@@ -1,8 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.welfair</groupId>
   <artifactId>welfair-ngo-system</artifactId>
@@ -11,14 +8,13 @@
 
   <dependencies>
     <!-- PostgreSQL JDBC driver -->
-
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
-      <version>42.7.3</version> <!-- or the latest stable version -->
+      <version>42.7.3</version>
     </dependency>
 
-    <!-- Servlet API -->
+    <!-- Servlet API (Java EE 8) -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -26,12 +22,10 @@
       <scope>provided</scope>
     </dependency>
 
-
   </dependencies>
 
   <build>
     <plugins>
-      <!-- Compiler plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -41,8 +35,6 @@
           <target>1.8</target>
         </configuration>
       </plugin>
-
-      <!-- WAR Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
