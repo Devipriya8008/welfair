@@ -8,17 +8,9 @@ public class Donor {
     private String address;
 
     // Constructors
-    public Donor() {} // Required for JSP EL
+    public Donor() {}
 
     public Donor(String name, String email, String phone, String address) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.address = address;
-    }
-
-    public Donor(int donorId, String name, String email, String phone, String address) {
-        this.donorId = donorId;
         this.name = name;
         this.email = email;
         this.phone = phone;
