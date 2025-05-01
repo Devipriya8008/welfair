@@ -11,6 +11,7 @@
 
   <dependencies>
     <!-- PostgreSQL JDBC driver -->
+
     <dependency>
       <groupId>org.postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -24,6 +25,8 @@
       <version>4.0.1</version>
       <scope>provided</scope>
     </dependency>
+
+
   </dependencies>
 
   <build>

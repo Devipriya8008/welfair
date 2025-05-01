@@ -7,105 +7,98 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DonorDAO {
-    // Add a new donor
-    public void addDonor(Donor donor) {
+    // Create a new donor and return generated ID
+    public int createDonor(Donor donor) throws SQLException {
         String sql = "INSERT INTO donors (name, email, phone, address) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             pstmt.setString(1, donor.getName());
             pstmt.setString(2, donor.getEmail());
             pstmt.setString(3, donor.getPhone());
             pstmt.setString(4, donor.getAddress());
             pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            try (ResultSet rs = pstmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return generated donor_id
+                }
+            }
         }
+        throw new SQLException("Creating donor failed, no ID obtained.");
     }
 
     // Get all donors
-    public List<Donor> getAllDonors() {
+    public List<Donor> getAllDonors() throws SQLException {
         List<Donor> donors = new ArrayList<>();
-        String sql = "SELECT * FROM donors";
-        
+        String sql = "SELECT * FROM donors ORDER BY name";
+
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            
+
             while (rs.next()) {
-                Donor donor = new Donor();
-                donor.setDonorId(rs.getInt("donor_id"));
-                donor.setName(rs.getString("name"));
-                donor.setEmail(rs.getString("email"));
-                donor.setPhone(rs.getString("phone"));
-                donor.setAddress(rs.getString("address"));
-                donors.add(donor);
+                donors.add(new Donor(
+                        rs.getInt("donor_id"),
+                        rs.getString("name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("address")
+                ));
             }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return donors;
     }
 
     // Get donor by ID
-    public Donor getDonorById(int id) {
-        Donor donor = null;
+    public Donor getDonorById(int id) throws SQLException {
         String sql = "SELECT * FROM donors WHERE donor_id = ?";
-        
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                donor = new Donor();
-                donor.setDonorId(rs.getInt("donor_id"));
-                donor.setName(rs.getString("name"));
-                donor.setEmail(rs.getString("email"));
-                donor.setPhone(rs.getString("phone"));
-                donor.setAddress(rs.getString("address"));
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return new Donor(
+                            rs.getInt("donor_id"),
+                            rs.getString("name"),
+                            rs.getString("email"),
+                            rs.getString("phone"),
+                            rs.getString("address")
+                    );
+                }
             }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return donor;
+        return null;
     }
 
     // Update donor
-    public void updateDonor(Donor donor) {
-        String sql = "UPDATE donors SET name = ?, email = ?, phone = ?, address = ? WHERE donor_id = ?";
-        
+    public boolean updateDonor(Donor donor) throws SQLException {
+        String sql = "UPDATE donors SET name=?, email=?, phone=?, address=? WHERE donor_id=?";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setString(1, donor.getName());
             pstmt.setString(2, donor.getEmail());
             pstmt.setString(3, donor.getPhone());
             pstmt.setString(4, donor.getAddress());
             pstmt.setInt(5, donor.getDonorId());
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            return pstmt.executeUpdate() > 0;
         }
     }
 
     // Delete donor
-    public void deleteDonor(int id) {
-        String sql = "DELETE FROM donors WHERE donor_id = ?";
-        
+    public boolean deleteDonor(int id) throws SQLException {
+        String sql = "DELETE FROM donors WHERE donor_id=?";
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
             pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return pstmt.executeUpdate() > 0;
         }
     }
 }
