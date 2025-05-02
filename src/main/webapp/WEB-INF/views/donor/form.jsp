@@ -3,66 +3,85 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>
-    <c:choose>
-      <c:when test="${donor.donorId == 0}">Add New Donor</c:when>
-      <c:otherwise>Edit Donor</c:otherwise>
-    </c:choose>
-  </title>
-  <style>
-    .form-group { margin-bottom: 15px; }
-    label { display: inline-block; width: 100px; }
-    input[type="text"], input[type="email"], input[type="tel"] { width: 300px; }
-    textarea { width: 300px; height: 100px; }
-    .button-group { margin-top: 20px; }
-    .error { color: red; }
-  </style>
+    <meta charset="UTF-8">
+    <title>
+        <c:choose>
+            <c:when test="${donor.donorId == 0}">Add New Donor</c:when>
+            <c:otherwise>Edit Donor</c:otherwise>
+        </c:choose>
+    </title>
+    <style>
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: inline-block;
+            width: 100px;
+        }
+
+        input[type="text"], input[type="email"], input[type="tel"] {
+            width: 300px;
+        }
+
+        textarea {
+            width: 300px;
+            height: 100px;
+        }
+
+        .button-group {
+            margin-top: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+    </style>
 </head>
 <body>
 
 <h2>
-  <c:choose>
-    <c:when test="${donor.donorId == 0}">Add New Donor</c:when>
-    <c:otherwise>Edit Donor</c:otherwise>
-  </c:choose>
+    <c:choose>
+        <c:when test="${donor.donorId == 0}">Add New Donor</c:when>
+        <c:otherwise>Edit Donor</c:otherwise>
+    </c:choose>
 </h2>
 
 <c:if test="${not empty errorMessage}">
-  <p class="error"><c:out value="${errorMessage}"/></p>
+    <p class="error"><c:out value="${errorMessage}"/></p>
 </c:if>
 
 <form action="${pageContext.request.contextPath}/donors" method="post">
-  <input type="hidden" name="action" value="${donor.donorId == 0 ? 'save' : 'update'}" />
+    <input type="hidden" name="action" value="${donor.donorId == 0 ? 'save' : 'update'}"/>
 
-  <c:if test="${donor.donorId != 0}">
-    <input type="hidden" name="donor_id" value="${donor.donorId}"/>
-  </c:if>
+    <c:if test="${donor.donorId != 0}">
+        <input type="hidden" name="donor_id" value="${donor.donorId}"/>
+    </c:if>
 
-  <div class="form-group">
-    <label for="name">Name:</label>
-    <input type="text" id="name" name="name" value="<c:out value='${donor.name}'/>" required/>
-  </div>
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="<c:out value='${donor.name}'/>" required/>
+    </div>
 
-  <div class="form-group">
-    <label for="email">Email:</label>
-    <input type="email" id="email" name="email" value="<c:out value='${donor.email}'/>" required/>
-  </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" value="<c:out value='${donor.email}'/>" required/>
+    </div>
 
-  <div class="form-group">
-    <label for="phone">Phone:</label>
-    <input type="tel" id="phone" name="phone" value="<c:out value='${donor.phone}'/>"/>
-  </div>
+    <div class="form-group">
+        <label for="phone">Phone:</label>
+        <input type="tel" id="phone" name="phone" value="<c:out value='${donor.phone}'/>"/>
+    </div>
 
-  <div class="form-group">
-    <label for="address">Address:</label>
-    <textarea id="address" name="address"><c:out value='${donor.address}'/></textarea>
-  </div>
+    <div class="form-group">
+        <label for="address">Address:</label>
+        <textarea id="address" name="address"><c:out value='${donor.address}'/></textarea>
+    </div>
 
-  <div class="button-group">
-    <button type="submit">Save</button>
-    <a href="${pageContext.request.contextPath}/donors" class="button">Cancel</a>
-  </div>
+    <div class="button-group">
+        <button type="submit">Save</button>
+        <a href="${pageContext.request.contextPath}/donors" class="button">Cancel</a>
+    </div>
 </form>
 
 </body>

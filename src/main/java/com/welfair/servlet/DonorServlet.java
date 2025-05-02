@@ -28,17 +28,14 @@ public class DonorServlet extends HttpServlet {
 
         try {
             if (action == null) {
-                // List all donors
                 request.setAttribute("donors", donorDAO.getAllDonors());
                 request.getRequestDispatcher("/WEB-INF/views/donor/list.jsp").forward(request, response);
             } else if ("new".equals(action)) {
-                // Show empty form for new donor - explicitly set donorId to 0
                 Donor newDonor = new Donor();
-                newDonor.setDonorId(0); // This ensures empty donorId is handled correctly
+                newDonor.setDonorId(0);
                 request.setAttribute("donor", newDonor);
                 request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
             } else if ("edit".equals(action)) {
-                // Show form with existing donor data
                 int id = Integer.parseInt(request.getParameter("id"));
                 Donor donor = donorDAO.getDonorById(id);
                 if (donor != null) {
@@ -48,7 +45,6 @@ public class DonorServlet extends HttpServlet {
                     response.sendError(HttpServletResponse.SC_NOT_FOUND, "Donor not found with ID: " + id);
                 }
             } else if ("delete".equals(action)) {
-                // Delete donor
                 int id = Integer.parseInt(request.getParameter("id"));
                 if (donorDAO.deleteDonor(id)) {
                     response.sendRedirect(request.getContextPath() + "/donors");
@@ -68,9 +64,10 @@ public class DonorServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String action = request.getParameter("action");
+        request.setCharacterEncoding("UTF-8");
 
         try {
+            String action = request.getParameter("action");
             Donor donor = new Donor();
             donor.setName(request.getParameter("name"));
             donor.setEmail(request.getParameter("email"));
@@ -80,7 +77,6 @@ public class DonorServlet extends HttpServlet {
             if ("update".equals(action)) {
                 int donorId = Integer.parseInt(request.getParameter("donor_id"));
                 donor.setDonorId(donorId);
-
                 if (donorDAO.updateDonor(donor)) {
                     response.sendRedirect(request.getContextPath() + "/donors");
                     return;
@@ -88,7 +84,6 @@ public class DonorServlet extends HttpServlet {
                     request.setAttribute("errorMessage", "Update failed. Donor not found.");
                 }
             } else {
-                // Save new donor
                 if (donorDAO.saveDonor(donor)) {
                     response.sendRedirect(request.getContextPath() + "/donors");
                     return;
