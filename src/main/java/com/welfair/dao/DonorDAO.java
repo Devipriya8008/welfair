@@ -14,7 +14,7 @@ public class DonorDAO {
     }
 
     // CRUD Operations
-    public boolean addDonor(Donor donor) throws SQLException {
+    public boolean saveDonor(Donor donor) throws SQLException {
         String sql = "INSERT INTO donors (name, email, phone, address) VALUES (?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, donor.getName());
@@ -75,13 +75,26 @@ public class DonorDAO {
 
     public boolean updateDonor(Donor donor) throws SQLException {
         String sql = "UPDATE donors SET name=?, email=?, phone=?, address=? WHERE donor_id=?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setString(1, donor.getName());
-            stmt.setString(2, donor.getEmail());
-            stmt.setString(3, donor.getPhone());
-            stmt.setString(4, donor.getAddress());
-            stmt.setInt(5, donor.getDonorId());
-            return stmt.executeUpdate() > 0;
+        try {
+            connection.setAutoCommit(false); // Start transaction
+            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+                stmt.setString(1, donor.getName());
+                stmt.setString(2, donor.getEmail());
+                stmt.setString(3, donor.getPhone());
+                stmt.setString(4, donor.getAddress());
+                stmt.setInt(5, donor.getDonorId());
+
+                int rowsAffected = stmt.executeUpdate();
+                connection.commit(); // Commit transaction
+
+                System.out.println("Rows affected in update: " + rowsAffected);
+                return rowsAffected > 0;
+            } catch (SQLException e) {
+                connection.rollback(); // Rollback on error
+                throw e;
+            }
+        } finally {
+            connection.setAutoCommit(true); // Reset auto-commit
         }
     }
 

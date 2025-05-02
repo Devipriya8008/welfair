@@ -28,27 +28,40 @@ public class DonorServlet extends HttpServlet {
 
         try {
             if (action == null) {
+                // List all donors
                 request.setAttribute("donors", donorDAO.getAllDonors());
                 request.getRequestDispatcher("/WEB-INF/views/donor/list.jsp").forward(request, response);
+            } else if ("new".equals(action)) {
+                // Show empty form for new donor - explicitly set donorId to 0
+                Donor newDonor = new Donor();
+                newDonor.setDonorId(0); // This ensures empty donorId is handled correctly
+                request.setAttribute("donor", newDonor);
+                request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
             } else if ("edit".equals(action)) {
+                // Show form with existing donor data
                 int id = Integer.parseInt(request.getParameter("id"));
                 Donor donor = donorDAO.getDonorById(id);
                 if (donor != null) {
                     request.setAttribute("donor", donor);
                     request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
                 } else {
-                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Donor not found with ID: " + id);
                 }
-            } else if ("new".equals(action)) {
-                request.setAttribute("donor", new Donor());
-                request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
             } else if ("delete".equals(action)) {
+                // Delete donor
                 int id = Integer.parseInt(request.getParameter("id"));
-                donorDAO.deleteDonor(id);
-                response.sendRedirect(request.getContextPath() + "/donors");
+                if (donorDAO.deleteDonor(id)) {
+                    response.sendRedirect(request.getContextPath() + "/donors");
+                } else {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND, "Failed to delete donor with ID: " + id);
+                }
+            } else {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action parameter");
             }
         } catch (SQLException e) {
             throw new ServletException("Database error", e);
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid ID format");
         }
     }
 
@@ -65,15 +78,33 @@ public class DonorServlet extends HttpServlet {
             donor.setAddress(request.getParameter("address"));
 
             if ("update".equals(action)) {
-                // CRITICAL: Make sure you're getting the donor_id parameter
-                donor.setDonorId(Integer.parseInt(request.getParameter("donor_id")));
-                donorDAO.updateDonor(donor);
+                int donorId = Integer.parseInt(request.getParameter("donor_id"));
+                donor.setDonorId(donorId);
+
+                if (donorDAO.updateDonor(donor)) {
+                    response.sendRedirect(request.getContextPath() + "/donors");
+                    return;
+                } else {
+                    request.setAttribute("errorMessage", "Update failed. Donor not found.");
+                }
+            } else {
+                // Save new donor
+                if (donorDAO.saveDonor(donor)) {
+                    response.sendRedirect(request.getContextPath() + "/donors");
+                    return;
+                } else {
+                    request.setAttribute("errorMessage", "Save failed. Please try again.");
+                }
             }
-            response.sendRedirect(request.getContextPath() + "/donors");
+
+            request.setAttribute("donor", donor);
+            request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
+
         } catch (SQLException e) {
-            throw new ServletException("Database error during update", e);
+            throw new ServletException("Database error", e);
         } catch (NumberFormatException e) {
-            throw new ServletException("Invalid donor ID format", e);
+            request.setAttribute("errorMessage", "Invalid ID format");
+            request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
         }
     }
 
