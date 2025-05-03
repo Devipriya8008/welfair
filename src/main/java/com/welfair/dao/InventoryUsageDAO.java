@@ -22,6 +22,54 @@ public class InventoryUsageDAO {
             e.printStackTrace();
         }
     }
+    public boolean exists(int itemId, int projectId) {
+        String sql = "SELECT COUNT(*) FROM inventory_usage WHERE item_id = ? AND project_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, itemId);
+            stmt.setInt(2, projectId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    private Connection getConnection() throws SQLException {
+        String jdbcURL = "jdbc:postgresql://localhost:5432/your_database_name";
+        String jdbcUsername = "your_username";
+        String jdbcPassword = "your_password";
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
+    }
+
+    public InventoryUsage getInventoryUsageById(int itemId, int projectId) {
+        String sql = "SELECT * FROM inventory_usage WHERE item_id = ? AND project_id = ?";
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, itemId);
+            stmt.setInt(2, projectId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new InventoryUsage(
+                        rs.getInt("item_id"),
+                        rs.getInt("project_id"),
+                        rs.getInt("quantity_used")
+                );
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     // Get all inventory usage records
     public List<InventoryUsage> getAllInventoryUsage() {
