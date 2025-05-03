@@ -5,7 +5,7 @@ public class VolunteerProject {
     private int projectId;
     private String role;
 
-    // Constructors, Getters, and Setters
+    // Constructors
     public VolunteerProject() {}
     public VolunteerProject(int volunteerId, int projectId, String role) {
         this.volunteerId = volunteerId;
