@@ -6,35 +6,25 @@
     <meta charset="UTF-8">
     <title>
         <c:choose>
-            <c:when test="${donor.donorId == 0}">Add New Donor</c:when>
+            <c:when test="${empty donor.donorId || donor.donorId == 0}">Add New Donor</c:when>
             <c:otherwise>Edit Donor</c:otherwise>
         </c:choose>
     </title>
     <style>
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        label {
-            display: inline-block;
-            width: 100px;
-        }
-
-        input[type="text"], input[type="email"], input[type="tel"] {
-            width: 300px;
-        }
-
-        textarea {
-            width: 300px;
-            height: 100px;
-        }
-
-        .button-group {
-            margin-top: 20px;
-        }
-
-        .error {
-            color: red;
+        .form-group { margin-bottom: 15px; }
+        label { display: inline-block; width: 100px; }
+        input[type="text"], input[type="email"], input[type="tel"] { width: 300px; }
+        textarea { width: 300px; height: 100px; }
+        .button-group { margin-top: 20px; }
+        .error { color: red; }
+        .button {
+            padding: 5px 10px;
+            background-color: #007BFF;
+            color: white;
+            border-radius: 4px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -42,7 +32,7 @@
 
 <h2>
     <c:choose>
-        <c:when test="${donor.donorId == 0}">Add New Donor</c:when>
+        <c:when test="${empty donor.donorId || donor.donorId == 0}">Add New Donor</c:when>
         <c:otherwise>Edit Donor</c:otherwise>
     </c:choose>
 </h2>
@@ -52,9 +42,9 @@
 </c:if>
 
 <form action="${pageContext.request.contextPath}/donors" method="post">
-    <input type="hidden" name="action" value="${donor.donorId == 0 ? 'save' : 'update'}"/>
+    <input type="hidden" name="action" value="${empty donor.donorId || donor.donorId == 0 ? 'save' : 'update'}"/>
 
-    <c:if test="${donor.donorId != 0}">
+    <c:if test="${not empty donor.donorId && donor.donorId != 0}">
         <input type="hidden" name="donor_id" value="${donor.donorId}"/>
     </c:if>
 
@@ -79,7 +69,7 @@
     </div>
 
     <div class="button-group">
-        <button type="submit">Save</button>
+        <button type="submit" class="button">Save</button>
         <a href="${pageContext.request.contextPath}/donors" class="button">Cancel</a>
     </div>
 </form>

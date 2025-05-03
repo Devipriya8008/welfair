@@ -1,66 +1,96 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="com.welfair.model.Donation" %>
-<%@ page import="java.time.format.DateTimeFormatter" %>
+<%@ page import="com.welfair.model.Donation, java.time.format.DateTimeFormatter" %>
 <%
-    Donation d = (Donation) request.getAttribute("donation");
-    boolean edit = d != null && d.getDonationId() > 0;
-    String errorMessage = (String) request.getAttribute("errorMessage");
-    String formattedDate = "";
-    if (edit && d.getDate() != null) {
-        formattedDate = d.getDate().toLocalDateTime().toLocalDate().toString();
-    }
+    Donation donation = (Donation) request.getAttribute("donation");
+    boolean isEdit = donation != null && donation.getDonationId() > 0;
+    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+    String formattedDate = isEdit ? donation.getDate().toLocalDateTime().format(formatter) : "";
 %>
 <html>
 <head>
-    <title><%= edit ? "Edit" : "Add" %> Donation</title>
+    <title><%= isEdit ? "Edit" : "Add" %> Donation</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        form { max-width: 500px; }
-        input[type="text"], input[type="number"], select, input[type="date"] {
+        .form-container { max-width: 600px; margin: 0 auto; }
+        .form-group { margin-bottom: 15px; }
+        label { display: inline-block; width: 120px; font-weight: bold; }
+        input[type="text"], input[type="number"], input[type="datetime-local"], select {
             width: 100%;
             padding: 8px;
-            margin: 5px 0 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
             box-sizing: border-box;
         }
-        .error { color: red; }
+        .btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn.cancel { background-color: #f44336; margin-left: 10px; }
+        .error { color: red; margin-top: 10px; }
     </style>
 </head>
 <body>
-<h2><%= edit ? "Edit" : "Add New" %> Donation</h2>
+<div class="form-container">
+    <h2><%= isEdit ? "Edit" : "Add New" %> Donation</h2>
 
-<% if (errorMessage != null) { %>
-<p class="error"><%= errorMessage %></p>
-<% } %>
-
-<form action="donations" method="post">
-    <% if (edit) { %>
-    <input type="hidden" name="action" value="update">
-    <input type="hidden" name="donation_id" value="<%= d.getDonationId() %>">
+    <% if (request.getAttribute("errorMessage") != null) { %>
+    <p class="error"><%= request.getAttribute("errorMessage") %></p>
     <% } %>
 
-    Donor ID:
-    <input type="number" name="donor_id" value="<%= edit ? d.getDonorId() : "" %>" min="1" required><br>
+    <form action="donations" method="post">
+        <% if (isEdit) { %>
+        <input type="hidden" name="action" value="update">
+        <input type="hidden" name="donation_id" value="<%= donation.getDonationId() %>">
+        <% } %>
 
-    Project ID:
-    <input type="number" name="project_id" value="<%= edit ? d.getProjectId() : "" %>" min="1" required><br>
+        <div class="form-group">
+            <label for="donor_id">Donor ID:</label>
+            <input type="number" id="donor_id" name="donor_id"
+                   value="<%= isEdit ? donation.getDonorId() : "" %>" min="1" required>
+        </div>
 
-    Amount:
-    <input type="text" name="amount" value="<%= edit ? d.getAmount() : "" %>" required><br>
+        <div class="form-group">
+            <label for="project_id">Project ID:</label>
+            <input type="number" id="project_id" name="project_id"
+                   value="<%= isEdit ? donation.getProjectId() : "" %>" min="1" required>
+        </div>
 
-    Date (YYYY-MM-DD):
-    <input type="date" name="date" value="<%= formattedDate %>" required><br>
+        <div class="form-group">
+            <label for="amount">Amount:</label>
+            <input type="text" id="amount" name="amount"
+                   value="<%= isEdit ? String.format("%.2f", donation.getAmount()) : "" %>"
+                   pattern="^\d+(\.\d{1,2})?$" title="Enter a valid amount (e.g., 100 or 100.50)" required>
+        </div>
 
-    Payment Mode:
-    <select name="mode" required>
-        <option value="">-- Select Mode --</option>
-        <option value="Cash" <%= edit && "Cash".equals(d.getMode()) ? "selected" : "" %>>Cash</option>
-        <option value="Credit Card" <%= edit && "Credit Card".equals(d.getMode()) ? "selected" : "" %>>Credit Card</option>
-        <option value="Bank Transfer" <%= edit && "Bank Transfer".equals(d.getMode()) ? "selected" : "" %>>Bank Transfer</option>
-        <option value="Check" <%= edit && "Check".equals(d.getMode()) ? "selected" : "" %>>Check</option>
-    </select><br>
+        <div class="form-group">
+            <label for="date">Date:</label>
+            <input type="datetime-local" id="date" name="date"
+                   value="<%= formattedDate %>" required>
+        </div>
 
-    <input type="submit" value="<%= edit ? "Update" : "Add" %>">
-    <a href="donations" style="margin-left: 10px;">Cancel</a>
-</form>
+        <div class="form-group">
+            <label for="mode">Payment Mode:</label>
+            <select id="mode" name="mode" required>
+                <option value="">-- Select Mode --</option>
+                <option value="Cash" <%= isEdit && "Cash".equals(donation.getMode()) ? "selected" : "" %>>Cash</option>
+                <option value="Credit Card" <%= isEdit && "Credit Card".equals(donation.getMode()) ? "selected" : "" %>>Credit Card</option>
+                <option value="Bank Transfer" <%= isEdit && "Bank Transfer".equals(donation.getMode()) ? "selected" : "" %>>Bank Transfer</option>
+                <option value="Check" <%= isEdit && "Check".equals(donation.getMode()) ? "selected" : "" %>>Check</option>
+                <option value="Online" <%= isEdit && "Online".equals(donation.getMode()) ? "selected" : "" %>>Online</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn"><%= isEdit ? "Update" : "Add" %> Donation</button>
+            <a href="donations" class="btn cancel">Cancel</a>
+        </div>
+    </form>
+</div>
 </body>
 </html>
