@@ -5,115 +5,154 @@ import com.welfair.model.Employee;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
+
 import java.io.IOException;
-import java.sql.SQLException;
 
 @WebServlet(name = "EmployeeServlet", urlPatterns = {"/employees"})
 public class EmployeeServlet extends HttpServlet {
     private EmployeeDAO employeeDAO;
 
     @Override
-    public void init() throws ServletException {
-        try {
-            employeeDAO = new EmployeeDAO();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize EmployeeDAO", e);
-        }
+    public void init() {
+        employeeDAO = new EmployeeDAO();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+
         String action = request.getParameter("action");
 
         try {
             if (action == null) {
-                // List all employees
-                request.setAttribute("employees", employeeDAO.getAllEmployees());
-                request.getRequestDispatcher("/WEB-INF/views/employee/list.jsp").forward(request, response);
-            } else if ("new".equals(action)) {
-                // Show new employee form
-                request.setAttribute("employee", new Employee());
-                request.getRequestDispatcher("/WEB-INF/views/employee/form.jsp").forward(request, response);
-            } else if ("edit".equals(action)) {
-                // Show edit form
-                int id = Integer.parseInt(request.getParameter("id"));
-                Employee employee = employeeDAO.getEmployeeById(id);
-                if (employee != null) {
-                    request.setAttribute("employee", employee);
-                    request.getRequestDispatcher("/WEB-INF/views/employee/form.jsp").forward(request, response);
-                } else {
-                    request.getSession().setAttribute("errorMessage", "Employee not found");
-                    response.sendRedirect(request.getContextPath() + "/employees");
+                listEmployees(request, response);
+            } else {
+                switch (action) {
+                    case "new":
+                        showForm(request, response, new Employee());
+                        break;
+                    case "edit":
+                        showEditForm(request, response);
+                        break;
+                    case "delete":
+                        deleteEmployee(request, response);
+                        break;
+                    default:
+                        listEmployees(request, response);
                 }
-            } else if ("delete".equals(action)) {
-                // Handle delete
-                int id = Integer.parseInt(request.getParameter("id"));
-                if (employeeDAO.deleteEmployee(id)) {
-                    request.getSession().setAttribute("successMessage", "Employee deleted successfully");
-                } else {
-                    request.getSession().setAttribute("errorMessage", "Failed to delete employee");
-                }
-                response.sendRedirect(request.getContextPath() + "/employees");
             }
-        } catch (NumberFormatException e) {
-            request.getSession().setAttribute("errorMessage", "Invalid employee ID");
-            response.sendRedirect(request.getContextPath() + "/employees");
-        } catch (SQLException e) {
-            throw new ServletException("Database error", e);
+        } catch (Exception ex) {
+            throw new ServletException(ex);
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // MUST BE FIRST LINE IN doPost
+
         request.setCharacterEncoding("UTF-8");
+        String action = request.getParameter("action");
 
         try {
-            Employee employee = new Employee();
-            employee.setName(request.getParameter("name"));
-            employee.setPosition(request.getParameter("position"));
-            employee.setPhone(request.getParameter("phone"));
-            employee.setEmail(request.getParameter("email"));
-
-            String empIdParam = request.getParameter("emp_id");
-            boolean isUpdate = empIdParam != null && !empIdParam.isEmpty();
-
-            if (isUpdate) {
-                // Update existing employee
-                employee.setEmpId(Integer.parseInt(empIdParam));
-                if (employeeDAO.updateEmployee(employee)) {
-                    request.getSession().setAttribute("successMessage", "Employee updated successfully");
-                } else {
-                    request.getSession().setAttribute("errorMessage", "Failed to update employee");
-                }
+            if ("update".equals(action)) {
+                updateEmployee(request, response);
             } else {
-                // Add new employee
-                if (employeeDAO.addEmployee(employee)) {
-                    request.getSession().setAttribute("successMessage", "Employee added successfully");
-                } else {
-                    request.getSession().setAttribute("errorMessage", "Failed to add employee");
-                }
+                addEmployee(request, response);
             }
-        } catch (NumberFormatException e) {
-            request.getSession().setAttribute("errorMessage", "Invalid employee ID");
-        } catch (SQLException e) {
-            request.getSession().setAttribute("errorMessage", "Database error: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception ex) {
+            throw new ServletException(ex);
         }
-
-        response.sendRedirect(request.getContextPath() + "/employees");
     }
 
-    @Override
-    public void destroy() {
-        try {
-            if (employeeDAO != null) {
-                employeeDAO.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error closing EmployeeDAO: " + e.getMessage());
+    private void listEmployees(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        request.setAttribute("employees", employeeDAO.getAllEmployees());
+        request.getRequestDispatcher("/WEB-INF/views/employee/list.jsp")
+                .forward(request, response);
+    }
+
+    private void showForm(HttpServletRequest request, HttpServletResponse response, Employee employee)
+            throws ServletException, IOException {
+        request.setAttribute("employee", employee);
+        request.setAttribute("action", employee.getEmpId() == 0 ? "create" : "update");
+        request.getRequestDispatcher("/WEB-INF/views/employee/form.jsp")
+                .forward(request, response);
+    }
+
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Employee employee = employeeDAO.getEmployeeById(id);
+        if (employee != null) {
+            showForm(request, response, employee);
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
+    }
+
+    private void addEmployee(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        Employee emp = new Employee();
+        populateEmployeeFromRequest(emp, request);
+
+        // Validate email uniqueness
+        if (employeeDAO.emailExists(emp.getEmail())) {
+            request.setAttribute("error", "Email already exists");
+            showForm(request, response, emp);
+            return;
+        }
+
+        if (employeeDAO.addEmployee(emp)) {
+            response.sendRedirect("employees");
+        } else {
+            request.setAttribute("error", "Failed to add employee");
+            showForm(request, response, emp);
+        }
+    }
+
+    private void updateEmployee(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        Employee emp = employeeDAO.getEmployeeById(id);
+
+        if (emp == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        String originalEmail = emp.getEmail();
+        populateEmployeeFromRequest(emp, request);
+
+        // Check if email was changed and now conflicts
+        if (!originalEmail.equals(emp.getEmail()) &&
+                employeeDAO.emailExists(emp.getEmail())) {
+            request.setAttribute("error", "Email already exists");
+            showForm(request, response, emp);
+            return;
+        }
+
+        if (employeeDAO.updateEmployee(emp)) {
+            response.sendRedirect("employees");
+        } else {
+            request.setAttribute("error", "Failed to update employee");
+            showForm(request, response, emp);
+        }
+    }
+
+    private void deleteEmployee(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("id"));
+        if (employeeDAO.deleteEmployee(id)) {
+            response.sendRedirect("employees");
+        } else {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void populateEmployeeFromRequest(Employee emp, HttpServletRequest request) {
+        emp.setName(request.getParameter("name"));
+        emp.setPosition(request.getParameter("position"));
+        emp.setPhone(request.getParameter("phone"));
+        emp.setEmail(request.getParameter("email"));
     }
 }
