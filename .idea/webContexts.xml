@@ -8,6 +8,7 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor/form.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donors/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donors" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/projectbeneficiary/form.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/projectbeneficiary" />
       </map>
     </option>
   </component>
