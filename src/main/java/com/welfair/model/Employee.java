@@ -7,10 +7,10 @@ public class Employee {
     private String phone;
     private String email;
 
-    // Constructors, Getters, and Setters
+    // Constructors
     public Employee() {}
-    public Employee(int empId, String name, String position, String phone, String email) {
-        this.empId = empId;
+
+    public Employee(String name, String position, String phone, String email) {
         this.name = name;
         this.position = position;
         this.phone = phone;

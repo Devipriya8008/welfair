@@ -7,19 +7,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class VolunteerDAO {
-    // Add a new volunteer
-    public void addVolunteer(Volunteer volunteer) {
+    private Connection connection;
+
+    public VolunteerDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
+    }
+
+    // Add a new volunteer with proper error handling
+    // In VolunteerDAO.java
+    public boolean addVolunteer(Volunteer volunteer) throws SQLException {
         String sql = "INSERT INTO volunteers (name, phone, email) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, volunteer.getName());
             pstmt.setString(2, volunteer.getPhone());
             pstmt.setString(3, volunteer.getEmail());
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        volunteer.setVolunteerId(generatedKeys.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 
@@ -73,20 +86,35 @@ public class VolunteerDAO {
     }
 
     // Update volunteer
-    public void updateVolunteer(Volunteer volunteer) {
-        String sql = "UPDATE volunteers SET name = ?, phone = ?, email = ? WHERE volunteer_id = ?";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
+    // In VolunteerDAO.java
+    public boolean updateVolunteer(Volunteer volunteer) throws SQLException {
+        String sql = "UPDATE volunteers SET name=?, phone=?, email=? WHERE volunteer_id=?";
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // Start transaction
+
+            pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, volunteer.getName());
             pstmt.setString(2, volunteer.getPhone());
             pstmt.setString(3, volunteer.getEmail());
             pstmt.setInt(4, volunteer.getVolunteerId());
-            pstmt.executeUpdate();
-            
+
+            int rowsUpdated = pstmt.executeUpdate();
+            conn.commit(); // Commit transaction
+
+            return rowsUpdated > 0;
         } catch (SQLException e) {
-            e.printStackTrace();
+            if (conn != null) conn.rollback(); // Rollback on error
+            throw e;
+        } finally {
+            if (pstmt != null) pstmt.close();
+            if (conn != null) {
+                conn.setAutoCommit(true); // Reset auto-commit
+                conn.close();
+            }
         }
     }
 

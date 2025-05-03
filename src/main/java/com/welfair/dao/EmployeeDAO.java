@@ -1,111 +1,120 @@
 package com.welfair.dao;
 
-import com.welfair.model.Employee;
 import com.welfair.db.DBConnection;
+import com.welfair.model.Employee;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeeDAO {
-    // Add a new employee
-    public void addEmployee(Employee employee) {
+    private Connection connection;
+
+    public EmployeeDAO() throws SQLException {
+        this.connection = DBConnection.getConnection();
+        this.connection.setAutoCommit(true); // Ensure auto-commit
+    }
+
+    public boolean addEmployee(Employee employee) throws SQLException {
+
         String sql = "INSERT INTO employees (name, position, phone, email) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, employee.getName());
-            pstmt.setString(2, employee.getPosition());
-            pstmt.setString(3, employee.getPhone());
-            pstmt.setString(4, employee.getEmail());
-            pstmt.executeUpdate();
-            
+
+        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            connection.setAutoCommit(false);
+            stmt.setString(1, employee.getName());
+            stmt.setString(2, employee.getPosition());
+
+            // Handle null values
+            if (employee.getPhone() == null || employee.getPhone().isEmpty()) {
+                stmt.setNull(3, Types.VARCHAR);
+            } else {
+                stmt.setString(3, employee.getPhone());
+            }
+
+            if (employee.getEmail() == null || employee.getEmail().isEmpty()) {
+                stmt.setNull(4, Types.VARCHAR);
+            } else {
+                stmt.setString(4, employee.getEmail());
+            }
+
+            int affectedRows = stmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        employee.setEmpId(generatedKeys.getInt(1));
+                    }
+                }
+                connection.commit();
+                return true;
+            }
+            connection.rollback();
+            return false;
         } catch (SQLException e) {
-            e.printStackTrace();
+            connection.rollback();
+            throw e;
         }
     }
 
-    // Get all employees
-    public List<Employee> getAllEmployees() {
+
+    public List<Employee> getAllEmployees() throws SQLException {
         List<Employee> employees = new ArrayList<>();
-        String sql = "SELECT * FROM employees";
-        
-        try (Connection conn = DBConnection.getConnection();
-             Statement stmt = conn.createStatement();
+        String sql = "SELECT * FROM employees ORDER BY name";
+
+        try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
-            
+
             while (rs.next()) {
-                Employee employee = new Employee();
-                employee.setEmpId(rs.getInt("emp_id"));
-                employee.setName(rs.getString("name"));
-                employee.setPosition(rs.getString("position"));
-                employee.setPhone(rs.getString("phone"));
-                employee.setEmail(rs.getString("email"));
-                employees.add(employee);
+                employees.add(mapResultSetToEmployee(rs));
             }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
         return employees;
     }
 
-    // Get employee by ID
-    public Employee getEmployeeById(int id) {
-        Employee employee = null;
+    public Employee getEmployeeById(int id) throws SQLException {
         String sql = "SELECT * FROM employees WHERE emp_id = ?";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            ResultSet rs = pstmt.executeQuery();
-            
-            if (rs.next()) {
-                employee = new Employee();
-                employee.setEmpId(rs.getInt("emp_id"));
-                employee.setName(rs.getString("name"));
-                employee.setPosition(rs.getString("position"));
-                employee.setPhone(rs.getString("phone"));
-                employee.setEmail(rs.getString("email"));
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToEmployee(rs);
+                }
             }
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
+        return null;
+    }
+
+    public boolean updateEmployee(Employee employee) throws SQLException {
+        String sql = "UPDATE employees SET name=?, position=?, phone=?, email=? WHERE emp_id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, employee.getName());
+            stmt.setString(2, employee.getPosition());
+            stmt.setString(3, employee.getPhone());
+            stmt.setString(4, employee.getEmail());
+            stmt.setInt(5, employee.getEmpId());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public boolean deleteEmployee(int id) throws SQLException {
+        String sql = "DELETE FROM employees WHERE emp_id=?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    private Employee mapResultSetToEmployee(ResultSet rs) throws SQLException {
+        Employee employee = new Employee();
+        employee.setEmpId(rs.getInt("emp_id"));
+        employee.setName(rs.getString("name"));
+        employee.setPosition(rs.getString("position"));
+        employee.setPhone(rs.getString("phone"));
+        employee.setEmail(rs.getString("email"));
         return employee;
     }
 
-    // Update employee
-    public void updateEmployee(Employee employee) {
-        String sql = "UPDATE employees SET name = ?, position = ?, phone = ?, email = ? WHERE emp_id = ?";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setString(1, employee.getName());
-            pstmt.setString(2, employee.getPosition());
-            pstmt.setString(3, employee.getPhone());
-            pstmt.setString(4, employee.getEmail());
-            pstmt.setInt(5, employee.getEmpId());
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // Delete employee
-    public void deleteEmployee(int id) {
-        String sql = "DELETE FROM employees WHERE emp_id = ?";
-        
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            
-            pstmt.setInt(1, id);
-            pstmt.executeUpdate();
-            
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void close() throws SQLException {
+        if (connection != null && !connection.isClosed()) {
+            connection.close();
         }
     }
 }
