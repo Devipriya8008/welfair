@@ -13,22 +13,28 @@ public class VolunteerServlet extends HttpServlet {
     private VolunteerDAO volunteerDAO;
 
     @Override
+    public void init() throws ServletException {
+        try {
+            volunteerDAO = new VolunteerDAO();
+        } catch (SQLException e) {
+            throw new ServletException("Failed to initialize VolunteerDAO", e);
+        }
+    }
+
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
 
         try {
             if (action == null) {
-                // List all volunteers
                 request.setAttribute("volunteers", volunteerDAO.getAllVolunteers());
                 request.getRequestDispatcher("/WEB-INF/views/volunteer/list.jsp").forward(request, response);
             } else if ("new".equals(action)) {
-                // Show empty form for new volunteer
                 request.setAttribute("formTitle", "Add New Volunteer");
                 request.setAttribute("volunteer", new Volunteer());
                 request.getRequestDispatcher("/WEB-INF/views/volunteer/form.jsp").forward(request, response);
             } else if ("edit".equals(action)) {
-                // Show form with existing volunteer data
                 int id = Integer.parseInt(request.getParameter("id"));
                 Volunteer volunteer = volunteerDAO.getVolunteerById(id);
                 if (volunteer != null) {
@@ -40,7 +46,6 @@ public class VolunteerServlet extends HttpServlet {
                     response.sendRedirect(request.getContextPath() + "/volunteers");
                 }
             } else if ("delete".equals(action)) {
-                // Handle delete
                 int id = Integer.parseInt(request.getParameter("id"));
                 volunteerDAO.deleteVolunteer(id);
                 request.getSession().setAttribute("successMessage", "Volunteer deleted successfully");
@@ -53,21 +58,13 @@ public class VolunteerServlet extends HttpServlet {
     }
 
     @Override
-    public void init() throws ServletException {
-        try {
-            volunteerDAO = new VolunteerDAO();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize VolunteerDAO", e);
-        }
-    }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
 
         try {
             Volunteer volunteer = new Volunteer();
+            volunteer.setUserId(Integer.parseInt(request.getParameter("user_id"))); // NEW
             volunteer.setName(request.getParameter("name"));
             volunteer.setPhone(request.getParameter("phone"));
             volunteer.setEmail(request.getParameter("email"));
@@ -75,12 +72,10 @@ public class VolunteerServlet extends HttpServlet {
             String idParam = request.getParameter("volunteer_id");
 
             if (idParam != null && !idParam.isEmpty() && !idParam.equals("0")) {
-                // Update existing volunteer
                 volunteer.setVolunteerId(Integer.parseInt(idParam));
                 volunteerDAO.updateVolunteer(volunteer);
                 request.getSession().setAttribute("successMessage", "Volunteer updated successfully");
             } else {
-                // Add new volunteer
                 volunteerDAO.addVolunteer(volunteer);
                 request.getSession().setAttribute("successMessage", "Volunteer added successfully");
             }
@@ -89,5 +84,16 @@ public class VolunteerServlet extends HttpServlet {
         }
 
         response.sendRedirect(request.getContextPath() + "/volunteers");
+    }
+
+    @Override
+    public void destroy() {
+        try {
+            if (volunteerDAO != null) {
+                volunteerDAO.close();
+            }
+        } catch (SQLException e) {
+            System.err.println("Error closing VolunteerDAO: " + e.getMessage());
+        }
     }
 }

@@ -13,7 +13,7 @@
     <style>
         .form-group { margin-bottom: 15px; }
         label { display: inline-block; width: 100px; }
-        input[type="text"], input[type="email"], input[type="tel"] { width: 300px; }
+        input[type="text"], input[type="email"], input[type="tel"], input[type="number"] { width: 300px; }
         textarea { width: 300px; height: 100px; }
         .button-group { margin-top: 20px; }
         .error { color: red; }
@@ -47,6 +47,13 @@
     <c:if test="${not empty donor.donorId && donor.donorId != 0}">
         <input type="hidden" name="donor_id" value="${donor.donorId}"/>
     </c:if>
+
+    <div class="form-group">
+        <label for="user_id">User ID:</label>
+        <input type="number" id="user_id" name="user_id"
+               value="<c:out value='${donor.userId}'/>" required
+               <c:if test="${not empty donor.userId && donor.userId != 0}">readonly</c:if>/>
+    </div>
 
     <div class="form-group">
         <label for="name">Name:</label>

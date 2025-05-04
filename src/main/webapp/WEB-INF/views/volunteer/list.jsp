@@ -5,110 +5,44 @@
 <head>
     <title>Volunteer List</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            line-height: 1.6;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-        tr:hover {
-            background-color: #f5f5f5;
-        }
-        .btn {
-            display: inline-block;
-            padding: 8px 12px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .btn:hover {
-            background-color: #45a049;
-        }
-        .action-links a {
-            color: #007bff;
-            text-decoration: none;
-            margin-right: 10px;
-        }
-        .action-links a:hover {
-            text-decoration: underline;
-        }
-        .message {
-            padding: 10px;
-            margin-bottom: 20px;
-            border-radius: 4px;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
+        /* Your existing styles */
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px; text-align: left; border-bottom: 1px solid #ddd; }
+        .btn { padding: 5px 10px; background-color: #4CAF50; color: white; text-decoration: none; }
     </style>
 </head>
 <body>
-<div class="container">
-    <h1>Volunteer Management</h1>
+<h1>Volunteer Management</h1>
 
-    <%-- Success/Error Messages --%>
-    <c:if test="${not empty sessionScope.successMessage}">
-        <div class="message success">${sessionScope.successMessage}</div>
-        <c:remove var="successMessage" scope="session"/>
-    </c:if>
-    <c:if test="${not empty sessionScope.errorMessage}">
-        <div class="message error">${sessionScope.errorMessage}</div>
-        <c:remove var="errorMessage" scope="session"/>
-    </c:if>
+<a href="volunteers?action=new" class="btn">Add New Volunteer</a>
 
-    <a href="volunteers?action=new" class="btn">Add New Volunteer</a>
-
-    <table>
-        <thead>
+<table>
+    <thead>
+    <tr>
+        <th>User ID</th>
+        <th>Volunteer ID</th>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Email</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <c:forEach items="${volunteers}" var="volunteer">
         <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Phone</th>
-            <th>Email</th>
-            <th>Actions</th>
+            <td>${volunteer.userId}</td>
+            <td>${volunteer.volunteerId}</td>
+            <td>${volunteer.name}</td>
+            <td>${volunteer.phone}</td>
+            <td>${volunteer.email}</td>
+            <td>
+                <a href="volunteers?action=edit&id=${volunteer.volunteerId}">Edit</a>
+                <a href="volunteers?action=delete&id=${volunteer.volunteerId}"
+                   onclick="return confirm('Are you sure?')">Delete</a>
+            </td>
         </tr>
-        </thead>
-        <tbody>
-        <c:forEach items="${volunteers}" var="volunteer">
-            <tr>
-                <td>${volunteer.volunteerId}</td>
-                <td>${volunteer.name}</td>
-                <td>${volunteer.phone}</td>
-                <td>${volunteer.email}</td>
-                <td class="action-links">
-                    <a href="volunteers?action=edit&id=${volunteer.volunteerId}">Edit</a>
-                    <a href="volunteers?action=delete&id=${volunteer.volunteerId}"
-                       onclick="return confirm('Are you sure you want to delete this volunteer?')">Delete</a>
-                </td>
-            </tr>
-        </c:forEach>
-        </tbody>
-    </table>
-</div>
+    </c:forEach>
+    </tbody>
+</table>
 </body>
 </html>

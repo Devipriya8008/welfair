@@ -2,6 +2,7 @@ package com.welfair.dao;
 
 import com.welfair.db.DBConnection;
 import com.welfair.model.Donor;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,14 +14,14 @@ public class DonorDAO {
         this.connection = DBConnection.getConnection();
     }
 
-    // CRUD Operations
     public boolean saveDonor(Donor donor) throws SQLException {
-        String sql = "INSERT INTO donors (name, email, phone, address) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO donors (user_id, name, email, phone, address) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            stmt.setString(1, donor.getName());
-            stmt.setString(2, donor.getEmail());
-            stmt.setString(3, donor.getPhone());
-            stmt.setString(4, donor.getAddress());
+            stmt.setInt(1, donor.getUserId()); // NEW
+            stmt.setString(2, donor.getName());
+            stmt.setString(3, donor.getEmail());
+            stmt.setString(4, donor.getPhone());
+            stmt.setString(5, donor.getAddress());
 
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) return false;
@@ -44,6 +45,7 @@ public class DonorDAO {
             while (rs.next()) {
                 Donor donor = new Donor();
                 donor.setDonorId(rs.getInt("donor_id"));
+                donor.setUserId(rs.getInt("user_id")); // NEW
                 donor.setName(rs.getString("name"));
                 donor.setEmail(rs.getString("email"));
                 donor.setPhone(rs.getString("phone"));
@@ -62,6 +64,7 @@ public class DonorDAO {
                 if (rs.next()) {
                     Donor donor = new Donor();
                     donor.setDonorId(rs.getInt("donor_id"));
+                    donor.setUserId(rs.getInt("user_id")); // NEW
                     donor.setName(rs.getString("name"));
                     donor.setEmail(rs.getString("email"));
                     donor.setPhone(rs.getString("phone"));
@@ -74,27 +77,27 @@ public class DonorDAO {
     }
 
     public boolean updateDonor(Donor donor) throws SQLException {
-        String sql = "UPDATE donors SET name=?, email=?, phone=?, address=? WHERE donor_id=?";
+        String sql = "UPDATE donors SET user_id=?, name=?, email=?, phone=?, address=? WHERE donor_id=?";
         try {
             connection.setAutoCommit(false); // Start transaction
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, donor.getName());
-                stmt.setString(2, donor.getEmail());
-                stmt.setString(3, donor.getPhone());
-                stmt.setString(4, donor.getAddress());
-                stmt.setInt(5, donor.getDonorId());
+                stmt.setInt(1, donor.getUserId()); // NEW
+                stmt.setString(2, donor.getName());
+                stmt.setString(3, donor.getEmail());
+                stmt.setString(4, donor.getPhone());
+                stmt.setString(5, donor.getAddress());
+                stmt.setInt(6, donor.getDonorId());
 
                 int rowsAffected = stmt.executeUpdate();
                 connection.commit(); // Commit transaction
 
-                System.out.println("Rows affected in update: " + rowsAffected);
                 return rowsAffected > 0;
             } catch (SQLException e) {
-                connection.rollback(); // Rollback on error
+                connection.rollback();
                 throw e;
             }
         } finally {
-            connection.setAutoCommit(true); // Reset auto-commit
+            connection.setAutoCommit(true);
         }
     }
 

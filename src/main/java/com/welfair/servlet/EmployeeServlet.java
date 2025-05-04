@@ -96,7 +96,7 @@ public class EmployeeServlet extends HttpServlet {
         populateEmployeeFromRequest(emp, request);
 
         // Validate email uniqueness
-        if (employeeDAO.emailExists(emp.getEmail())) {
+        if (employeeDAO.emailExists(emp.getEmail(), 0)) {
             request.setAttribute("error", "Email already exists");
             showForm(request, response, emp);
             return;
@@ -125,7 +125,7 @@ public class EmployeeServlet extends HttpServlet {
 
         // Check if email was changed and now conflicts
         if (!originalEmail.equals(emp.getEmail()) &&
-                employeeDAO.emailExists(emp.getEmail())) {
+                employeeDAO.emailExists(emp.getEmail(), emp.getEmpId())) {
             request.setAttribute("error", "Email already exists");
             showForm(request, response, emp);
             return;
@@ -150,6 +150,7 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void populateEmployeeFromRequest(Employee emp, HttpServletRequest request) {
+        emp.setUserId(Integer.parseInt(request.getParameter("user_id"))); // NEW
         emp.setName(request.getParameter("name"));
         emp.setPosition(request.getParameter("position"));
         emp.setPhone(request.getParameter("phone"));

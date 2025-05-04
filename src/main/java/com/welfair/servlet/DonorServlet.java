@@ -61,7 +61,6 @@ public class DonorServlet extends HttpServlet {
         }
     }
 
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
@@ -73,6 +72,10 @@ public class DonorServlet extends HttpServlet {
             donor.setEmail(request.getParameter("email"));
             donor.setPhone(request.getParameter("phone"));
             donor.setAddress(request.getParameter("address"));
+
+            // NEW: set userId
+            int userId = Integer.parseInt(request.getParameter("user_id"));
+            donor.setUserId(userId);
 
             if ("update".equals(action)) {
                 int donorId = Integer.parseInt(request.getParameter("donor_id"));
@@ -95,13 +98,12 @@ public class DonorServlet extends HttpServlet {
             request.setAttribute("donor", donor);
             request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
 
-        } catch (SQLException e) {
-            throw new ServletException("Database error", e);
-        } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid ID format");
+        } catch (SQLException | NumberFormatException e) {
+            request.setAttribute("errorMessage", "Error: " + e.getMessage());
             request.getRequestDispatcher("/WEB-INF/views/donor/form.jsp").forward(request, response);
         }
     }
+
 
     @Override
     public void destroy() {

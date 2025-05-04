@@ -10,14 +10,15 @@ public class EmployeeDAO {
 
     // Create employee
     public boolean addEmployee(Employee emp) {
-        String sql = "INSERT INTO employees (name, position, phone, email) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO employees (user_id, name, position, phone, email) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            pstmt.setString(1, emp.getName());
-            pstmt.setString(2, emp.getPosition());
-            pstmt.setString(3, emp.getPhone());
-            pstmt.setString(4, emp.getEmail());
+            pstmt.setInt(1, emp.getUserId()); // NEW
+            pstmt.setString(2, emp.getName());
+            pstmt.setString(3, emp.getPosition());
+            pstmt.setString(4, emp.getPhone());
+            pstmt.setString(5, emp.getEmail());
 
             int affectedRows = pstmt.executeUpdate();
 
@@ -47,6 +48,7 @@ public class EmployeeDAO {
             while (rs.next()) {
                 Employee emp = new Employee();
                 emp.setEmpId(rs.getInt("emp_id"));
+                emp.setUserId(rs.getInt("user_id")); // NEW
                 emp.setName(rs.getString("name"));
                 emp.setPosition(rs.getString("position"));
                 emp.setPhone(rs.getString("phone"));
@@ -72,6 +74,7 @@ public class EmployeeDAO {
                 if (rs.next()) {
                     emp = new Employee();
                     emp.setEmpId(rs.getInt("emp_id"));
+                    emp.setUserId(rs.getInt("user_id")); // NEW
                     emp.setName(rs.getString("name"));
                     emp.setPosition(rs.getString("position"));
                     emp.setPhone(rs.getString("phone"));
@@ -86,16 +89,17 @@ public class EmployeeDAO {
 
     // Update employee
     public boolean updateEmployee(Employee emp) {
-        String sql = "UPDATE employees SET name=?, position=?, phone=?, email=? WHERE emp_id=?";
+        String sql = "UPDATE employees SET user_id=?, name=?, position=?, phone=?, email=? WHERE emp_id=?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, emp.getName());
-            pstmt.setString(2, emp.getPosition());
-            pstmt.setString(3, emp.getPhone());
-            pstmt.setString(4, emp.getEmail());
-            pstmt.setInt(5, emp.getEmpId());
+            pstmt.setInt(1, emp.getUserId()); // NEW
+            pstmt.setString(2, emp.getName());
+            pstmt.setString(3, emp.getPosition());
+            pstmt.setString(4, emp.getPhone());
+            pstmt.setString(5, emp.getEmail());
+            pstmt.setInt(6, emp.getEmpId());
 
             return pstmt.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -119,12 +123,13 @@ public class EmployeeDAO {
         return false;
     }
 
-    // Check if email exists
-    public boolean emailExists(String email) {
-        String sql = "SELECT 1 FROM employees WHERE email = ?";
+    // Check if email exists (excluding current employee)
+    public boolean emailExists(String email, int excludeEmpId) {
+        String sql = "SELECT 1 FROM employees WHERE email = ? AND emp_id != ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, email);
+            pstmt.setInt(2, excludeEmpId);
             try (ResultSet rs = pstmt.executeQuery()) {
                 return rs.next();
             }
@@ -132,5 +137,31 @@ public class EmployeeDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    // NEW: Get employee by user ID
+    public Employee getEmployeeByUserId(int userId) {
+        String sql = "SELECT * FROM employees WHERE user_id = ?";
+        Employee emp = null;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, userId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    emp = new Employee();
+                    emp.setEmpId(rs.getInt("emp_id"));
+                    emp.setUserId(rs.getInt("user_id"));
+                    emp.setName(rs.getString("name"));
+                    emp.setPosition(rs.getString("position"));
+                    emp.setPhone(rs.getString("phone"));
+                    emp.setEmail(rs.getString("email"));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return emp;
     }
 }

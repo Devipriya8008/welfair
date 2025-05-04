@@ -29,7 +29,8 @@
 <table>
     <thead>
     <tr>
-        <th>ID</th>
+        <th>User ID</th>
+        <th>Donor ID</th>
         <th>Name</th>
         <th>Email</th>
         <th>Phone</th>
@@ -39,6 +40,7 @@
     <tbody>
     <c:forEach items="${donors}" var="donor">
         <tr>
+            <td><c:out value="${donor.userId}"/></td>
             <td><c:out value="${donor.donorId}"/></td>
             <td><c:out value="${donor.name}"/></td>
             <td><c:out value="${donor.email}"/></td>
