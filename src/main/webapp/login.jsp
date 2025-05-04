@@ -1,36 +1,63 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Login</title>
+    <title>${param.role} Login</title>
     <style>
         .error { color: red; }
-        .success { color: green; }
-        form { max-width: 300px; margin: 20px auto; }
-        input { display: block; width: 100%; margin: 10px 0; padding: 8px; }
+        .login-container {
+            max-width: 400px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .forgot-password {
+            text-align: right;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
-<h2>Login</h2>
+<div class="login-container">
+    <h2>Login - ${param.role}</h2>
 
-<%-- Show registration success message if present --%>
-<c:if test="${not empty param.registration}">
-    <p class="success">Registration successful! Please login.</p>
-</c:if>
+    <c:if test="${not empty error}">
+        <p class="error">${error}</p>
+    </c:if>
 
-<%-- Show error message if present --%>
-<c:if test="${not empty error}">
-    <p class="error">${error}</p>
-</c:if>
+    <form action="login" method="post">
+        <input type="hidden" name="role" value="${param.role}" />
 
-<form action="login" method="post">
-    <input type="text" name="username" placeholder="Username" required>
-    <input type="password" name="password" placeholder="Password" required>
-    <button type="submit">Login</button>
-    <p><a href="forgot-password">Forgot password?</a></p>
-</form>
+        <div class="form-group">
+            <label>Username:</label>
+            <input type="text" name="username" required>
+        </div>
 
-<p>Don't have an account? <a href="register">Register here</a></p>
+        <div class="form-group">
+            <label>Password:</label>
+            <input type="password" name="password" required>
+        </div>
 
+        <div class="forgot-password">
+            <a href="forgot-password.jsp">Forgot Password?</a>
+        </div>
+
+        <button type="submit" class="auth-btn">Login</button>
+    </form>
+</div>
 </body>
 </html>

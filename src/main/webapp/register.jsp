@@ -3,34 +3,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Register</title>
+  <title>${param.role} Registration</title>
   <style>
     .error { color: red; }
-    form { max-width: 300px; margin: 20px auto; }
-    input { display: block; width: 100%; margin: 10px 0; padding: 8px; }
+    .register-container {
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+    }
   </style>
 </head>
 <body>
-<h2>Register</h2>
+<div class="register-container">
+  <h2>${param.role} Registration</h2>
 
-<c:if test="${not empty error}">
-  <p class="error">${error}</p>
-</c:if>
+  <c:if test="${not empty error}">
+    <p class="error">${error}</p>
+  </c:if>
 
-<form action="register" method="post">
-  <input type="text" name="username" placeholder="Username" required>
-  <input type="password" name="password" placeholder="Password" required>
-  <input type="email" name="email" placeholder="Email" required>
-  <select name="role" required>
-    <option value="">Select Role</option>
-    <option value="admin">Admin</option>
-    <option value="employee">Employee</option>
-    <option value="volunteer">Volunteer</option>
-    <option value="donor">Donor</option>
-  </select>
-  <button type="submit">Register</button>
-</form>
+  <form action="register" method="post">
+    <input type="hidden" name="role" value="${param.role}" />
 
-<p>Already have an account? <a href="login">Login here</a></p>
+    <div class="form-group">
+      <label>Username:</label>
+      <input type="text" name="username" required>
+    </div>
+
+    <div class="form-group">
+      <label>Email:</label>
+      <input type="email" name="email" required>
+    </div>
+
+    <div class="form-group">
+      <label>Password:</label>
+      <input type="password" name="password" required>
+    </div>
+
+    <div class="form-group">
+      <label>Confirm Password:</label>
+      <input type="password" name="confirmPassword" required>
+    </div>
+
+    <button type="submit" class="auth-btn">Register</button>
+  </form>
+
+  <p>Already have an account? <a href="login.jsp?role=${param.role}">Login here</a></p>
+</div>
 </body>
 </html>
