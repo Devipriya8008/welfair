@@ -25,6 +25,12 @@
       padding: 8px;
       box-sizing: border-box;
     }
+    .role-specific {
+      margin-top: 15px;
+      padding: 10px;
+      background-color: #f5f5f5;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -57,6 +63,24 @@
       <label>Confirm Password:</label>
       <input type="password" name="confirmPassword" required>
     </div>
+
+    <c:if test="${param.role eq 'admin'}">
+      <div class="role-specific">
+        <h3>Admin Details</h3>
+        <div class="form-group">
+          <label>Full Name:</label>
+          <input type="text" name="fullName" required>
+        </div>
+        <div class="form-group">
+          <label>Phone:</label>
+          <input type="tel" name="phone" required>
+        </div>
+        <div class="form-group">
+          <label>Department:</label>
+          <input type="text" name="department" required>
+        </div>
+      </div>
+    </c:if>
 
     <button type="submit" class="auth-btn">Register</button>
   </form>
