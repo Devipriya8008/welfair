@@ -5,6 +5,7 @@ import com.welfair.db.DBConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class DonationDAO {
     // Add a new donation
@@ -100,5 +101,65 @@ public class DonationDAO {
         donation.setDate(rs.getTimestamp("date"));
         donation.setMode(rs.getString("mode"));
         return donation;
+    }
+    public List<Donation> getDonationsByDonorId(int donorId) throws SQLException {
+        List<Donation> donations = new ArrayList<>();
+        String sql = "SELECT d.*, p.title as project_title FROM donations d "
+                + "JOIN project p ON d.project_id = p.project_id "
+                + "WHERE d.donor_id = ? ORDER BY d.date DESC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, donorId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Donation donation = mapRowToDonation(rs);
+                    donation.setProjectTitle(rs.getString("project_title"));
+                    donations.add(donation);
+                }
+            }
+        }
+        return donations;
+    }
+
+    public BigDecimal getTotalDonationsByDonor(int donorId) throws SQLException {
+        String sql = "SELECT SUM(amount) AS total FROM donations WHERE donor_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, donorId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getBigDecimal("total");
+                }
+            }
+        }
+        return BigDecimal.ZERO;
+    }
+
+    public Donation getDonationForReceipt(int donationId) throws SQLException {
+        String sql = "SELECT d.*, p.title AS project_title, u.email "
+                + "FROM donations d "
+                + "JOIN project p ON d.project_id = p.project_id "
+                + "JOIN donor dr ON d.donor_id = dr.donor_id "
+                + "JOIN users u ON dr.user_id = u.user_id "
+                + "WHERE d.donation_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, donationId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    Donation donation = mapRowToDonation(rs);
+                    donation.setProjectTitle(rs.getString("project_title"));
+                    donation.setDonorEmail(rs.getString("email"));
+                    return donation;
+                }
+            }
+        }
+        return null;
     }
 }

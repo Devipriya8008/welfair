@@ -24,6 +24,29 @@ public class ProjectDAO {
             e.printStackTrace();
         }
     }
+    public List<Project> getActiveProjects() {
+        List<Project> projects = new ArrayList<>();
+        String sql = "SELECT * FROM projects WHERE status = 'active'";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            while (rs.next()) {
+                Project project = new Project();
+                project.setProjectId(rs.getInt("project_id"));
+                project.setName(rs.getString("name"));
+                project.setDescription(rs.getString("description"));
+                project.setStartDate(rs.getDate("start_date"));
+                project.setEndDate(rs.getDate("end_date"));
+                project.setStatus(rs.getString("status"));
+                projects.add(project);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return projects;
+    }
 
     // Get all projects
     public List<Project> getAllProjects() {

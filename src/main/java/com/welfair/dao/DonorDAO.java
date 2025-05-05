@@ -100,6 +100,25 @@ public class DonorDAO {
             connection.setAutoCommit(true);
         }
     }
+    public Donor getDonorByUserId(int userId) throws SQLException {
+        String sql = "SELECT * FROM donors WHERE user_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Donor donor = new Donor();
+                    donor.setDonorId(rs.getInt("donor_id"));
+                    donor.setUserId(rs.getInt("user_id"));
+                    donor.setName(rs.getString("name"));
+                    donor.setEmail(rs.getString("email"));
+                    donor.setPhone(rs.getString("phone"));
+                    donor.setAddress(rs.getString("address"));
+                    return donor;
+                }
+            }
+        }
+        return null;
+    }
 
     public boolean deleteDonor(int id) throws SQLException {
         String sql = "DELETE FROM donors WHERE donor_id=?";
