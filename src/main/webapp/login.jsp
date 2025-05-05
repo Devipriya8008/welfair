@@ -4,6 +4,7 @@
 <html>
 <head>
     <title>${param.role} Login</title>
+    <!-- ... (keep your existing styles) ... -->
     <style>
         .login-container {
             max-width: 400px;
@@ -77,7 +78,7 @@
         <p class="error">${error}</p>
     </c:if>
 
-    <form action="login" method="post">
+    <form action="${pageContext.request.contextPath}/login" method="post">
         <input type="hidden" name="role" value="${param.role}" />
 
         <div class="form-group">
@@ -90,15 +91,11 @@
             <input type="password" name="password" required>
         </div>
 
-        <div class="forgot-password">
-            <a href="forgot-password.jsp">Forgot Password?</a>
-        </div>
-
         <button type="submit" class="auth-btn">Login</button>
     </form>
 
     <div class="switch-role">
-        <a href="index.jsp">Select a different role</a>
+        <a href="${pageContext.request.contextPath}/index.jsp">Select a different role</a>
     </div>
 </div>
 </body>

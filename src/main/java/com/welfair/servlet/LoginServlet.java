@@ -18,9 +18,10 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         String role = request.getParameter("role");
         if (!isValidRole(role)) {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect(request.getContextPath() + "/index.jsp");
             return;
         }
+        request.setAttribute("role", role);
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
@@ -31,7 +32,7 @@ public class LoginServlet extends HttpServlet {
         String expectedRole = request.getParameter("role");
 
         if (!isValidRole(expectedRole)) {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect(request.getContextPath() + "/index.jsp");
             return;
         }
 
@@ -44,7 +45,7 @@ public class LoginServlet extends HttpServlet {
 
                 HttpSession session = request.getSession();
                 session.setAttribute("user", user);
-                redirectToDashboard(response, user.getRole().toLowerCase());
+                redirectToDashboard(request, response, user.getRole().toLowerCase());
             } else {
                 handleInvalidCredentials(request, response, expectedRole);
             }
@@ -54,28 +55,32 @@ public class LoginServlet extends HttpServlet {
     }
 
     private boolean isValidRole(String role) {
-        return role != null && (role.equalsIgnoreCase("admin") ||
-                role.equalsIgnoreCase("employee") ||
-                role.equalsIgnoreCase("donor") ||
-                role.equalsIgnoreCase("volunteer"));
+        return role != null && (
+                role.equalsIgnoreCase("admin") ||
+                        role.equalsIgnoreCase("employee") ||
+                        role.equalsIgnoreCase("donor") ||
+                        role.equalsIgnoreCase("volunteer")
+        );
     }
 
-    private void redirectToDashboard(HttpServletResponse response, String role) throws IOException {
+    private void redirectToDashboard(HttpServletRequest request, HttpServletResponse response, String role)
+            throws IOException {
+        String contextPath = response.encodeRedirectURL(request.getContextPath());
         switch (role) {
             case "admin":
-                response.sendRedirect("admin-dashboard.jsp");
+                response.sendRedirect(contextPath + "/admin-dashboard.jsp");
                 break;
             case "employee":
-                response.sendRedirect("employee-dashboard.jsp");
+                response.sendRedirect(contextPath + "/employee-dashboard.jsp");
                 break;
             case "donor":
-                response.sendRedirect("donor-dashboard.jsp");
+                response.sendRedirect(contextPath + "/donor-dashboard.jsp");
                 break;
             case "volunteer":
-                response.sendRedirect("volunteer-dashboard.jsp");
+                response.sendRedirect(contextPath + "/volunteer-dashboard.jsp");
                 break;
             default:
-                response.sendRedirect("dashboard.jsp");
+                response.sendRedirect(contextPath + "/dashboard.jsp");
         }
     }
 
@@ -85,7 +90,7 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("error", "Invalid username, password, or role");
         request.setAttribute("role", role);
-        request.getRequestDispatcher("/login.jsp?role=" + role).forward(request, response);
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 
     private void handleDatabaseError(HttpServletRequest request,
@@ -94,6 +99,6 @@ public class LoginServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("error", "Database error: " + e.getMessage());
         request.setAttribute("role", role);
-        request.getRequestDispatcher("/login.jsp?role=" + role).forward(request, response);
+        request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
 }

@@ -866,20 +866,12 @@
     </div>
 </footer>
 
+<!-- ... (keep all your existing HTML and CSS) ... -->
+
 <script>
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            document.querySelector(this.getAttribute('href')).scrollIntoView({
-                behavior: 'smooth'
-            });
-        });
-    });
+    // ... (keep existing smooth scrolling and click-outside code) ...
 
-    // Role selection functionality
-    let currentRole = '';
-
+    // Role selection functionality - MODIFIED VERSION
     function showAuthOptionsForRole(role) {
         event.preventDefault();
         currentRole = role;
@@ -887,44 +879,20 @@
         // Update the auth options title
         document.getElementById('authRoleTitle').textContent = role.charAt(0).toUpperCase() + role.slice(1) + ' Options';
 
-        // Update the login and register links with context path
+        // Update the login and register links with context path and role parameter
         const contextPath = '${pageContext.request.contextPath}';
-        document.getElementById('loginBtn').href = contextPath + '/login.jsp?role=' + role;
-        document.getElementById('registerBtn').href = contextPath + '/register.jsp?role=' + role;
+        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login?role=' + role);
+        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register?role=' + role);
 
         // Show the auth options
         document.getElementById('authOptions').classList.add('show');
-
-        // Scroll to auth options if needed
-        document.getElementById('authOptions').scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-        });
     }
 
-    function showAuthOptions(event) {
-        event.preventDefault();
-        document.getElementById('authOptions').classList.toggle('show');
-    }
-
-    // Close auth options when clicking outside
-    document.addEventListener('click', function(event) {
-        const authOptions = document.getElementById('authOptions');
-        const roleButtons = document.querySelector('.role-buttons');
-        const authBtn = document.querySelector('.auth-btn');
-
-        if (!authOptions.contains(event.target) &&
-            !roleButtons.contains(event.target) &&
-            event.target !== authBtn) {
-            authOptions.classList.remove('show');
-        }
-    });
-
-    // Initialize auth options with context path
+    // Initialize with context path - MODIFIED VERSION
     document.addEventListener('DOMContentLoaded', function() {
         const contextPath = '${pageContext.request.contextPath}';
-        document.getElementById('loginBtn').href = contextPath + '/login.jsp';
-        document.getElementById('registerBtn').href = contextPath + '/register.jsp';
+        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login');
+        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register');
     });
 </script>
 </body>

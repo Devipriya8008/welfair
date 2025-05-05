@@ -4,6 +4,7 @@
 <html>
 <head>
   <title>${not empty param.role ? param.role : 'User'} Registration</title>
+  <!-- ... (keep your existing styles) ... -->
   <style>
     .register-container {
       max-width: 500px;
@@ -79,66 +80,17 @@
     <p class="error">${error}</p>
   </c:if>
 
-  <form action="register" method="post">
+  <form action="${pageContext.request.contextPath}/register" method="post">
     <input type="hidden" name="role" value="${param.role}" />
 
-    <div class="form-group">
-      <label>Username:</label>
-      <input type="text" name="username" required>
-    </div>
-
-    <div class="form-group">
-      <label>Email:</label>
-      <input type="email" name="email" required>
-    </div>
-
-    <div class="form-group">
-      <label>Password:</label>
-      <input type="password" name="password" required>
-    </div>
-
-    <div class="form-group">
-      <label>Confirm Password:</label>
-      <input type="password" name="confirmPassword" required>
-    </div>
-
-    <c:if test="${param.role eq 'admin'}">
-      <div class="role-specific">
-        <h3>Admin Details</h3>
-        <div class="form-group">
-          <label>Full Name:</label>
-          <input type="text" name="fullName" required>
-        </div>
-        <div class="form-group">
-          <label>Phone:</label>
-          <input type="tel" name="phone" required>
-        </div>
-        <div class="form-group">
-          <label>Department:</label>
-          <input type="text" name="department" required>
-        </div>
-      </div>
-    </c:if>
-
-    <c:if test="${param.role eq 'employee'}">
-      <div class="role-specific">
-        <h3>Employee Details</h3>
-        <div class="form-group">
-          <label>Position:</label>
-          <input type="text" name="position" required>
-        </div>
-        <div class="form-group">
-          <label>Department:</label>
-          <input type="text" name="department" required>
-        </div>
-      </div>
-    </c:if>
+    <!-- ... (keep your existing form fields) ... -->
 
     <button type="submit" class="auth-btn">Register</button>
   </form>
 
   <div class="login-link">
-    Already have an account? <a href="login.jsp?role=${param.role}">Login here</a>
+    Already have an account?
+    <a href="${pageContext.request.contextPath}/login?role=${param.role}">Login here</a>
   </div>
 </div>
 </body>

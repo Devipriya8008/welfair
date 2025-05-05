@@ -26,38 +26,44 @@ public class RegistrationServlet extends HttpServlet {
         try {
             donorDao = new DonorDAO();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to initialize DonorDAO", e);
         }
         try {
             volunteerDao = new VolunteerDAO();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to initialize VolunteerDAO", e);
         }
         employeeDao = new EmployeeDAO();
         try {
             adminDao = new AdminDAO();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to initialize AdminDAO", e);
         }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String role = request.getParameter("role");
-        if (!isValidRole(role)) {
-            response.sendRedirect("index.jsp");
-            return;
+        try {
+            String role = request.getParameter("role");
+            if (!isValidRole(role)) {
+                response.sendRedirect(request.getContextPath() + "/index.jsp");
+                return;
+            }
+            request.setAttribute("role", role);
+            request.getRequestDispatcher("/register.jsp").forward(request, response);
+        } catch (Exception e) {
+            handleError(request, response, "An error occurred while loading registration page", null);
         }
-        request.getRequestDispatcher("/register.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String role = request.getParameter("role");
+
         if (!isValidRole(role)) {
-            response.sendRedirect("index.jsp");
+            response.sendRedirect(request.getContextPath() + "/index.jsp");
             return;
         }
 
@@ -128,6 +134,10 @@ public class RegistrationServlet extends HttpServlet {
 
             // Get user with ID
             User createdUser = userDao.findByUsername(username);
+            if (createdUser == null) {
+                forwardWithError(request, response, "Failed to retrieve registered user", role);
+                return;
+            }
 
             // Create role-specific entity
             switch (role.toLowerCase()) {
@@ -169,10 +179,12 @@ public class RegistrationServlet extends HttpServlet {
             }
 
             // Redirect to login with success message
-            response.sendRedirect("login.jsp?success=1&role=" + role);
+            response.sendRedirect(request.getContextPath() + "/login?success=1&role=" + role);
 
         } catch (SQLException e) {
-            forwardWithError(request, response, "Database error: " + e.getMessage(), role);
+            handleError(request, response, "Database error: " + e.getMessage(), role);
+        } catch (Exception e) {
+            handleError(request, response, "An unexpected error occurred: " + e.getMessage(), role);
         }
     }
 
@@ -190,6 +202,18 @@ public class RegistrationServlet extends HttpServlet {
             throws ServletException, IOException {
         request.setAttribute("error", error);
         request.setAttribute("role", role);
-        request.getRequestDispatcher("/register.jsp?role=" + role).forward(request, response);
+        request.getRequestDispatcher("/register.jsp").forward(request, response);
+    }
+
+    private void handleError(HttpServletRequest request,
+                             HttpServletResponse response,
+                             String errorMessage,
+                             String role)
+            throws ServletException, IOException {
+        request.setAttribute("error", errorMessage);
+        if (role != null) {
+            request.setAttribute("role", role);
+        }
+        request.getRequestDispatcher("/error.jsp").forward(request, response);
     }
 }
