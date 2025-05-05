@@ -11,6 +11,8 @@
         :root {
             --primary: #2c8a8a;
             --secondary: #f8b400;
+            --tertiary: #6c5ce7;
+            --quaternary: #e84393;
             --dark: #333;
             --light: #f9f9f9;
             --gray: #777;
@@ -83,10 +85,9 @@
             color: var(--primary);
         }
 
-        .btn {
+        /* Auth Buttons */
+        .auth-btn {
             display: inline-block;
-            background-color: var(--primary);
-            color: white;
             padding: 10px 20px;
             border-radius: 5px;
             text-decoration: none;
@@ -94,13 +95,19 @@
             transition: all 0.3s;
         }
 
-        .btn:hover {
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
             background-color: #1e6d6d;
             transform: translateY(-2px);
         }
 
         .btn-secondary {
             background-color: var(--secondary);
+            color: white;
         }
 
         .btn-secondary:hover {
@@ -136,10 +143,97 @@
             margin-bottom: 30px;
         }
 
-        .hero-btns {
+        /* Role Selection */
+        .role-selection {
+            margin-top: 30px;
+        }
+
+        .role-buttons {
             display: flex;
             justify-content: center;
-            gap: 20px;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .role-btn {
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            color: white;
+            min-width: 180px;
+        }
+
+        .btn-donor {
+            background-color: var(--primary);
+        }
+
+        .btn-volunteer {
+            background-color: var(--secondary);
+        }
+
+        .btn-employee {
+            background-color: var(--tertiary);
+        }
+
+        .btn-admin {
+            background-color: var(--quaternary);
+        }
+
+        .role-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .auth-options {
+            display: none;
+            background: rgba(255,255,255,0.9);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 0 auto;
+            max-width: 400px;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .auth-options.show {
+            display: block;
+        }
+
+        .auth-options h3 {
+            color: var(--dark);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .auth-btns {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .auth-option-btn {
+            padding: 10px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .login-btn {
+            background: var(--primary);
+        }
+
+        .register-btn {
+            background: var(--secondary);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* About Section */
@@ -472,6 +566,25 @@
             .contact-container {
                 flex-direction: column;
             }
+
+            .role-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .role-btn {
+                width: 100%;
+                max-width: 250px;
+            }
+
+            .auth-btns {
+                flex-direction: column;
+            }
+
+            .auth-option-btn {
+                width: 100%;
+                text-align: center;
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -489,7 +602,15 @@
                 <li><a href="#impact">Impact Stories</a></li>
                 <li><a href="#events">Upcoming Events</a></li>
                 <li><a href="#contact">Contact Us</a></li>
-                <li><a href="login.jsp" class="btn btn-secondary">Login</a></li>
+                <c:choose>
+                    <c:when test="${not empty sessionScope.user}">
+                        <li><a href="dashboard.jsp" class="auth-btn btn-primary">Dashboard</a></li>
+                        <li><a href="logout" class="auth-btn btn-secondary">Logout</a></li>
+                    </c:when>
+                    <c:otherwise>
+                        <li><a href="#" class="auth-btn btn-primary" onclick="showAuthOptions(event)">Login/Register</a></li>
+                    </c:otherwise>
+                </c:choose>
             </ul>
         </nav>
     </div>
@@ -501,9 +622,22 @@
         <div class="hero-content">
             <h1>Empowering Communities, Transforming Lives</h1>
             <p>Welfair is dedicated to creating sustainable change through education, healthcare, and community development initiatives.</p>
-            <div class="hero-btns">
-                <a href="register.jsp?role=donor" class="btn">Become a Donor</a>
-                <a href="register.jsp?role=volunteer" class="btn btn-secondary">Join as Volunteer</a>
+
+            <div class="role-selection">
+                <div class="role-buttons">
+                    <button class="role-btn btn-donor" onclick="showAuthOptionsForRole('donor')">Donor</button>
+                    <button class="role-btn btn-volunteer" onclick="showAuthOptionsForRole('volunteer')">Volunteer</button>
+                    <button class="role-btn btn-employee" onclick="showAuthOptionsForRole('employee')">Employee</button>
+                    <button class="role-btn btn-admin" onclick="showAuthOptionsForRole('admin')">Admin</button>
+                </div>
+
+                <div id="authOptions" class="auth-options">
+                    <h3 id="authRoleTitle">Select Option</h3>
+                    <div class="auth-btns">
+                        <a id="loginBtn" href="#" class="auth-option-btn login-btn">Login</a>
+                        <a id="registerBtn" href="#" class="auth-option-btn register-btn">Register</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -520,7 +654,7 @@
                 <h3>Our Story</h3>
                 <p>Founded in 2010, Welfair has been at the forefront of social change, working tirelessly to uplift underprivileged communities across the region. What began as a small group of passionate individuals has now grown into a movement of thousands.</p>
                 <p>We believe in the power of collective action and sustainable solutions. Our approach combines immediate relief with long-term development programs to create lasting impact.</p>
-                <a href="about.jsp" class="btn">Learn More</a>
+                <a href="about.jsp" class="auth-btn btn-primary">Learn More</a>
             </div>
             <div class="about-image">
                 <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Welfair Team">
@@ -580,7 +714,7 @@
             </div>
         </div>
         <div style="text-align: center; margin-top: 50px;">
-            <a href="impact.jsp" class="btn">Read Impact Stories</a>
+            <a href="impact.jsp" class="auth-btn btn-primary">Read Impact Stories</a>
         </div>
     </div>
 </section>
@@ -592,42 +726,22 @@
             <h2>Upcoming Events</h2>
         </div>
         <div class="event-cards">
-            <div class="event-card">
-                <div class="event-image">
-                    <img src="https://images.unsplash.com/photo-1505373877841-8d25f7d46678?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Education Drive">
+            <c:forEach items="${events}" var="event" end="2">
+                <div class="event-card">
+                    <div class="event-image">
+                        <img src="${event.imageUrl}" alt="${event.title}">
+                    </div>
+                    <div class="event-details">
+                        <span class="event-date"><fmt:formatDate value="${event.date}" pattern="MMMM d, yyyy" /></span>
+                        <h3 class="event-title">${event.title}</h3>
+                        <p>${event.shortDescription}</p>
+                        <a href="event-details.jsp?id=${event.id}" class="auth-btn btn-primary" style="margin-top: 15px; display: inline-block;">Learn More</a>
+                    </div>
                 </div>
-                <div class="event-details">
-                    <span class="event-date">June 15, 2023</span>
-                    <h3 class="event-title">Education for All Drive</h3>
-                    <p>Join us in distributing school supplies to underprivileged children across 20 rural communities.</p>
-                    <a href="event-details.jsp?id=1" class="btn" style="margin-top: 15px; display: inline-block;">Learn More</a>
-                </div>
-            </div>
-            <div class="event-card">
-                <div class="event-image">
-                    <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Health Camp">
-                </div>
-                <div class="event-details">
-                    <span class="event-date">July 2, 2023</span>
-                    <h3 class="event-title">Free Health Camp</h3>
-                    <p>Medical professionals will provide free checkups and medicines in urban slum areas.</p>
-                    <a href="event-details.jsp?id=2" class="btn" style="margin-top: 15px; display: inline-block;">Learn More</a>
-                </div>
-            </div>
-            <div class="event-card">
-                <div class="event-image">
-                    <img src="https://images.unsplash.com/photo-1527525443983-6e60c75fff46?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Fundraiser">
-                </div>
-                <div class="event-details">
-                    <span class="event-date">August 10, 2023</span>
-                    <h3 class="event-title">Annual Fundraiser Gala</h3>
-                    <p>An evening of inspiration to support our new vocational training center project.</p>
-                    <a href="event-details.jsp?id=3" class="btn" style="margin-top: 15px; display: inline-block;">Learn More</a>
-                </div>
-            </div>
+            </c:forEach>
         </div>
         <div style="text-align: center; margin-top: 50px;">
-            <a href="events.jsp" class="btn">View All Events</a>
+            <a href="events.jsp" class="auth-btn btn-primary">View All Events</a>
         </div>
     </div>
 </section>
@@ -698,7 +812,7 @@
                         <label for="message">Message</label>
                         <textarea id="message" name="message" required></textarea>
                     </div>
-                    <button type="submit" class="btn">Send Message</button>
+                    <button type="submit" class="auth-btn btn-primary">Send Message</button>
                 </form>
             </div>
         </div>
@@ -726,9 +840,9 @@
             <div class="footer-column">
                 <h3>Get Involved</h3>
                 <ul>
-                    <li><a href="register.jsp?role=donor">Donate</a></li>
-                    <li><a href="register.jsp?role=volunteer">Volunteer</a></li>
-                    <li><a href="register.jsp?role=employee">Careers</a></li>
+                    <li><a href="#" onclick="showAuthOptionsForRole('donor')">Donate</a></li>
+                    <li><a href="#" onclick="showAuthOptionsForRole('volunteer')">Volunteer</a></li>
+                    <li><a href="#" onclick="showAuthOptionsForRole('employee')">Careers</a></li>
                     <li><a href="partnerships.jsp">Partnerships</a></li>
                 </ul>
             </div>
@@ -761,6 +875,56 @@
                 behavior: 'smooth'
             });
         });
+    });
+
+    // Role selection functionality
+    let currentRole = '';
+
+    function showAuthOptionsForRole(role) {
+        event.preventDefault();
+        currentRole = role;
+
+        // Update the auth options title
+        document.getElementById('authRoleTitle').textContent = role.charAt(0).toUpperCase() + role.slice(1) + ' Options';
+
+        // Update the login and register links with context path
+        const contextPath = '${pageContext.request.contextPath}';
+        document.getElementById('loginBtn').href = contextPath + '/login.jsp?role=' + role;
+        document.getElementById('registerBtn').href = contextPath + '/register.jsp?role=' + role;
+
+        // Show the auth options
+        document.getElementById('authOptions').classList.add('show');
+
+        // Scroll to auth options if needed
+        document.getElementById('authOptions').scrollIntoView({
+            behavior: 'smooth',
+            block: 'center'
+        });
+    }
+
+    function showAuthOptions(event) {
+        event.preventDefault();
+        document.getElementById('authOptions').classList.toggle('show');
+    }
+
+    // Close auth options when clicking outside
+    document.addEventListener('click', function(event) {
+        const authOptions = document.getElementById('authOptions');
+        const roleButtons = document.querySelector('.role-buttons');
+        const authBtn = document.querySelector('.auth-btn');
+
+        if (!authOptions.contains(event.target) &&
+            !roleButtons.contains(event.target) &&
+            event.target !== authBtn) {
+            authOptions.classList.remove('show');
+        }
+    });
+
+    // Initialize auth options with context path
+    document.addEventListener('DOMContentLoaded', function() {
+        const contextPath = '${pageContext.request.contextPath}';
+        document.getElementById('loginBtn').href = contextPath + '/login.jsp';
+        document.getElementById('registerBtn').href = contextPath + '/register.jsp';
     });
 </script>
 </body>

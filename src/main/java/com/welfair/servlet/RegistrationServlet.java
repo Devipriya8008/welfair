@@ -1,26 +1,18 @@
 package com.welfair.servlet;
 
-import com.welfair.dao.UserDAO;
-import com.welfair.dao.DonorDAO;
-import com.welfair.dao.VolunteerDAO;
-import com.welfair.dao.EmployeeDAO;
-import com.welfair.dao.AdminDAO;
-import com.welfair.model.User;
-import com.welfair.model.Donor;
-import com.welfair.model.Volunteer;
-import com.welfair.model.Employee;
-import com.welfair.model.Admin;
+import com.welfair.dao.*;
+import com.welfair.model.*;
 import com.welfair.util.PasswordUtil;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.*;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
 @WebServlet("/register")
 public class RegistrationServlet extends HttpServlet {
-
     private UserDAO userDao;
     private DonorDAO donorDao;
     private VolunteerDAO volunteerDao;
@@ -33,23 +25,28 @@ public class RegistrationServlet extends HttpServlet {
         userDao = new UserDAO();
         try {
             donorDao = new DonorDAO();
-            volunteerDao = new VolunteerDAO();
-            adminDao = new AdminDAO();
         } catch (SQLException e) {
-            throw new ServletException("Failed to initialize DAOs", e);
+            throw new RuntimeException(e);
+        }
+        try {
+            volunteerDao = new VolunteerDAO();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
         employeeDao = new EmployeeDAO();
+        try {
+            adminDao = new AdminDAO();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String role = request.getParameter("role");
-        if (role == null || !(role.equalsIgnoreCase("donor") ||
-                role.equalsIgnoreCase("volunteer") ||
-                role.equalsIgnoreCase("employee") ||
-                role.equalsIgnoreCase("admin"))) {
-            response.sendRedirect("role-selection.jsp");
+        if (!isValidRole(role)) {
+            response.sendRedirect("index.jsp");
             return;
         }
         request.getRequestDispatcher("/register.jsp").forward(request, response);
@@ -58,29 +55,32 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        String role = request.getParameter("role");
+        if (!isValidRole(role)) {
+            response.sendRedirect("index.jsp");
+            return;
+        }
 
-        // Read form fields
+        // Common fields
         String username = request.getParameter("username");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
         String email = request.getParameter("email");
-        String role = request.getParameter("role");
 
         // Validate input
-        if (username == null || username.isEmpty() || password == null || password.isEmpty() ||
-                email == null || email.isEmpty() || role == null || role.isEmpty()) {
-            request.setAttribute("error", "All fields are required.");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+        if (username == null || username.isEmpty() ||
+                password == null || password.isEmpty() ||
+                email == null || email.isEmpty()) {
+            forwardWithError(request, response, "All fields are required", role);
             return;
         }
 
         if (!password.equals(confirmPassword)) {
-            request.setAttribute("error", "Passwords do not match.");
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+            forwardWithError(request, response, "Passwords do not match", role);
             return;
         }
 
-        // Additional validation for admin role
+        // Role-specific validation
         if (role.equalsIgnoreCase("admin")) {
             String fullName = request.getParameter("fullName");
             String phone = request.getParameter("phone");
@@ -89,36 +89,47 @@ public class RegistrationServlet extends HttpServlet {
             if (fullName == null || fullName.isEmpty() ||
                     phone == null || phone.isEmpty() ||
                     department == null || department.isEmpty()) {
-                request.setAttribute("error", "All admin details are required.");
-                request.getRequestDispatcher("register.jsp").forward(request, response);
+                forwardWithError(request, response, "All admin details are required", role);
                 return;
             }
         }
 
-        User user = new User();
-        user.setUsername(username);
-        user.setPassword(PasswordUtil.hashPassword(password));
-        user.setEmail(email);
-        user.setRole(role);
+        if (role.equalsIgnoreCase("employee")) {
+            String position = request.getParameter("position");
+            String department = request.getParameter("department");
+
+            if (position == null || position.isEmpty() ||
+                    department == null || department.isEmpty()) {
+                forwardWithError(request, response, "All employee details are required", role);
+                return;
+            }
+        }
 
         try {
-            // Check if username already exists
+            // Check if username exists
             if (userDao.findByUsername(username) != null) {
-                request.setAttribute("error", "Username already taken.");
-                request.getRequestDispatcher("register.jsp").forward(request, response);
+                forwardWithError(request, response, "Username already exists", role);
                 return;
             }
 
-            // Register user
+            // Create user
+            User user = new User();
+            user.setUsername(username);
+            user.setPassword(PasswordUtil.hashPassword(password));
+            user.setEmail(email);
+            user.setRole(role);
+
+            // Add user
             boolean isUserAdded = userDao.addUser(user);
             if (!isUserAdded) {
-                request.setAttribute("error", "Failed to register user.");
-                request.getRequestDispatcher("register.jsp").forward(request, response);
+                forwardWithError(request, response, "Failed to register user", role);
                 return;
             }
 
-            User createdUser = userDao.findByUsername(username); // Get user with ID
+            // Get user with ID
+            User createdUser = userDao.findByUsername(username);
 
+            // Create role-specific entity
             switch (role.toLowerCase()) {
                 case "donor":
                     Donor donor = new Donor();
@@ -140,7 +151,8 @@ public class RegistrationServlet extends HttpServlet {
                     Employee emp = new Employee();
                     emp.setName(username);
                     emp.setEmail(email);
-                    emp.setPosition("Default Position");
+                    emp.setPosition(request.getParameter("position"));
+                    //emp.setDepartment(request.getParameter("department"));
                     emp.setUserId(createdUser.getUserId());
                     employeeDao.addEmployee(emp);
                     break;
@@ -154,19 +166,30 @@ public class RegistrationServlet extends HttpServlet {
                     admin.setLastLogin(new Timestamp(System.currentTimeMillis()));
                     adminDao.addAdmin(admin);
                     break;
-
-                default:
-                    request.setAttribute("error", "Invalid role selected.");
-                    request.getRequestDispatcher("register.jsp").forward(request, response);
-                    return;
             }
 
+            // Redirect to login with success message
             response.sendRedirect("login.jsp?success=1&role=" + role);
 
         } catch (SQLException e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Database error: " + e.getMessage());
-            request.getRequestDispatcher("register.jsp").forward(request, response);
+            forwardWithError(request, response, "Database error: " + e.getMessage(), role);
         }
+    }
+
+    private boolean isValidRole(String role) {
+        return role != null && (role.equalsIgnoreCase("admin") ||
+                role.equalsIgnoreCase("employee") ||
+                role.equalsIgnoreCase("donor") ||
+                role.equalsIgnoreCase("volunteer"));
+    }
+
+    private void forwardWithError(HttpServletRequest request,
+                                  HttpServletResponse response,
+                                  String error,
+                                  String role)
+            throws ServletException, IOException {
+        request.setAttribute("error", error);
+        request.setAttribute("role", role);
+        request.getRequestDispatcher("/register.jsp?role=" + role).forward(request, response);
     }
 }

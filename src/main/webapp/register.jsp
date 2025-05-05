@@ -3,39 +3,77 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>${param.role} Registration</title>
+  <title>${not empty param.role ? param.role : 'User'} Registration</title>
   <style>
-    .error { color: red; }
     .register-container {
-      max-width: 400px;
-      margin: 20px auto;
-      padding: 20px;
+      max-width: 500px;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      background: white;
+    }
+
+    .register-title {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c8a8a;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
       border: 1px solid #ddd;
       border-radius: 5px;
     }
-    .form-group {
+
+    .auth-btn {
+      width: 100%;
+      padding: 10px;
+      background: #2c8a8a;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
       margin-bottom: 15px;
     }
-    label {
-      display: block;
-      margin-bottom: 5px;
-    }
-    input {
-      width: 100%;
-      padding: 8px;
-      box-sizing: border-box;
-    }
+
     .role-specific {
-      margin-top: 15px;
-      padding: 10px;
-      background-color: #f5f5f5;
+      margin: 20px 0;
+      padding: 15px;
+      background: #f5f5f5;
       border-radius: 5px;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .login-link a {
+      color: #2c8a8a;
+      text-decoration: none;
     }
   </style>
 </head>
 <body>
 <div class="register-container">
-  <h2>${param.role} Registration</h2>
+  <h1 class="register-title">${not empty param.role ? param.role : 'User'} Registration</h1>
 
   <c:if test="${not empty error}">
     <p class="error">${error}</p>
@@ -82,10 +120,26 @@
       </div>
     </c:if>
 
+    <c:if test="${param.role eq 'employee'}">
+      <div class="role-specific">
+        <h3>Employee Details</h3>
+        <div class="form-group">
+          <label>Position:</label>
+          <input type="text" name="position" required>
+        </div>
+        <div class="form-group">
+          <label>Department:</label>
+          <input type="text" name="department" required>
+        </div>
+      </div>
+    </c:if>
+
     <button type="submit" class="auth-btn">Register</button>
   </form>
 
-  <p>Already have an account? <a href="login.jsp?role=${param.role}">Login here</a></p>
+  <div class="login-link">
+    Already have an account? <a href="login.jsp?role=${param.role}">Login here</a>
+  </div>
 </div>
 </body>
 </html>
