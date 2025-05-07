@@ -2,6 +2,7 @@ package com.welfair.dao;
 
 import com.welfair.model.User;
 import com.welfair.model.PasswordResetToken;
+import com.welfair.util.PasswordUtil;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -62,7 +63,9 @@ public class UserDAO {
         String sql = "UPDATE users SET password = ? WHERE user_id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, newPassword);
+            // Hash the new password before storing
+            String hashedPassword = PasswordUtil.hashPassword(newPassword);
+            pstmt.setString(1, hashedPassword);
             pstmt.setInt(2, userId);
             return pstmt.executeUpdate() > 0;
         }
@@ -122,6 +125,18 @@ public class UserDAO {
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, token);
             pstmt.executeUpdate();
+        }
+    }
+    public User findByUserId(int userId) throws SQLException {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, userId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapUserFromResultSet(rs);
+            }
+            return null;
         }
     }
 }
