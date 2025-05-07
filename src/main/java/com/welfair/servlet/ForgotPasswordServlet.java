@@ -25,27 +25,44 @@ public class ForgotPasswordServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String email = request.getParameter("email");
+        String role = request.getParameter("role"); // Get role parameter if exists
 
         try {
             User user = userDao.findByEmail(email);
 
-            if (user != null) {
+            if (user != null && (role == null || user.getRole().equals(role))) {
                 String token = userDao.createPasswordResetToken(user.getUserId());
 
-                // Build proper reset link
-                String resetLink = BASE_URL + "/reset-password?token=" + token;
+                // Build reset link with context path
+                String resetLink = request.getScheme() + "://" +
+                        request.getServerName() +
+                        (request.getServerPort() != 80 ? ":" + request.getServerPort() : "") +
+                        request.getContextPath() +
+                        "/reset-password?token=" + token;
+
+                if (role != null) {
+                    resetLink += "&role=" + role;
+                }
 
                 try {
                     EmailUtil.sendPasswordResetEmail(user.getEmail(), resetLink);
                     request.setAttribute("message", "Password reset link has been sent to your email.");
                 } catch (MessagingException e) {
                     request.setAttribute("error", "Failed to send email. Please try again later.");
-                    e.printStackTrace();
                 }
             } else {
-                request.setAttribute("error", "No account found with that email address.");
+                String errorMsg = "No account found";
+                if (role != null) {
+                    errorMsg += " with that email address for the " + role + " role.";
+                } else {
+                    errorMsg += " with that email address.";
+                }
+                request.setAttribute("error", errorMsg);
             }
 
+            if (role != null) {
+                request.setAttribute("role", role);
+            }
             doGet(request, response);
         } catch (SQLException e) {
             request.setAttribute("error", "An error occurred. Please try again.");

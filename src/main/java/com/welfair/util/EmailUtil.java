@@ -21,10 +21,10 @@ public class EmailUtil {
             }
             emailProps.load(input);
 
-            SMTP_HOST = emailProps.getProperty("smtp.host");
-            SMTP_PORT = emailProps.getProperty("smtp.port");
-            EMAIL_USERNAME = emailProps.getProperty("email.username");
-            EMAIL_PASSWORD = emailProps.getProperty("email.password");
+            SMTP_HOST = "smtp.gmail.com";
+            SMTP_PORT = "587";
+            EMAIL_USERNAME = "dhev2006@gmail.com";
+            EMAIL_PASSWORD = "jnvfceajdjsuuoii";
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to load email configuration", e);
