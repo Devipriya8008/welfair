@@ -7,6 +7,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "EmployeeServlet", urlPatterns = {"/employees"})
 public class EmployeeServlet extends HttpServlet {
@@ -65,7 +66,7 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void listEmployees(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         request.setAttribute("employees", employeeDAO.getAllEmployees());
         request.getRequestDispatcher("/WEB-INF/views/employee/list.jsp")
                 .forward(request, response);
@@ -80,7 +81,7 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         int id = Integer.parseInt(request.getParameter("id"));
         Employee employee = employeeDAO.getEmployeeById(id);
         if (employee != null) {
@@ -91,7 +92,7 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         Employee emp = new Employee();
         populateEmployeeFromRequest(emp, request);
 
@@ -111,7 +112,7 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void updateEmployee(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         int id = Integer.parseInt(request.getParameter("id"));
         Employee emp = employeeDAO.getEmployeeById(id);
 
@@ -140,7 +141,7 @@ public class EmployeeServlet extends HttpServlet {
     }
 
     private void deleteEmployee(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+            throws ServletException, IOException, SQLException {
         int id = Integer.parseInt(request.getParameter("id"));
         if (employeeDAO.deleteEmployee(id)) {
             response.sendRedirect("employees");

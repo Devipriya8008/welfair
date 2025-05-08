@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -545,6 +546,31 @@
             font-size: 14px;
         }
 
+        /* Success Message */
+        .success-message-container {
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            text-align: center;
+        }
+
+        .success-message {
+            display: inline-block;
+            padding: 15px 30px;
+            background: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .nav-links {
@@ -590,6 +616,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
+<!-- Success Message -->
+<div class="success-message-container">
+    <c:if test="${not empty param.registerSuccess}">
+        <div class="success-message">
+            Registration successful! Please login using your credentials.
+        </div>
+    </c:if>
+</div>
+
 <!-- Header -->
 <header>
     <div class="container">
@@ -604,11 +639,11 @@
                 <li><a href="#contact">Contact Us</a></li>
                 <c:choose>
                     <c:when test="${not empty sessionScope.user}">
-                        <li><a href="dashboard.jsp" class="auth-btn btn-primary">Dashboard</a></li>
-                        <li><a href="logout" class="auth-btn btn-secondary">Logout</a></li>
+                        <li><a href="${pageContext.request.contextPath}/dashboard.jsp" class="auth-btn btn-primary">Dashboard</a></li>
+                        <li><a href="${pageContext.request.contextPath}/logout" class="auth-btn btn-secondary">Logout</a></li>
                     </c:when>
                     <c:otherwise>
-                        <li><a href="#" class="auth-btn btn-primary" onclick="showAuthOptions(event)">Login/Register</a></li>
+                        <li><a href="#" class="auth-btn btn-primary" onclick="showAuthOptionsForRole(localStorage.getItem('selectedRole') || 'donor')">Login/Register</a></li>
                     </c:otherwise>
                 </c:choose>
             </ul>
@@ -866,34 +901,78 @@
     </div>
 </footer>
 
-<!-- ... (keep all your existing HTML and CSS) ... -->
-
 <script>
-    // ... (keep existing smooth scrolling and click-outside code) ...
-
-    // Role selection functionality - MODIFIED VERSION
+    // Role selection functionality
     function showAuthOptionsForRole(role) {
         event.preventDefault();
         currentRole = role;
+
+        // Store the selected role in localStorage
+        localStorage.setItem('selectedRole', role);
 
         // Update the auth options title
         document.getElementById('authRoleTitle').textContent = role.charAt(0).toUpperCase() + role.slice(1) + ' Options';
 
         // Update the login and register links with context path and role parameter
         const contextPath = '${pageContext.request.contextPath}';
-        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login?role=' + role);
-        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register?role=' + role);
+        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login.jsp?role=' + role);
+        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register.jsp?role=' + role);
 
         // Show the auth options
         document.getElementById('authOptions').classList.add('show');
     }
 
-    // Initialize with context path - MODIFIED VERSION
+    // Initialize with context path
     document.addEventListener('DOMContentLoaded', function() {
         const contextPath = '${pageContext.request.contextPath}';
-        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login');
-        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register');
+        const storedRole = localStorage.getItem('selectedRole') || 'donor';
+
+        // Set default links with stored role
+        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login.jsp?role=' + storedRole);
+        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register.jsp?role=' + storedRole);
+
+        // Update the title if we have a stored role
+        if (storedRole) {
+            document.getElementById('authRoleTitle').textContent =
+                storedRole.charAt(0).toUpperCase() + storedRole.slice(1) + ' Options';
+        }
+    });
+
+    // Make sure the login/register buttons work when clicked
+    document.getElementById('loginBtn').addEventListener('click', function(e) {
+        window.location.href = this.getAttribute('href');
+    });
+
+    document.getElementById('registerBtn').addEventListener('click', function(e) {
+        window.location.href = this.getAttribute('href');
+    });
+
+    // Close auth options when clicking outside
+    document.addEventListener('click', function(event) {
+        const authOptions = document.getElementById('authOptions');
+        if (!event.target.closest('.role-selection') && authOptions.classList.contains('show')) {
+            authOptions.classList.remove('show');
+        }
+    });
+
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href');
+            if (targetId === '#') return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                window.scrollTo({
+                    top: targetElement.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
 </script>
+    // Role selection functionality
+
 </body>
 </html>

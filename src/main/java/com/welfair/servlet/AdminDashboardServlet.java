@@ -20,12 +20,8 @@ public class AdminDashboardServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        try {
-            adminDAO = new AdminDAO();
-            userDAO = new UserDAO();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize DAOs", e);
-        }
+        adminDAO = new AdminDAO();
+        userDAO = new UserDAO();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -36,10 +32,30 @@ public class AdminDashboardServlet extends HttpServlet {
             return;
         }
 
-        int totalDonations = adminDAO.getTotalDonations();
-        int activeProjects = adminDAO.getActiveProjects();
-        int inventoryItems = adminDAO.getInventoryStockCount();
-        int beneficiaryCount = adminDAO.getBeneficiaryCount();
+        int totalDonations = 0;
+        try {
+            totalDonations = adminDAO.getTotalDonations();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        int activeProjects = 0;
+        try {
+            activeProjects = adminDAO.getActiveProjects();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        int inventoryItems = 0;
+        try {
+            inventoryItems = adminDAO.getInventoryStockCount();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        int beneficiaryCount = 0;
+        try {
+            beneficiaryCount = adminDAO.getBeneficiaryCount();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
 
         request.setAttribute("totalDonations", totalDonations);
         request.setAttribute("activeProjects", activeProjects);

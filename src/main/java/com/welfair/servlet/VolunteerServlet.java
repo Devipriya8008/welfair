@@ -14,11 +14,7 @@ public class VolunteerServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        try {
-            volunteerDAO = new VolunteerDAO();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize VolunteerDAO", e);
-        }
+        volunteerDAO = new VolunteerDAO();
     }
 
     @Override
@@ -86,14 +82,6 @@ public class VolunteerServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/volunteers");
     }
 
-    @Override
-    public void destroy() {
-        try {
-            if (volunteerDAO != null) {
-                volunteerDAO.close();
-            }
-        } catch (SQLException e) {
-            System.err.println("Error closing VolunteerDAO: " + e.getMessage());
-        }
-    }
+
+
 }

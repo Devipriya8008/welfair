@@ -16,21 +16,18 @@ public class EmailUtil {
     static {
         Properties emailProps = new Properties();
         try (InputStream input = EmailUtil.class.getClassLoader().getResourceAsStream("email.properties")) {
-            if (input == null) {
-                throw new RuntimeException("Unable to find email.properties");
-            }
+            if (input == null) throw new RuntimeException("email.properties not found!");
             emailProps.load(input);
 
-            SMTP_HOST = "smtp.gmail.com";
-            SMTP_PORT = "587";
-            EMAIL_USERNAME = "dhev2006@gmail.com";
-            EMAIL_PASSWORD = "jnvfceajdjsuuoii";
-
+            // Read from properties file
+            SMTP_HOST = emailProps.getProperty("smtp.host");
+            SMTP_PORT = emailProps.getProperty("smtp.port");
+            EMAIL_USERNAME = emailProps.getProperty("email.username");
+            EMAIL_PASSWORD = emailProps.getProperty("email.password");
         } catch (Exception e) {
-            throw new RuntimeException("Failed to load email configuration", e);
+            throw new RuntimeException("Failed to load email config", e);
         }
     }
-
     public static void sendPasswordResetEmail(String recipientEmail, String resetLink)
             throws MessagingException {
         System.out.println("Preparing to send email...");

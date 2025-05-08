@@ -1,6 +1,7 @@
 package com.welfair.servlet;
 
 import com.welfair.dao.*;
+import com.welfair.db.DBConnection;
 import com.welfair.model.*;
 import com.welfair.util.PasswordUtil;
 import jakarta.servlet.*;
@@ -8,7 +9,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.sql.*;
 import java.sql.Timestamp;
 
 @WebServlet("/register")
@@ -23,22 +24,10 @@ public class RegistrationServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         userDao = new UserDAO();
-        try {
-            donorDao = new DonorDAO();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to initialize DonorDAO", e);
-        }
-        try {
-            volunteerDao = new VolunteerDAO();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to initialize VolunteerDAO", e);
-        }
+        donorDao = new DonorDAO();
+        volunteerDao = new VolunteerDAO();
         employeeDao = new EmployeeDAO();
-        try {
-            adminDao = new AdminDAO();
-        } catch (SQLException e) {
-            throw new RuntimeException("Failed to initialize AdminDAO", e);
-        }
+        adminDao = new AdminDAO();
     }
 
     @Override
@@ -60,6 +49,7 @@ public class RegistrationServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        Connection conn = null;
         String role = request.getParameter("role");
 
         if (!isValidRole(role)) {
@@ -67,79 +57,80 @@ public class RegistrationServlet extends HttpServlet {
             return;
         }
 
-        // Common fields
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String confirmPassword = request.getParameter("confirmPassword");
-        String email = request.getParameter("email");
-
-        // Validate input
-        if (username == null || username.isEmpty() ||
-                password == null || password.isEmpty() ||
-                email == null || email.isEmpty()) {
-            forwardWithError(request, response, "All fields are required", role);
-            return;
-        }
-
-        if (!password.equals(confirmPassword)) {
-            forwardWithError(request, response, "Passwords do not match", role);
-            return;
-        }
-
-        // Role-specific validation
-        if (role.equalsIgnoreCase("admin")) {
-            String fullName = request.getParameter("fullName");
-            String phone = request.getParameter("phone");
-            String department = request.getParameter("department");
-
-            if (fullName == null || fullName.isEmpty() ||
-                    phone == null || phone.isEmpty() ||
-                    department == null || department.isEmpty()) {
-                forwardWithError(request, response, "All admin details are required", role);
-                return;
-            }
-        }
-
-        if (role.equalsIgnoreCase("employee")) {
-            String position = request.getParameter("position");
-            String department = request.getParameter("department");
-
-            if (position == null || position.isEmpty() ||
-                    department == null || department.isEmpty()) {
-                forwardWithError(request, response, "All employee details are required", role);
-                return;
-            }
-        }
-
         try {
-            // Check if username exists
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            userDao.setConnection(conn);
+            donorDao.setConnection(conn);
+            volunteerDao.setConnection(conn);
+            employeeDao.setConnection(conn);
+            adminDao.setConnection(conn);
+
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String confirmPassword = request.getParameter("confirmPassword");
+            String email = request.getParameter("email");
+
+            if (username == null || username.isEmpty() ||
+                    password == null || password.isEmpty() ||
+                    email == null || email.isEmpty()) {
+                forwardWithError(request, response, "All fields are required", role);
+                return;
+            }
+
+            if (!password.equals(confirmPassword)) {
+                forwardWithError(request, response, "Passwords do not match", role);
+                return;
+            }
+
+            if (role.equalsIgnoreCase("admin")) {
+                String fullName = request.getParameter("fullName");
+                String phone = request.getParameter("phone");
+                String department = request.getParameter("department");
+
+                if (fullName == null || fullName.isEmpty() ||
+                        phone == null || phone.isEmpty() ||
+                        department == null || department.isEmpty()) {
+                    forwardWithError(request, response, "All admin details are required", role);
+                    return;
+                }
+            }
+
+            if (role.equalsIgnoreCase("employee")) {
+                String position = request.getParameter("position");
+                String department = request.getParameter("department");
+
+                if (position == null || position.isEmpty() ||
+                        department == null || department.isEmpty()) {
+                    forwardWithError(request, response, "All employee details are required", role);
+                    return;
+                }
+            }
+
             if (userDao.findByUsername(username) != null) {
                 forwardWithError(request, response, "Username already exists", role);
                 return;
             }
 
-            // Create user
             User user = new User();
             user.setUsername(username);
             user.setPassword(PasswordUtil.hashPassword(password));
             user.setEmail(email);
             user.setRole(role);
 
-            // Add user
             boolean isUserAdded = userDao.addUser(user);
             if (!isUserAdded) {
                 forwardWithError(request, response, "Failed to register user", role);
                 return;
             }
 
-            // Get user with ID
             User createdUser = userDao.findByUsername(username);
             if (createdUser == null) {
                 forwardWithError(request, response, "Failed to retrieve registered user", role);
                 return;
             }
 
-            // Create role-specific entity
             switch (role.toLowerCase()) {
                 case "donor":
                     Donor donor = new Donor();
@@ -178,13 +169,38 @@ public class RegistrationServlet extends HttpServlet {
                     break;
             }
 
-            // Redirect to login with success message
-            response.sendRedirect(request.getContextPath() + "/login?success=1&role=" + role);
+            conn.commit();
+
+            // Redirect to index.jsp with success parameter
+            response.sendRedirect(
+                    response.encodeRedirectURL(
+                            request.getContextPath() + "/index.jsp?registerSuccess=true"
+                    )
+            );
 
         } catch (SQLException e) {
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                e.addSuppressed(ex);
+            }
             handleError(request, response, "Database error: " + e.getMessage(), role);
         } catch (Exception e) {
+            try {
+                if (conn != null) conn.rollback();
+            } catch (SQLException ex) {
+                e.addSuppressed(ex);
+            }
             handleError(request, response, "An unexpected error occurred: " + e.getMessage(), role);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    System.err.println("Error closing connection: " + e.getMessage());
+                }
+            }
         }
     }
 

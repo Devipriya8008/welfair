@@ -8,13 +8,24 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import com.welfair.db.DBConnection;
 
-
 public class UserDAO {
-    // ... existing methods ...
+    private Connection connection;
+
+    public UserDAO() {
+        // Connection will be set by servlet
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
+    }
+
+    private Connection getActiveConnection() throws SQLException {
+        return connection != null ? connection : DBConnection.getConnection();
+    }
+
     public User findByUsername(String username) throws SQLException {
         String sql = "SELECT * FROM users WHERE username = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             pstmt.setString(1, username);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -23,22 +34,31 @@ public class UserDAO {
             return null;
         }
     }
+
     public boolean addUser(User user) throws SQLException {
         String sql = "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, user.getUsername());
             pstmt.setString(2, user.getPassword());
             pstmt.setString(3, user.getEmail());
             pstmt.setString(4, user.getRole());
-            return pstmt.executeUpdate() > 0;
+
+            int affectedRows = pstmt.executeUpdate();
+            if (affectedRows > 0) {
+                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        user.setUserId(generatedKeys.getInt(1));
+                    }
+                }
+                return true;
+            }
+            return false;
         }
     }
 
     public User findByEmail(String email) throws SQLException {
         String sql = "SELECT * FROM users WHERE email = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             pstmt.setString(1, email);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -58,12 +78,9 @@ public class UserDAO {
         return user;
     }
 
-
     public boolean updatePassword(int userId, String newPassword) throws SQLException {
         String sql = "UPDATE users SET password = ? WHERE user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            // Hash the new password before storing
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             String hashedPassword = PasswordUtil.hashPassword(newPassword);
             pstmt.setString(1, hashedPassword);
             pstmt.setInt(2, userId);
@@ -72,21 +89,17 @@ public class UserDAO {
     }
 
     public String createPasswordResetToken(int userId) throws SQLException {
-        // Delete any existing tokens for this user
         String deleteSql = "DELETE FROM password_reset_tokens WHERE user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(deleteSql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(deleteSql)) {
             pstmt.setInt(1, userId);
             pstmt.executeUpdate();
         }
 
-        // Create new token
         String token = UUID.randomUUID().toString();
-        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24); // Token valid for 24 hours
+        LocalDateTime expiresAt = LocalDateTime.now().plusHours(24);
 
         String insertSql = "INSERT INTO password_reset_tokens (user_id, token, expires_at) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(insertSql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(insertSql)) {
             pstmt.setInt(1, userId);
             pstmt.setString(2, token);
             pstmt.setTimestamp(3, Timestamp.valueOf(expiresAt));
@@ -98,8 +111,7 @@ public class UserDAO {
 
     public boolean isValidPasswordResetToken(String token) throws SQLException {
         String sql = "SELECT * FROM password_reset_tokens WHERE token = ? AND used = false AND expires_at > NOW()";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             pstmt.setString(1, token);
             ResultSet rs = pstmt.executeQuery();
             return rs.next();
@@ -108,8 +120,7 @@ public class UserDAO {
 
     public int getUserIdFromResetToken(String token) throws SQLException {
         String sql = "SELECT user_id FROM password_reset_tokens WHERE token = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             pstmt.setString(1, token);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {
@@ -121,16 +132,15 @@ public class UserDAO {
 
     public void markTokenAsUsed(String token) throws SQLException {
         String sql = "UPDATE password_reset_tokens SET used = true WHERE token = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             pstmt.setString(1, token);
             pstmt.executeUpdate();
         }
     }
+
     public User findByUserId(int userId) throws SQLException {
         String sql = "SELECT * FROM users WHERE user_id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
             pstmt.setInt(1, userId);
             ResultSet rs = pstmt.executeQuery();
             if (rs.next()) {

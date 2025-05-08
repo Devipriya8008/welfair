@@ -14,11 +14,7 @@ public class DonorServlet extends HttpServlet {
 
     @Override
     public void init() throws ServletException {
-        try {
-            donorDAO = new DonorDAO();
-        } catch (SQLException e) {
-            throw new ServletException("Failed to initialize DonorDAO", e);
-        }
+        donorDAO = new DonorDAO();
     }
 
     @Override
@@ -105,8 +101,7 @@ public class DonorServlet extends HttpServlet {
     }
 
 
-    @Override
-    public void destroy() {
+    /*public void destroy() {
         try {
             if (donorDAO != null) {
                 donorDAO.close();
@@ -114,5 +109,5 @@ public class DonorServlet extends HttpServlet {
         } catch (SQLException e) {
             System.err.println("Error closing DonorDAO: " + e.getMessage());
         }
-    }
+    }*/
 }

@@ -14,6 +14,7 @@ import java.sql.SQLException;
 public class LoginServlet extends HttpServlet {
     private final UserDAO userDao = new UserDAO();
 
+    // LoginServlet.java - Updated doGet method
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String role = request.getParameter("role");
@@ -21,6 +22,13 @@ public class LoginServlet extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/index.jsp");
             return;
         }
+
+        // Handle success message from registration
+        String success = request.getParameter("success");
+        if (success != null && success.equals("1")) {
+            request.setAttribute("message", "Registration successful! Please login.");
+        }
+
         request.setAttribute("role", role);
         request.getRequestDispatcher("/login.jsp").forward(request, response);
     }
