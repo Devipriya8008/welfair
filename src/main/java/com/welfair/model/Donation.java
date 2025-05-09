@@ -10,45 +10,79 @@ public class Donation {
     private BigDecimal amount;
     private Timestamp date;
     private String mode;
-
-    // ✅ Add these two fields
     private String projectTitle;
     private String donorEmail;
+    private String donorName;
 
-    public Donation() {}
+    public int getDonationId() {
+        return donationId;
+    }
 
-    public Donation(int donationId, int donorId, int projectId, BigDecimal amount, Timestamp date, String mode) {
+    public void setDonationId(int donationId) {
         this.donationId = donationId;
+    }
+
+    public int getDonorId() {
+        return donorId;
+    }
+
+    public void setDonorId(int donorId) {
         this.donorId = donorId;
+    }
+
+    public int getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(int projectId) {
         this.projectId = projectId;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
+    }
+
+    public Timestamp getDate() {
+        return date;
+    }
+
+    public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    public String getMode() {
+        return mode;
+    }
+
+    public void setMode(String mode) {
         this.mode = mode;
     }
 
-    // Getters and Setters
-    public int getDonationId() { return donationId; }
-    public void setDonationId(int donationId) { this.donationId = donationId; }
+    public String getProjectTitle() {
+        return projectTitle;
+    }
 
-    public int getDonorId() { return donorId; }
-    public void setDonorId(int donorId) { this.donorId = donorId; }
+    public void setProjectTitle(String projectTitle) {
+        this.projectTitle = projectTitle;
+    }
 
-    public int getProjectId() { return projectId; }
-    public void setProjectId(int projectId) { this.projectId = projectId; }
+    public String getDonorEmail() {
+        return donorEmail;
+    }
 
-    public BigDecimal getAmount() { return amount; }
-    public void setAmount(BigDecimal amount) { this.amount = amount; }
+    public void setDonorEmail(String donorEmail) {
+        this.donorEmail = donorEmail;
+    }
 
-    public Timestamp getDate() { return date; }
-    public void setDate(Timestamp date) { this.date = date; }
+    public String getDonorName() {
+        return donorName;
+    }
 
-    public String getMode() { return mode; }
-    public void setMode(String mode) { this.mode = mode; }
-
-    // ✅ Add missing getters/setters
-    public String getProjectTitle() { return projectTitle; }
-    public void setProjectTitle(String projectTitle) { this.projectTitle = projectTitle; }
-
-    public String getDonorEmail() { return donorEmail; }
-    public void setDonorEmail(String donorEmail) { this.donorEmail = donorEmail; }
+    public void setDonorName(String donorName) {
+        this.donorName = donorName;
+    }
 }

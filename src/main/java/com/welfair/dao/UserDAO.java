@@ -137,6 +137,21 @@ public class UserDAO {
             pstmt.executeUpdate();
         }
     }
+    public User authenticateUser(String email, String plainPassword) throws SQLException {
+        String sql = "SELECT * FROM users WHERE email = ?";
+        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                String hashedPassword = rs.getString("password");
+                if (PasswordUtil.checkPassword(plainPassword, hashedPassword)) {
+                    return mapUserFromResultSet(rs); // Return user if password matches
+                }
+            }
+            return null; // User not found or wrong password
+        }
+    }
 
     public User findByUserId(int userId) throws SQLException {
         String sql = "SELECT * FROM users WHERE user_id = ?";

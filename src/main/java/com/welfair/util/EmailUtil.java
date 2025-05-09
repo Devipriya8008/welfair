@@ -1,10 +1,18 @@
 package com.welfair.util;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.*;
 import javax.mail.internet.*;
+import javax.sql.DataSource;
 import java.io.File;
 import java.io.InputStream;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class EmailUtil {
 
@@ -69,6 +77,7 @@ public class EmailUtil {
         }
     }
 
+    // In EmailUtil.java - update the sendDonationReceipt method
     public static void sendDonationReceipt(String toEmail, String subject, String body, String attachmentPath)
             throws MessagingException {
         Properties props = new Properties();
@@ -91,18 +100,74 @@ public class EmailUtil {
             message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
             message.setSubject(subject);
 
+            // Create the message part
             MimeBodyPart messageBodyPart = new MimeBodyPart();
             messageBodyPart.setContent(body, "text/html");
 
+            // Create the PDF attachment part
             MimeBodyPart attachmentPart = new MimeBodyPart();
-            attachmentPart.attachFile(new File(attachmentPath));
+            DataSource source = new DataSource() {
+                @Override
+                public <T> T unwrap(Class<T> iface) throws SQLException {
+                    return null;
+                }
 
+                @Override
+                public boolean isWrapperFor(Class<?> iface) throws SQLException {
+                    return false;
+                }
+
+                @Override
+                public Connection getConnection() throws SQLException {
+                    return null;
+                }
+
+                @Override
+                public Connection getConnection(String username, String password) throws SQLException {
+                    return null;
+                }
+
+                @Override
+                public PrintWriter getLogWriter() throws SQLException {
+                    return null;
+                }
+
+                @Override
+                public void setLogWriter(PrintWriter out) throws SQLException {
+
+                }
+
+                @Override
+                public void setLoginTimeout(int seconds) throws SQLException {
+
+                }
+
+                @Override
+                public int getLoginTimeout() throws SQLException {
+                    return 0;
+                }
+
+                @Override
+                public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+                    return null;
+                }
+            };
+            attachmentPart.setDataHandler(new DataHandler((javax.activation.DataSource) source));
+            attachmentPart.setFileName("DonationReceipt.pdf");
+
+            // Create the multi-part
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(messageBodyPart);
             multipart.addBodyPart(attachmentPart);
 
+            // Set the complete message parts
             message.setContent(multipart);
+
+            // Send message
             Transport.send(message);
+
+            // Delete the temporary PDF file
+            new File(attachmentPath).delete();
         } catch (Exception e) {
             throw new MessagingException("Failed to send donation receipt", e);
         }

@@ -24,10 +24,9 @@ public class ProjectDAO {
             e.printStackTrace();
         }
     }
-    public List<Project> getActiveProjects() {
+    public List<Project> getActiveProjects() throws SQLException {
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM projects WHERE status = 'active'";
-
+        String sql = "SELECT * FROM projects WHERE status ILIKE 'Active'";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
@@ -43,7 +42,8 @@ public class ProjectDAO {
                 projects.add(project);
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Error fetching active projects: " + e.getMessage());
+            throw e;
         }
         return projects;
     }
