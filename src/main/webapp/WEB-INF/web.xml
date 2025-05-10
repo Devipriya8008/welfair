@@ -10,6 +10,7 @@
   <display-name>Welfair NGO System</display-name>
 
   <!-- JSP Configuration -->
+
   <jsp-config>
     <jsp-property-group>
       <url-pattern>*.jsp</url-pattern>
@@ -24,6 +25,5 @@
     <welcome-file>index.jsp</welcome-file>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
-
 
 </web-app>

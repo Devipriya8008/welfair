@@ -6,13 +6,19 @@ import com.welfair.util.PasswordUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
-
+import com.welfair.db.DBConnection;
+import java.sql.Connection;
 import java.io.IOException;
 import java.sql.SQLException;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
-    private final UserDAO userDao = new UserDAO();
+    private UserDAO userDao = new UserDAO();
+
+    @Override
+    public void init() throws ServletException {
+        userDao = new UserDAO();
+    }
 
     // LoginServlet.java - Updated doGet method
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -35,30 +41,50 @@ public class LoginServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String expectedRole = request.getParameter("role");
-
-        if (!isValidRole(expectedRole)) {
-            response.sendRedirect(request.getContextPath() + "/index.jsp");
-            return;
-        }
-
+        Connection conn = null;
         try {
-            User user = userDao.findByUsername(username);
+            conn = DBConnection.getConnection();
+            userDao.setConnection(conn);
 
-            if (user != null &&
-                    PasswordUtil.checkPassword(password, user.getPassword()) &&
-                    user.getRole().equalsIgnoreCase(expectedRole)) {
+            String username = request.getParameter("username");
+            String password = request.getParameter("password");
+            String role = request.getParameter("role");
 
-                HttpSession session = request.getSession();
-                session.setAttribute("user", user);
-                redirectToDashboard(request, response, user.getRole().toLowerCase());
-            } else {
-                handleInvalidCredentials(request, response, expectedRole);
+            if (username == null || username.isEmpty() || password == null || password.isEmpty()) {
+                request.setAttribute("error", "Username and password are required");
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
+                return;
             }
+
+            User user = userDao.findByUsername(username);
+            if (user == null || !PasswordUtil.checkPassword(password, user.getPassword())) {
+                request.setAttribute("error", "Invalid username or password");
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
+                return;
+            }
+
+            if (role != null && !role.equalsIgnoreCase(user.getRole())) {
+                request.setAttribute("error", "You don't have permission to access this role");
+                request.getRequestDispatcher("/login.jsp").forward(request, response);
+                return;
+            }
+
+            HttpSession session = request.getSession();
+            session.setAttribute("user", user);
+            response.sendRedirect(request.getContextPath() + "/" + user.getRole() + "-dashboard.jsp");
+
         } catch (SQLException e) {
-            handleDatabaseError(request, response, expectedRole, e);
+            e.printStackTrace();
+            request.setAttribute("error", "Database error occurred");
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -76,7 +102,7 @@ public class LoginServlet extends HttpServlet {
         String contextPath = response.encodeRedirectURL(request.getContextPath());
         switch (role) {
             case "admin":
-                response.sendRedirect(contextPath + "/admin-dashboard.jsp");
+                response.sendRedirect(contextPath + "/admin/dashboard");
                 break;
             case "employee":
                 response.sendRedirect(contextPath + "/employee-dashboard.jsp");

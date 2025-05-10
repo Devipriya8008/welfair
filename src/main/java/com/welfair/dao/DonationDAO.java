@@ -9,6 +9,7 @@ import java.math.BigDecimal;
 
 public class DonationDAO {
     // Add a new donation
+    private Connection connection;
     public void addDonation(Donation donation) throws SQLException {
         String sql = "INSERT INTO donations (donor_id, project_id, amount, date, mode) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
@@ -161,5 +162,23 @@ public class DonationDAO {
             }
         }
         return null;
+    }
+    public BigDecimal getTotalDonations() throws SQLException {
+        String sql = "SELECT COALESCE(SUM(amount), 0) AS total FROM donations";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+
+            if (rs.next()) {
+                BigDecimal result = rs.getBigDecimal("total");
+                System.out.println("[DAO] Retrieved total donations: " + result);
+                return result;
+            }
+            return BigDecimal.ZERO;
+        }
+    }
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
 }
