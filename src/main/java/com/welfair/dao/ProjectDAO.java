@@ -25,15 +25,12 @@ public class ProjectDAO {
         }
     }
     public static List<Project> getActiveProjects() throws SQLException {
-        System.out.println("DEBUG: Executing getActiveProjects()");
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM projects WHERE status = 'Active'"; // Fixed query
+        String sql = "SELECT * FROM projects WHERE status = 'Active'";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
-
-            System.out.println("DEBUG: Executed query: " + sql);
 
             while (rs.next()) {
                 Project project = new Project();
@@ -45,11 +42,9 @@ public class ProjectDAO {
                 project.setStatus(rs.getString("status"));
                 projects.add(project);
             }
-            System.out.println("DEBUG: Found " + projects.size() + " active projects");
         }
         return projects;
     }
-
     // Get all projects
     public List<Project> getAllProjects() {
         List<Project> projects = new ArrayList<>();
