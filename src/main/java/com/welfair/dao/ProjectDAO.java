@@ -24,12 +24,16 @@ public class ProjectDAO {
             e.printStackTrace();
         }
     }
-    public List<Project> getActiveProjects() throws SQLException {
+    public static List<Project> getActiveProjects() throws SQLException {
+        System.out.println("DEBUG: Executing getActiveProjects()");
         List<Project> projects = new ArrayList<>();
-        String sql = "SELECT * FROM projects WHERE status ILIKE 'Active'";
+        String sql = "SELECT * FROM projects WHERE status = 'Active'"; // Fixed query
+
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql);
              ResultSet rs = pstmt.executeQuery()) {
+
+            System.out.println("DEBUG: Executed query: " + sql);
 
             while (rs.next()) {
                 Project project = new Project();
@@ -41,9 +45,7 @@ public class ProjectDAO {
                 project.setStatus(rs.getString("status"));
                 projects.add(project);
             }
-        } catch (SQLException e) {
-            System.err.println("Error fetching active projects: " + e.getMessage());
-            throw e;
+            System.out.println("DEBUG: Found " + projects.size() + " active projects");
         }
         return projects;
     }

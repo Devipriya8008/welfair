@@ -853,7 +853,33 @@
         </div>
     </div>
 </section>
-
+<!-- Header -->
+<header>
+    <div class="container">
+        <nav>
+            <a href="index.jsp" class="logo">Welf<span>air</span></a>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About Us</a></li>
+                <li><a href="#mission">Vision & Mission</a></li>
+                <li><a href="#impact">Impact Stories</a></li>
+                <li><a href="#events">Upcoming Events</a></li>
+                <li><a href="#contact">Contact Us</a></li>
+                <!-- Added Select Role link -->
+                <li><a href="${pageContext.request.contextPath}/select-role.jsp">Select Role</a></li>
+                <c:choose>
+                    <c:when test="${not empty sessionScope.user}">
+                        <li><a href="${pageContext.request.contextPath}/dashboard.jsp" class="auth-btn btn-primary">Dashboard</a></li>
+                        <li><a href="${pageContext.request.contextPath}/logout" class="auth-btn btn-secondary">Logout</a></li>
+                    </c:when>
+                    <c:otherwise>
+                        <li><a href="#" class="auth-btn btn-primary" onclick="showAuthOptionsForRole(localStorage.getItem('selectedRole') || 'donor')">Login/Register</a></li>
+                    </c:otherwise>
+                </c:choose>
+            </ul>
+        </nav>
+    </div>
+</header>
 <!-- Footer -->
 <footer>
     <div class="container">

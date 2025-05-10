@@ -2,6 +2,7 @@ package com.welfair.servlet;
 
 import com.welfair.dao.DonationDAO;
 import com.welfair.dao.ProjectDAO;
+import com.welfair.db.DBConnection;
 import com.welfair.model.Donation;
 import com.welfair.model.Donor;
 import com.welfair.model.Project;
@@ -10,8 +11,9 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
+import java.util.ArrayList;
 
 @WebServlet("/donor-dashboard")
 public class DonorDashboardServlet extends HttpServlet {
@@ -36,24 +38,48 @@ public class DonorDashboardServlet extends HttpServlet {
         Donor donor = (Donor) session.getAttribute("donor");
 
         try {
-            // Get donation-related data
+            // DEBUG CODE START
+            System.out.println("=== DEBUG START ===");
+            try {
+                List<Project> testProjects = projectDAO.getAllProjects();  // Changed from ProjectDAO to projectDAO
+                System.out.println("Servlet received projects: " + testProjects.size());
+
+                // Test direct database connection
+                try (Connection conn = DBConnection.getConnection()) {
+                    System.out.println("DB Connection successful to: " + conn.getMetaData().getURL());
+
+                    // Test direct query
+                    Statement stmt = conn.createStatement();
+                    ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM projects WHERE status = 'Active'");
+                    rs.next();
+                    System.out.println("Direct DB query count: " + rs.getInt(1));
+                }
+            } catch (SQLException e) {
+                System.out.println("DEBUG ERROR: " + e.getMessage());
+                e.printStackTrace();
+            }
+            System.out.println("=== DEBUG END ===");
+            // DEBUG CODE END
+
+            // Original code continues...
             List<Donation> donations = donationDAO.getDonationsByDonorId(donor.getDonorId());
             BigDecimal totalDonations = donationDAO.getTotalDonationsByDonor(donor.getDonorId());
 
-            // Get active projects
             List<Project> activeProjects = projectDAO.getActiveProjects();
-            System.out.println("Found " + activeProjects.size() + " active projects"); // Debug
+            if (activeProjects.isEmpty()) {
+                request.setAttribute("projectError", "No active projects available at the moment");
+            }
 
             request.setAttribute("donations", donations);
             request.setAttribute("totalDonations", totalDonations);
             request.setAttribute("activeProjects", activeProjects);
             request.setAttribute("projectsSupported", donations.size());
 
-            request.getRequestDispatcher("/WEB-INF/views/donor/dashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/donor-dashboard.jsp").forward(request, response);
 
         } catch (SQLException e) {
             request.setAttribute("error", "Error loading dashboard data: " + e.getMessage());
-            request.getRequestDispatcher("/WEB-INF/views/error.jsp").forward(request, response);
+            request.getRequestDispatcher("error.jsp").forward(request, response);
         }
     }
 }

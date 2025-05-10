@@ -9,8 +9,6 @@ public class Project {
     private Date startDate;
     private Date endDate;
     private String status;
-    private String imageUrl;
-    private String category;
 
     // Getters and Setters
     public int getProjectId() { return projectId; }

@@ -22,14 +22,13 @@ public class EmployeeDAO {
     }
 
     public boolean addEmployee(Employee emp) throws SQLException {
-        String sql = "INSERT INTO employees (user_id, name, position, department, phone, email) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employees (name, position, phone, email, user_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, emp.getUserId());
-            pstmt.setString(2, emp.getName());
-            pstmt.setString(3, emp.getPosition());
-            //pstmt.setString(4, emp.getDepartment());
-            pstmt.setString(5, emp.getPhone());
-            pstmt.setString(6, emp.getEmail());
+            pstmt.setString(1, emp.getName());
+            pstmt.setString(2, emp.getPosition());
+            pstmt.setString(3, emp.getPhone());
+            pstmt.setString(4, emp.getEmail());
+            pstmt.setInt(5, emp.getUserId());
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -57,7 +56,6 @@ public class EmployeeDAO {
                 emp.setUserId(rs.getInt("user_id"));
                 emp.setName(rs.getString("name"));
                 emp.setPosition(rs.getString("position"));
-                //emp.setDepartment(rs.getString("department"));
                 emp.setPhone(rs.getString("phone"));
                 emp.setEmail(rs.getString("email"));
                 employees.add(emp);
@@ -79,7 +77,6 @@ public class EmployeeDAO {
                     emp.setUserId(rs.getInt("user_id"));
                     emp.setName(rs.getString("name"));
                     emp.setPosition(rs.getString("position"));
-                    //emp.setDepartment(rs.getString("department"));
                     emp.setPhone(rs.getString("phone"));
                     emp.setEmail(rs.getString("email"));
                 }
@@ -89,16 +86,15 @@ public class EmployeeDAO {
     }
 
     public boolean updateEmployee(Employee emp) throws SQLException {
-        String sql = "UPDATE employees SET user_id=?, name=?, position=?, department=?, phone=?, email=? WHERE emp_id=?";
+        String sql = "UPDATE employees SET name=?, position=?, phone=?, email=?, user_id=? WHERE emp_id=?";
 
         try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, emp.getUserId());
-            pstmt.setString(2, emp.getName());
-            pstmt.setString(3, emp.getPosition());
-            //pstmt.setString(4, emp.getDepartment());
-            pstmt.setString(5, emp.getPhone());
-            pstmt.setString(6, emp.getEmail());
-            pstmt.setInt(7, emp.getEmpId());
+            pstmt.setString(1, emp.getName());
+            pstmt.setString(2, emp.getPosition());
+            pstmt.setString(3, emp.getPhone());
+            pstmt.setString(4, emp.getEmail());
+            pstmt.setInt(5, emp.getUserId());
+            pstmt.setInt(6, emp.getEmpId());
 
             return pstmt.executeUpdate() > 0;
         }
@@ -137,7 +133,6 @@ public class EmployeeDAO {
                     emp.setUserId(rs.getInt("user_id"));
                     emp.setName(rs.getString("name"));
                     emp.setPosition(rs.getString("position"));
-                    //emp.setDepartment(rs.getString("department"));
                     emp.setPhone(rs.getString("phone"));
                     emp.setEmail(rs.getString("email"));
                 }
