@@ -40,11 +40,13 @@ public class EventServlet extends HttpServlet {
                     eventDAO.deleteEvent(delId);
                     response.sendRedirect(request.getContextPath() + "/events/list");
                     break;
+                    // Change this in your EventServlet
                 case "/list":
                 default:
                     List<Event> events = eventDAO.getAllEvents();
                     request.setAttribute("events", events);
-                    request.getRequestDispatcher("/WEB-INF/views/events/list.jsp").forward(request, response);
+                    request.getRequestDispatcher("/events.jsp").forward(request, response); // Changed path
+                    break;
             }
         } catch (Exception ex) {
             throw new ServletException(ex);

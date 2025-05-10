@@ -1,3 +1,13 @@
+<%@ page import="com.welfair.dao.EventDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.welfair.model.Event" %>
+
+<%
+    // Temporary direct fetch
+    EventDAO eventDAO = new EventDAO();
+    List<Event> events = eventDAO.getAllEvents();
+    request.setAttribute("events", events);
+%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -413,7 +423,6 @@
     </style>
 </head>
 <body>
-<!-- Header (same as index.jsp) -->
 <header>
     <div class="container">
         <nav>
@@ -469,23 +478,24 @@
                 <c:forEach items="${events}" var="event">
                     <div class="event-card" data-category="${event.category}" data-date="${event.date}">
                         <div class="event-image">
-                            <img src="${event.imageUrl}" alt="${event.title}">
+                            <img src="${not empty event.imageUrl ? event.imageUrl : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'}" alt="${event.name}">
                         </div>
                         <div class="event-details">
-                                <span class="event-date">
-                                    <fmt:formatDate value="${event.date}" pattern="MMMM d, yyyy" />
-                                </span>
-                            <h3 class="event-title">${event.title}</h3>
+                            <span class="event-date">
+                                <fmt:formatDate value="${event.date}" pattern="MMMM d, yyyy" />
+                            </span>
+                            <h3 class="event-title">${event.name}</h3>
                             <p class="event-description">${event.shortDescription}</p>
                             <div class="event-meta">
-                                    <span class="event-location">
-                                        <i class="fas fa-map-marker-alt"></i> ${event.location}
-                                    </span>
+                                <span class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i> ${event.location}
+                                </span>
                                 <span class="event-time">
-                                        <i class="far fa-clock"></i> ${event.time}
-                                    </span>
+                                    <i class="far fa-clock"></i>
+                                    <fmt:formatDate value="${event.time}" type="time" timeStyle="short"/>
+                                </span>
                             </div>
-                            <a href="event-details.jsp?id=${event.id}" class="auth-btn btn-primary" style="margin-top: 15px; display: inline-block;">View Details</a>
+                            <a href="event-details.jsp?id=${event.eventId}" class="auth-btn btn-primary" style="margin-top: 15px; display: inline-block;">View Details</a>
                         </div>
                     </div>
                 </c:forEach>
@@ -510,7 +520,7 @@
     </div>
 </div>
 
-<!-- Footer (same as index.jsp) -->
+<!-- Keep your existing footer -->
 <footer>
     <!-- Your existing footer content -->
     <div class="container">
@@ -557,7 +567,7 @@
         </div>
     </div>
 </footer>
-
+<!-- Add this script for filtering functionality -->
 <script>
     // Filter functionality
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -570,24 +580,6 @@
         });
     });
 
-    // Search functionality
-    document.getElementById('eventSearch').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const eventCards = document.querySelectorAll('.event-card');
-
-        eventCards.forEach(card => {
-            const title = card.querySelector('.event-title').textContent.toLowerCase();
-            const description = card.querySelector('.event-description').textContent.toLowerCase();
-
-            if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
-
-    // Filter events by category
     function filterEvents(filter) {
         const eventCards = document.querySelectorAll('.event-card');
         const currentDate = new Date();
@@ -618,14 +610,20 @@
         });
     }
 
-    // Pagination functionality (would need server-side implementation)
-    document.querySelectorAll('.pagination-btn:not(:first-child):not(:last-child)').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    // Search functionality
+    document.getElementById('eventSearch').addEventListener('input', function() {
+        const searchTerm = this.value.toLowerCase();
+        const eventCards = document.querySelectorAll('.event-card');
 
-            // In a real implementation, this would fetch new page data from the server
-            console.log('Loading page ' + this.textContent);
+        eventCards.forEach(card => {
+            const title = card.querySelector('.event-title').textContent.toLowerCase();
+            const description = card.querySelector('.event-description').textContent.toLowerCase();
+
+            if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
         });
     });
 </script>
