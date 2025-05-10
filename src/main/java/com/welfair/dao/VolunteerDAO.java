@@ -104,18 +104,18 @@ public class VolunteerDAO {
 
     public Volunteer getVolunteerByUserId(int userId) throws SQLException {
         String sql = "SELECT * FROM volunteers WHERE user_id = ?";
-        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setInt(1, userId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
-                    Volunteer volunteer = new Volunteer();
-                    volunteer.setVolunteerId(rs.getInt("volunteer_id"));
-                    volunteer.setUserId(rs.getInt("user_id"));
-                    volunteer.setName(rs.getString("name"));
-                    volunteer.setPhone(rs.getString("phone"));
-                    volunteer.setEmail(rs.getString("email"));
-                    return volunteer;
-                }
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                Volunteer volunteer = new Volunteer();
+                volunteer.setVolunteerId(rs.getInt("volunteer_id"));
+                volunteer.setUserId(rs.getInt("user_id"));
+                volunteer.setName(rs.getString("name"));
+                volunteer.setPhone(rs.getString("phone"));
+                volunteer.setEmail(rs.getString("email"));
+                return volunteer;
             }
         }
         return null;

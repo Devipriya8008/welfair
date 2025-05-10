@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import com.welfair.util.EmailUtil;
 import com.welfair.util.PasswordUtil;
 
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 @WebServlet("/admin/dashboard")
 public class AdminDashboardServlet extends HttpServlet {
