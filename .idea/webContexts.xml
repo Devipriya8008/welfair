@@ -10,7 +10,11 @@
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donors/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donors" />
         <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/projectbeneficiary/form.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/projectbeneficiary" />
+<<<<<<< HEAD
         <entry key="file://$PROJECT_DIR$/src/main/webapp/admin-dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+=======
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/about-details.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+>>>>>>> 9a88f1e1f009bbd3db143e554701583b041fba7a
         <entry key="file://$PROJECT_DIR$/src/main/webapp/events.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
       </map>
     </option>

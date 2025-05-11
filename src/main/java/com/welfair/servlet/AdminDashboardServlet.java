@@ -7,16 +7,14 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import com.welfair.util.EmailUtil;
 import com.welfair.util.PasswordUtil;
-import javax.mail.MessagingException;
+
 import java.sql.Statement;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 @WebServlet("/admin-dashboard")

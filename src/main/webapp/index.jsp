@@ -690,6 +690,9 @@
                 <p>Founded in 2010, Welfair has been at the forefront of social change, working tirelessly to uplift underprivileged communities across the region. What began as a small group of passionate individuals has now grown into a movement of thousands.</p>
                 <p>We believe in the power of collective action and sustainable solutions. Our approach combines immediate relief with long-term development programs to create lasting impact.</p>
                 <a href="about.jsp" class="auth-btn btn-primary">Learn More</a>
+                <!-- Update your Learn More button -->
+                <a href="about-details.jsp" class="auth-btn btn-primary">Learn More</a>
+
             </div>
             <div class="about-image">
                 <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Welfair Team">
