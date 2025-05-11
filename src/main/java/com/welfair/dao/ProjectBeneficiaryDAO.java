@@ -128,4 +128,31 @@ public class ProjectBeneficiaryDAO {
             return false;
         }
     }
+
+    public List<ProjectBeneficiary> getBeneficiariesByProject(int projectId) {
+        List<ProjectBeneficiary> beneficiaries = new ArrayList<>();
+        String sql = "SELECT * FROM project_beneficiaries WHERE project_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, projectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ProjectBeneficiary pb = new ProjectBeneficiary();
+                    pb.setProjectId(rs.getInt("project_id"));
+                    pb.setBeneficiaryId(rs.getInt("beneficiary_id"));
+                    pb.setDateAssigned(rs.getDate("date_assigned"));
+                    beneficiaries.add(pb);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching beneficiaries for project: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return beneficiaries;
+    }
+
 }

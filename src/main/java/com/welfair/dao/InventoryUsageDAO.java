@@ -1,5 +1,6 @@
 package com.welfair.dao;
 
+import com.welfair.model.Inventory;
 import com.welfair.model.InventoryUsage;
 import com.welfair.db.DBConnection;
 import java.sql.*;
@@ -70,7 +71,41 @@ public class InventoryUsageDAO {
         }
         return null;
     }
+    public List<InventoryUsage> getInventoryByProject(int projectId) {
+        List<InventoryUsage> inventoryUsage = new ArrayList<>();
+        String sql = "SELECT iu.*, i.name, i.unit " +
+                "FROM inventory_usage iu " +
+                "JOIN inventory i ON iu.item_id = i.item_id " +
+                "WHERE iu.project_id = ?";
 
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, projectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    InventoryUsage usage = new InventoryUsage();
+                    Inventory item = new Inventory();
+
+                    // Set InventoryUsage fields
+                    usage.setProjectId(projectId);
+                    usage.setQuantityUsed(rs.getInt("quantity_used"));
+
+                    // Set Inventory item fields
+                    item.setItemId(rs.getInt("item_id"));
+                    item.setName(rs.getString("name"));
+                    item.setUnit(rs.getString("unit"));
+
+                    usage.setItem(item);
+                    inventoryUsage.add(usage);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching inventory: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return inventoryUsage;
+    }
     // Get all inventory usage records
     public List<InventoryUsage> getAllInventoryUsage() {
         List<InventoryUsage> usages = new ArrayList<>();

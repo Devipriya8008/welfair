@@ -12,37 +12,31 @@
   String error = null;
 
   try {
-    // Get connection (EmployeeDAO will handle connection management)
     employeeDAO.setConnection(employeeDAO.getActiveConnection());
-
-    // Fetch all employees
     employees = employeeDAO.getAllEmployees();
-
-    // Store in request scope for JSTL
     request.setAttribute("employees", employees);
-
   } catch (SQLException e) {
     error = "Database error: " + e.getMessage();
     request.setAttribute("error", error);
 
-    // For debugging, you might want to create some test data
+    // Create test data
     Employee testEmp1 = new Employee();
     testEmp1.setEmpId(1);
     testEmp1.setName("John Doe");
-    testEmp1.setPosition("Manager");
-    testEmp1.setEmail("john@example.com");
-    testEmp1.setBio("Experienced manager with 10+ years in the industry");
+    testEmp1.setPosition("Project Manager");
+    testEmp1.setEmail("john@welfair.org");
+    testEmp1.setBio("10+ years experience in social project management");
 
     Employee testEmp2 = new Employee();
     testEmp2.setEmpId(2);
-    testEmp2.setName("Jane Smith");
+    testEmp2.setName("Sarah Wilson");
     testEmp2.setPosition("Field Coordinator");
-    testEmp2.setEmail("jane@example.com");
-    testEmp2.setBio("Passionate about community outreach programs");
+    testEmp2.setEmail("sarah@welfair.org");
+    testEmp2.setBio("Passionate about community development initiatives");
 
     employees = List.of(testEmp1, testEmp2);
     request.setAttribute("employees", employees);
-    request.setAttribute("warning", "Using test data due to database connection issues");
+    request.setAttribute("warning", "Showing sample data due to temporary system issues");
   }
 %>
 
@@ -53,8 +47,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    /* [Keep all your existing CSS styles] */
-    /* ... your existing CSS ... */
     :root {
       --primary: #2c8a8a;
       --primary-light: #e6f2f2;
@@ -83,71 +75,55 @@
     .team-hero {
       background: linear-gradient(135deg, var(--primary) 0%, #34a1a1 100%);
       color: white;
-      padding: 80px 20px;
+      padding: 5rem 1rem;
       text-align: center;
       position: relative;
       overflow: hidden;
     }
 
-    .team-hero::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path fill="rgba(255,255,255,0.05)" d="M0,0 L100,0 L100,100 L0,100 Z" /></svg>');
-      background-size: cover;
-    }
-
-    .team-hero-content {
-      max-width: 800px;
-      margin: 0 auto;
-      position: relative;
-      z-index: 2;
-    }
-
     .team-hero h1 {
       font-size: 2.8rem;
-      margin-bottom: 15px;
+      margin-bottom: 1.2rem;
       font-weight: 700;
+      letter-spacing: -0.5px;
     }
 
     .team-hero p {
       font-size: 1.1rem;
       opacity: 0.9;
-      margin-bottom: 30px;
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.7;
     }
 
     .team-container {
       max-width: 1200px;
       margin: 0 auto;
-      padding: 60px 20px;
+      padding: 4rem 1rem;
     }
 
     .team-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-      gap: 30px;
-      margin-top: 40px;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
     }
 
     .team-card {
       background: var(--light);
-      border-radius: 12px;
+      border-radius: 1rem;
       overflow: hidden;
       box-shadow: var(--card-shadow);
       transition: var(--transition);
-      position: relative;
     }
 
     .team-card:hover {
-      transform: translateY(-8px);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
     }
 
     .team-photo {
-      height: 280px;
+      height: 260px;
       overflow: hidden;
       position: relative;
     }
@@ -160,32 +136,34 @@
     }
 
     .team-card:hover .team-photo img {
-      transform: scale(1.05);
+      transform: scale(1.03);
     }
 
     .team-info {
-      padding: 25px;
+      padding: 1.8rem;
       text-align: center;
     }
 
     .team-name {
-      font-size: 1.4rem;
+      font-size: 1.3rem;
       font-weight: 600;
-      margin-bottom: 5px;
+      margin-bottom: 0.5rem;
       color: var(--dark);
     }
 
     .team-position {
       color: var(--primary);
       font-weight: 500;
-      margin-bottom: 15px;
+      font-size: 0.95rem;
+      margin-bottom: 1.2rem;
       display: block;
     }
 
     .team-bio {
       color: var(--text-light);
-      font-size: 0.95rem;
-      margin-bottom: 20px;
+      font-size: 0.9rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
       display: -webkit-box;
       -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
@@ -195,7 +173,7 @@
     .team-contact {
       display: flex;
       justify-content: center;
-      gap: 15px;
+      gap: 1rem;
     }
 
     .team-contact a {
@@ -213,137 +191,81 @@
     .team-contact a:hover {
       color: white;
       background: var(--primary);
-      transform: translateY(-3px);
-    }
-
-    .team-departments {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 15px;
-      margin-bottom: 40px;
-    }
-
-    .department-btn {
-      padding: 8px 20px;
-      border-radius: 50px;
-      background: white;
-      border: 1px solid #e0e0e0;
-      cursor: pointer;
-      transition: var(--transition);
-      font-size: 0.9rem;
-    }
-
-    .department-btn:hover,
-    .department-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
+      transform: translateY(-2px);
     }
 
     .section-title {
       text-align: center;
-      margin-bottom: 20px;
-      position: relative;
+      margin-bottom: 3rem;
     }
 
     .section-title h2 {
       font-size: 2rem;
       color: var(--dark);
-      display: inline-block;
       position: relative;
+      display: inline-block;
     }
 
     .section-title h2::after {
       content: '';
       position: absolute;
-      bottom: -10px;
+      bottom: -0.8rem;
       left: 50%;
       transform: translateX(-50%);
-      width: 60px;
+      width: 50px;
       height: 3px;
       background: var(--primary);
     }
 
     @media (max-width: 768px) {
-      .team-grid {
-        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      .team-hero {
+        padding: 3rem 1rem;
       }
 
       .team-hero h1 {
         font-size: 2.2rem;
       }
-    }
-    /* Add debug styles */
-    .debug-panel {
-      background: #f0f0f0;
-      padding: 15px;
-      margin: 20px;
-      border-radius: 8px;
-      border-left: 4px solid #e74c3c;
+
+      .team-hero p {
+        font-size: 1rem;
+      }
+
+      .team-grid {
+        grid-template-columns: 1fr;
+        max-width: 400px;
+        margin: 2rem auto;
+      }
     }
 
-    .debug-title {
-      font-weight: bold;
-      color: #e74c3c;
-      margin-bottom: 10px;
-    }
-
-    .debug-info {
-      margin-bottom: 5px;
-    }
-
-    .error-message {
-      color: #e74c3c;
-      background: #ffebee;
-      padding: 10px;
+    .system-notice {
+      background: #fff9e6;
+      color: #856404;
+      padding: 1rem;
       border-radius: 4px;
-      margin: 10px 0;
+      margin: 1rem auto;
+      max-width: 800px;
+      text-align: center;
+      border-left: 4px solid #ffd700;
     }
   </style>
 </head>
 <body>
-<!-- Debug Panel -->
-<div class="debug-panel">
-  <div class="debug-title">System Information</div>
-  <div class="debug-info">Employees list: ${not empty employees ? employees.size() : '0'} employees found</div>
-
-  <c:if test="${not empty warning}">
-    <div class="warning-message">⚠️ ${warning}</div>
-  </c:if>
-
-  <c:if test="${not empty error}">
-    <div class="error-message">❌ ${error}</div>
-  </c:if>
-
-  <c:if test="${not empty employees}">
-    <div class="debug-info">Data source: ${not empty error ? 'Test Data' : 'Database'}</div>
-  </c:if>
-</div>
-
-<!-- Rest of your JSP content remains the same -->
 <section class="team-hero">
-  <div class="team-hero-content">
-    <h1>Meet Our Team</h1>
-    <p>The passionate individuals who make our mission possible every day</p>
-  </div>
+  <h1>Our Exceptional Team</h1>
+  <p>Meet the dedicated professionals driving positive change through innovation and compassion</p>
 </section>
 
-<!-- Main Content -->
+<c:if test="${not empty warning}">
+  <div class="system-notice">
+    ⚠️ ${warning}
+  </div>
+</c:if>
+
 <div class="team-container">
   <div class="section-title">
-    <h2>Our Dedicated Team</h2>
+    <h2>Team Members</h2>
   </div>
 
-  <!-- Department Filter (optional) -->
-  <div class="team-departments">
-    <button class="department-btn active">All</button>
-    <button class="department-btn">Management</button>
-    <button class="department-btn">Field Work</button>
-    <button class="department-btn">Support</button>
-  </div>
-
-  <!-- Team Grid -->
   <div class="team-grid">
     <c:forEach var="employee" items="${employees}">
       <div class="team-card">
@@ -354,11 +276,17 @@
         <div class="team-info">
           <h3 class="team-name">${employee.name}</h3>
           <span class="team-position">${employee.position}</span>
-          <p class="team-bio">${not empty employee.bio ? employee.bio : 'Dedicated professional committed to making a difference in our community.'}</p>
+          <p class="team-bio">${not empty employee.bio ? employee.bio : 'Committed to excellence in social welfare and community development.'}</p>
           <div class="team-contact">
-            <a href="mailto:${employee.email}" title="Email"><i class="fas fa-envelope"></i></a>
-            <a href="#" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            <a href="#" title="Profile"><i class="fas fa-user"></i></a>
+            <a href="mailto:${employee.email}" title="Email">
+              <i class="fas fa-envelope"></i>
+            </a>
+            <a href="#" title="LinkedIn">
+              <i class="fab fa-linkedin-in"></i>
+            </a>
+            <a href="#" title="Profile">
+              <i class="fas fa-user"></i>
+            </a>
           </div>
         </div>
       </div>
@@ -367,18 +295,21 @@
 </div>
 
 <script>
-  // Enhanced department filtering with debug
-  document.querySelectorAll('.department-btn').forEach(btn => {
-    btn.addEventListener('click', function() {
-      console.log('Department filter clicked: ' + this.textContent);
-      document.querySelector('.department-btn.active').classList.remove('active');
-      this.classList.add('active');
+  // Add smooth hover effects
+  document.querySelectorAll('.team-card').forEach(card => {
+    card.addEventListener('mouseenter', () => {
+      card.style.transition = 'transform 0.3s ease, box-shadow 0.3s ease';
     });
   });
 
-  // Debug output
-  console.log('Team page loaded');
-  console.log('Number of employees: ${not empty employees ? employees.size() : '0'}');
+  // Handle system notices
+  const notice = document.querySelector('.system-notice');
+  if (notice) {
+    setTimeout(() => {
+      notice.style.opacity = '0.9';
+      notice.style.transition = 'opacity 0.3s ease';
+    }, 5000);
+  }
 </script>
 </body>
 </html>

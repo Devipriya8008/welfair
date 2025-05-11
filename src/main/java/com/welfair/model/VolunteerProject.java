@@ -20,4 +20,8 @@ public class VolunteerProject {
     public void setProjectId(int projectId) { this.projectId = projectId; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public Employee getVolunteer() {
+        return new Employee(this.volunteerId, 0, "", this.role, "", "");
+    }
 }

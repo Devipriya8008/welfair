@@ -22,4 +22,8 @@ public class ProjectBeneficiary {
     public void setBeneficiaryId(int beneficiaryId) { this.beneficiaryId = beneficiaryId; }
     public Date getDateAssigned() { return dateAssigned; }
     public void setDateAssigned(Date dateAssigned) { this.dateAssigned = dateAssigned; }
+
+    public Beneficiary getBeneficiary() {
+        return new Beneficiary(this.beneficiaryId, "", 0, "", "");
+    }
 }

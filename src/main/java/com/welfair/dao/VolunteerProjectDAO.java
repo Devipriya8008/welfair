@@ -131,4 +131,29 @@ public class VolunteerProjectDAO {
             e.printStackTrace();
         }
     }
+
+    public List<VolunteerProject> getVolunteersByProject(int projectId) {
+        List<VolunteerProject> volunteers = new ArrayList<>();
+        String sql = "SELECT * FROM volunteer_projects WHERE project_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, projectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+
+                while (rs.next()) {
+                    VolunteerProject vp = new VolunteerProject();
+                    vp.setVolunteerId(rs.getInt("volunteer_id"));
+                    vp.setProjectId(rs.getInt("project_id"));
+                    vp.setRole(rs.getString("role"));
+                    volunteers.add(vp);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return volunteers;
+    }
 }

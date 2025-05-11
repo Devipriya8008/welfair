@@ -1,5 +1,6 @@
 package com.welfair.dao;
 
+import com.welfair.model.Employee;
 import com.welfair.model.ProjectEmployee;
 import com.welfair.db.DBConnection;
 import java.sql.*;
@@ -131,5 +132,44 @@ public class ProjectEmployeeDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    public List<ProjectEmployee> getEmployeesByProject(int projectId) {
+        List<ProjectEmployee> employees = new ArrayList<>();
+        String sql = "SELECT pe.*, e.name, e.position, e.email, e.bio, e.photo_url " +
+                "FROM project_employees pe " +
+                "JOIN employees e ON pe.emp_id = e.emp_id " +
+                "WHERE pe.project_id = ?";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, projectId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    ProjectEmployee pe = new ProjectEmployee();
+                    Employee employee = new Employee();
+
+                    // Set ProjectEmployee fields
+                    pe.setProjectId(projectId);
+                    pe.setRole(rs.getString("role"));
+
+                    // Set Employee fields
+                    employee.setEmpId(rs.getInt("emp_id"));
+                    employee.setName(rs.getString("name"));
+                    employee.setPosition(rs.getString("position"));
+                    employee.setEmail(rs.getString("email"));
+                    employee.setBio(rs.getString("bio"));
+                    employee.setPhotoUrl(rs.getString("photo_url"));
+
+                    pe.setEmployee(employee);
+                    employees.add(pe);
+                }
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching employees: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return employees;
     }
 }

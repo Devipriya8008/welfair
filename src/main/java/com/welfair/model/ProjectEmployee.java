@@ -20,4 +20,12 @@ public class ProjectEmployee {
     public void setProjectId(int projectId) { this.projectId = projectId; }
     public String getRole() { return role; }
     public void setRole(String role) { this.role = role; }
+
+    public void setEmployee(Employee employee) {
+        this.empId = employee.getEmpId();
+        this.role = employee.getPosition();
+    }
+    public Employee getEmployee() {
+        return new Employee(this.empId, 0, "", this.role, "", "");
+    }
 }

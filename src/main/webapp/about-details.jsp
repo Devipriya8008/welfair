@@ -202,7 +202,7 @@
       Our Team
     </a>
 
-    <a href="/about/projects" class="nav-tab">
+    <a href="projects.jsp" class="nav-tab">
       <i class="fas fa-project-diagram"></i>
       Our Projects
     </a>
@@ -217,7 +217,7 @@
       Success Stories
     </a>
 
-    <a href="/about/finance" class="nav-tab">
+    <a href="finance.jsp" class="nav-tab">
       <i class="fas fa-file-invoice-dollar"></i>
       Financial Transparency
     </a>
