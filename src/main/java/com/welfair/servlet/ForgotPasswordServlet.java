@@ -8,7 +8,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.sql.SQLException;
-import javax.mail.MessagingException;
+import jakarta.mail.MessagingException;
 
 @WebServlet("/forgot-password")
 public class ForgotPasswordServlet extends HttpServlet {

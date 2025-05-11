@@ -110,6 +110,12 @@ public class DonationServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Database error: " + e.getMessage());
             forwardToForm(request, response);
         }
+        String referer = request.getHeader("referer");
+        if (referer != null && referer.contains("admin-table")) {
+            response.sendRedirect(request.getContextPath() + "/admin-table?table=donations");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/donations");
+        }
     }
 
     private void forwardToForm(HttpServletRequest request, HttpServletResponse response)

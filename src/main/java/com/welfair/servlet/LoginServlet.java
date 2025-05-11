@@ -100,7 +100,19 @@ public class LoginServlet extends HttpServlet {
     private void redirectToDashboard(HttpServletRequest request, HttpServletResponse response, String role)
             throws IOException {
         String contextPath = response.encodeRedirectURL(request.getContextPath());
-        switch (role) {
+        HttpSession session = request.getSession();
+
+        // Check for return to events
+        if (session.getAttribute("returnToEvents") != null) {
+            session.removeAttribute("returnToEvents");
+            response.sendRedirect(contextPath + "/events.jsp?filter=volunteer");
+            return;
+        }
+
+        switch (role.toLowerCase()) {
+            case "volunteer":
+                response.sendRedirect(contextPath + "/volunteer-dashboard.jsp");
+                break;
             case "admin":
                 response.sendRedirect(contextPath + "/admin/dashboard");
                 break;
@@ -109,9 +121,6 @@ public class LoginServlet extends HttpServlet {
                 break;
             case "donor":
                 response.sendRedirect(contextPath + "/donor-dashboard.jsp");
-                break;
-            case "volunteer":
-                response.sendRedirect(contextPath + "/volunteer-dashboard.jsp");
                 break;
             default:
                 response.sendRedirect(contextPath + "/dashboard.jsp");

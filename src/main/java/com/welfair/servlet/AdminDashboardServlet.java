@@ -1,10 +1,8 @@
 package com.welfair.servlet;
 
-import com.welfair.dao.AdminDAO;
-import com.welfair.dao.UserDAO;
-import com.welfair.dao.DonationDAO;
+import com.welfair.dao.*;
 import com.welfair.db.DBConnection;
-import com.welfair.model.User;
+import com.welfair.model.*;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
@@ -21,92 +19,48 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/admin-dashboard.jsp")
+@WebServlet("/admin-dashboard")
 public class AdminDashboardServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(AdminDashboardServlet.class.getName());
     private AdminDAO adminDAO;
     private UserDAO userDAO;
     private DonationDAO donationDAO;
+    private ProjectDAO projectDAO;
+    private BeneficiaryDAO beneficiaryDAO;
+    private InventoryDAO inventoryDAO;
 
     @Override
     public void init() throws ServletException {
         adminDAO = new AdminDAO();
         userDAO = new UserDAO();
         donationDAO = new DonationDAO();
+        projectDAO = new ProjectDAO();
+        beneficiaryDAO = new BeneficiaryDAO();
+        inventoryDAO = new InventoryDAO();
     }
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-
-        // 1. Verify login
-        HttpSession session = request.getSession(false);
-        if (session == null || session.getAttribute("user") == null) {
-            response.sendRedirect(request.getContextPath() + "/login");
-            return;
-        }
-
-        // Set response content type
-        response.setContentType("text/html");
-        PrintWriter out = response.getWriter();
-
-        // Start HTML output
-        out.println("<!DOCTYPE html>");
-        out.println("<html><head><title>Admin Dashboard</title>");
-        out.println("<style>");
-        out.println("body { font-family: Arial; margin: 40px; }");
-        out.println(".stat { background: #f0f0f0; padding: 20px; margin: 10px; border-radius: 5px; }");
-        out.println("h1 { color: #2c8a8a; }");
-        out.println("</style></head><body>");
-
-        out.println("<h1>Admin Dashboard</h1>");
-
-        // 2. HARDCODED VALUES (Guaranteed to show)
-        out.println("<div class='stat'>");
-        out.println("<h2>System Status</h2>");
-        out.println("<p>Application Version: 1.0.0</p>");
-        out.println("<p>Logged in as: " + session.getAttribute("user") + "</p>");
-        out.println("</div>");
-
-        // 3. DATABASE QUERY (Donations)
-        out.println("<div class='stat'>");
-        out.println("<h2>Donation Summary</h2>");
-
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         try {
-            Connection conn = DBConnection.getConnection();
-            Statement stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT COALESCE(SUM(amount), 0) FROM donations");
+            // Get counts for the dashboard cards
+            BigDecimal totalDonations = donationDAO.getTotalDonations();
+            int totalProjects = projectDAO.getTotalProjects();
+            int totalBeneficiaries = beneficiaryDAO.getTotalBeneficiaries();
+            int totalInventoryItems = inventoryDAO.getTotalInventoryItems();
 
-            if(rs.next()) {
-                BigDecimal total = rs.getBigDecimal(1);
-                out.println("<p>Total Donations: ₹" + total + "</p>");
-            } else {
-                out.println("<p>No donations found</p>");
-            }
+            // Set attributes for dashboard cards
+            request.setAttribute("totalDonations", totalDonations);
+            request.setAttribute("totalProjects", totalProjects);
+            request.setAttribute("totalBeneficiaries", totalBeneficiaries);
+            request.setAttribute("totalInventoryItems", totalInventoryItems);
 
-            // Additional stats
-            rs = stmt.executeQuery("SELECT COUNT(*) FROM donations");
-            if(rs.next()) {
-                out.println("<p>Total Donations Count: " + rs.getInt(1) + "</p>");
-            }
+            // Forward to admin dashboard JSP
+            RequestDispatcher dispatcher = request.getRequestDispatcher("admin-dashboard.jsp");
+            dispatcher.forward(request, response);
 
-            conn.close();
-        } catch(Exception e) {
-            out.println("<p style='color:red'>Database Error: " + e.getMessage() + "</p>");
-            // Fallback hardcoded value
-            out.println("<p>Recent Donations (sample data): ₹15,000.75</p>");
+        } catch (SQLException e) {
+            throw new ServletException(e);
         }
-
-        out.println("</div>");
-
-        // 4. Additional Hardcoded Stats
-        out.println("<div class='stat'>");
-        out.println("<h2>Quick Stats</h2>");
-        out.println("<p>Active Projects: 5</p>");
-        out.println("<p>Registered Users: 42</p>");
-        out.println("</div>");
-
-        // End HTML
-        out.println("</body></html>");
     }
 
     private BigDecimal getTotalDonations() throws SQLException {
@@ -216,7 +170,7 @@ public class AdminDashboardServlet extends HttpServlet {
             } else {
                 request.setAttribute("error", "No account found with that email");
             }
-        } catch (SQLException | MessagingException e) {
+        } catch (SQLException | jakarta.mail.MessagingException e) {
             request.setAttribute("error", "Error processing request: " + e.getMessage());
         }
         doGet(request, response);

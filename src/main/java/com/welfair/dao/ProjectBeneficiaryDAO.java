@@ -42,6 +42,25 @@ public class ProjectBeneficiaryDAO {
         }
     }
 
+    public List<ProjectBeneficiary> getAllProjectBeneficiaries() throws SQLException {
+        List<ProjectBeneficiary> projectBeneficiaries = new ArrayList<>();
+        String sql = "SELECT * FROM project_beneficiaries";
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            while (resultSet.next()) {
+                ProjectBeneficiary pb = new ProjectBeneficiary();
+                pb.setProjectId(resultSet.getInt("project_id"));
+                pb.setBeneficiaryId(resultSet.getInt("beneficiary_id"));
+                pb.setDateAssigned(resultSet.getDate("date_assigned"));
+                projectBeneficiaries.add(pb);
+            }
+        }
+        return projectBeneficiaries;
+    }
+
     public List<Map<String, Object>> getAllAssignments() {
         List<Map<String, Object>> assignments = new ArrayList<>();
         String sql = "SELECT pb.project_id, p.name as project_name, " +

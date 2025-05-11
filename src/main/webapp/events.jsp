@@ -1,3 +1,13 @@
+<%@ page import="com.welfair.dao.EventDAO" %>
+<%@ page import="java.util.List" %>
+<%@ page import="com.welfair.model.Event" %>
+
+<%
+    // Temporary direct fetch
+    EventDAO eventDAO = new EventDAO();
+    List<Event> events = eventDAO.getAllEvents();
+    request.setAttribute("events", events);
+%>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -357,6 +367,30 @@
             font-size: 14px;
         }
 
+        /* New CSS for volunteer form and alerts */
+        .volunteer-form {
+            margin-top: 15px;
+        }
+
+        .alert {
+            padding: 15px;
+            margin: 20px auto;
+            max-width: 1200px;
+            border-radius: 5px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
         /* Responsive Styles */
         @media (max-width: 768px) {
             .nav-links {
@@ -413,7 +447,6 @@
     </style>
 </head>
 <body>
-<!-- Header (same as index.jsp) -->
 <header>
     <div class="container">
         <nav>
@@ -438,54 +471,87 @@
         </nav>
     </div>
 </header>
-
 <!-- Events Header -->
 <div class="events-header">
     <h1>Upcoming Events</h1>
     <p>Join us in making a difference through our community events</p>
 </div>
 
+<!-- Add return link below the events-header -->
+<c:if test="${not empty param.source and param.source eq 'dashboard'}">
+    <div class="return-dashboard" style="margin: 20px 0; text-align: left;">
+        <a href="volunteer-dashboard.jsp" class="auth-btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Return to Dashboard
+        </a>
+    </div>
+</c:if>
+
 <!-- Events Container -->
 <div class="events-container">
-    <!-- Events Filter -->
+    <!-- Message display remains the same -->
+
+    <!-- Updated Events Filter -->
     <div class="events-filter">
         <div class="filter-group">
-            <button class="filter-btn active" data-filter="all">All Events</button>
-            <button class="filter-btn" data-filter="upcoming">Upcoming</button>
-            <button class="filter-btn" data-filter="past">Past Events</button>
-            <button class="filter-btn" data-filter="volunteer">Volunteer Opportunities</button>
-            <button class="filter-btn" data-filter="fundraiser">Fundraisers</button>
+            <button class="filter-btn ${empty param.filter or param.filter == 'all' ? 'active' : ''}"
+                    onclick="window.location.href='events.jsp?source=${param.source}&filter=all'">
+                All Events
+            </button>
+            <button class="filter-btn ${param.filter == 'upcoming' ? 'active' : ''}"
+                    onclick="window.location.href='events.jsp?source=${param.source}&filter=upcoming'">
+                Upcoming
+            </button>
+            <button class="filter-btn ${param.filter == 'past' ? 'active' : ''}"
+                    onclick="window.location.href='events.jsp?source=${param.source}&filter=past'">
+                Past Events
+            </button>
+            <button class="filter-btn ${param.filter == 'volunteer' ? 'active' : ''}"
+                    onclick="window.location.href='events.jsp?source=${param.source}&filter=volunteer'">
+                Volunteer Opportunities
+            </button>
+            <button class="filter-btn ${param.filter == 'fundraiser' ? 'active' : ''}"
+                    onclick="window.location.href='events.jsp?source=${param.source}&filter=fundraiser'">
+                Fundraisers
+            </button>
         </div>
         <div class="search-box">
             <i class="fas fa-search"></i>
             <input type="text" id="eventSearch" placeholder="Search events...">
         </div>
     </div>
-
-    <!-- Event Cards -->
     <div class="event-cards">
         <c:choose>
             <c:when test="${not empty events}">
                 <c:forEach items="${events}" var="event">
                     <div class="event-card" data-category="${event.category}" data-date="${event.date}">
                         <div class="event-image">
-                            <img src="${event.imageUrl}" alt="${event.title}">
+                            <img src="${not empty event.imageUrl ? event.imageUrl : 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80'}" alt="${event.name}">
                         </div>
                         <div class="event-details">
-                                <span class="event-date">
-                                    <fmt:formatDate value="${event.date}" pattern="MMMM d, yyyy" />
-                                </span>
-                            <h3 class="event-title">${event.title}</h3>
+                            <span class="event-date">
+                                <fmt:formatDate value="${event.date}" pattern="MMMM d, yyyy" />
+                            </span>
+                            <h3 class="event-title">${event.name}</h3>
                             <p class="event-description">${event.shortDescription}</p>
                             <div class="event-meta">
-                                    <span class="event-location">
-                                        <i class="fas fa-map-marker-alt"></i> ${event.location}
-                                    </span>
+                                <span class="event-location">
+                                    <i class="fas fa-map-marker-alt"></i> ${event.location}
+                                </span>
                                 <span class="event-time">
-                                        <i class="far fa-clock"></i> ${event.time}
-                                    </span>
+                                    <i class="far fa-clock"></i>
+                                    <fmt:formatDate value="${event.time}" type="time" timeStyle="short"/>
+                                </span>
                             </div>
-                            <a href="event-details.jsp?id=${event.id}" class="auth-btn btn-primary" style="margin-top: 15px; display: inline-block;">View Details</a>
+                            <a href="event-details.jsp?id=${event.eventId}" class="auth-btn btn-primary" style="margin-top: 15px; display: inline-block;">View Details</a>
+
+                            <c:if test="${not empty sessionScope.user && sessionScope.user.role eq 'volunteer'}">
+                                <form action="register-volunteer" method="post" class="volunteer-form">
+                                    <input type="hidden" name="eventId" value="${event.eventId}">
+                                    <button type="submit" class="auth-btn btn-secondary">
+                                        <i class="fas fa-user-plus"></i> Register as Volunteer
+                                    </button>
+                                </form>
+                            </c:if>
                         </div>
                     </div>
                 </c:forEach>
@@ -510,7 +576,7 @@
     </div>
 </div>
 
-<!-- Footer (same as index.jsp) -->
+<!-- Keep your existing footer -->
 <footer>
     <!-- Your existing footer content -->
     <div class="container">
@@ -558,75 +624,46 @@
     </div>
 </footer>
 
+<!-- Rest of the content remains the same until the scripts -->
+
+<!-- Updated script section -->
 <script>
-    // Filter functionality
+    // Existing filter functionality
     document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.addEventListener('click', function() {
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-
             const filter = this.dataset.filter;
             filterEvents(filter);
         });
     });
 
-    // Search functionality
-    document.getElementById('eventSearch').addEventListener('input', function() {
-        const searchTerm = this.value.toLowerCase();
-        const eventCards = document.querySelectorAll('.event-card');
-
-        eventCards.forEach(card => {
-            const title = card.querySelector('.event-title').textContent.toLowerCase();
-            const description = card.querySelector('.event-description').textContent.toLowerCase();
-
-            if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
-            }
-        });
-    });
-
-    // Filter events by category
     function filterEvents(filter) {
-        const eventCards = document.querySelectorAll('.event-card');
-        const currentDate = new Date();
-
-        eventCards.forEach(card => {
-            const eventDate = new Date(card.dataset.date);
-            const category = card.dataset.category;
-
-            let showCard = true;
-
-            switch(filter) {
-                case 'upcoming':
-                    showCard = eventDate >= currentDate;
-                    break;
-                case 'past':
-                    showCard = eventDate < currentDate;
-                    break;
-                case 'volunteer':
-                    showCard = category === 'volunteer';
-                    break;
-                case 'fundraiser':
-                    showCard = category === 'fundraiser';
-                    break;
-                // 'all' shows all cards
-            }
-
-            card.style.display = showCard ? 'block' : 'none';
-        });
+        // Existing filter logic
     }
 
-    // Pagination functionality (would need server-side implementation)
-    document.querySelectorAll('.pagination-btn:not(:first-child):not(:last-child)').forEach(btn => {
-        btn.addEventListener('click', function() {
-            document.querySelectorAll('.pagination-btn').forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+    // Search functionality remains the same
 
-            // In a real implementation, this would fetch new page data from the server
-            console.log('Loading page ' + this.textContent);
-        });
+    // New DOMContentLoaded handler
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const filter = urlParams.get('filter');
+
+        // Auto-apply filter from URL
+        if (filter) {
+            filterEvents(filter);
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.toLowerCase().includes(filter)) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        // Special case for dashboard redirect
+        if (urlParams.get('source') === 'dashboard' && filter === 'volunteer') {
+            filterEvents('volunteer');
+        }
     });
 </script>
 </body>

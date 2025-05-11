@@ -98,8 +98,15 @@ public class DonationDAO {
         donation.setDonationId(rs.getInt("donation_id"));
         donation.setDonorId(rs.getInt("donor_id"));
         donation.setProjectId(rs.getInt("project_id"));
-        donation.setAmount(rs.getBigDecimal("amount"));
-        donation.setDate(rs.getTimestamp("date"));
+
+        // Handle amount - ensure it's never null
+        BigDecimal amount = rs.getBigDecimal("amount");
+        donation.setAmount(amount != null ? amount : BigDecimal.ZERO);
+
+        // Handle date - ensure proper timestamp conversion
+        Timestamp timestamp = rs.getTimestamp("date");
+        donation.setDate(timestamp != null ? timestamp : new Timestamp(System.currentTimeMillis()));
+
         donation.setMode(rs.getString("mode"));
         return donation;
     }

@@ -1,95 +1,59 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<%@ page import="com.welfair.model.Donation, java.time.format.DateTimeFormatter" %>
-<%
-    Donation donation = (Donation) request.getAttribute("donation");
-    boolean isEdit = donation != null && donation.getDonationId() > 0;
-    DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
-    String formattedDate = isEdit ? donation.getDate().toLocalDateTime().format(formatter) : "";
-%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title><%= isEdit ? "Edit" : "Add" %> Donation</title>
-    <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .form-container { max-width: 600px; margin: 0 auto; }
-        .form-group { margin-bottom: 15px; }
-        label { display: inline-block; width: 120px; font-weight: bold; }
-        input[type="text"], input[type="number"], input[type="datetime-local"], select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .btn {
-            padding: 8px 16px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-block;
-        }
-        .btn.cancel { background-color: #f44336; margin-left: 10px; }
-        .error { color: red; margin-top: 10px; }
-    </style>
+    <title>${empty donation.donationId ? 'Add' : 'Edit'} Donation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<div class="form-container">
-    <h2><%= isEdit ? "Edit" : "Add New" %> Donation</h2>
+<div class="container mt-4">
+    <h2>${empty donation.donationId ? 'Add' : 'Edit'} Donation</h2>
 
-    <% if (request.getAttribute("errorMessage") != null) { %>
-    <p class="error"><%= request.getAttribute("errorMessage") %></p>
-    <% } %>
+    <form method="post" action="${pageContext.request.contextPath}/donations">
+        <input type="hidden" name="action" value="${empty donation.donationId ? 'add' : 'update'}">
+        <c:if test="${not empty donation.donationId}">
+            <input type="hidden" name="donation_id" value="${donation.donationId}">
+        </c:if>
 
-    <form action="donations" method="post">
-        <% if (isEdit) { %>
-        <input type="hidden" name="action" value="update">
-        <input type="hidden" name="donation_id" value="<%= donation.getDonationId() %>">
-        <% } %>
-
-        <div class="form-group">
-            <label for="donor_id">Donor ID:</label>
-            <input type="number" id="donor_id" name="donor_id"
-                   value="<%= isEdit ? donation.getDonorId() : "" %>" min="1" required>
+        <div class="mb-3">
+            <label for="donor_id" class="form-label">Donor ID</label>
+            <input type="number" class="form-control" id="donor_id" name="donor_id"
+                   value="${donation.donorId}" required>
         </div>
 
-        <div class="form-group">
-            <label for="project_id">Project ID:</label>
-            <input type="number" id="project_id" name="project_id"
-                   value="<%= isEdit ? donation.getProjectId() : "" %>" min="1" required>
+        <div class="mb-3">
+            <label for="project_id" class="form-label">Project ID</label>
+            <input type="number" class="form-control" id="project_id" name="project_id"
+                   value="${donation.projectId}" required>
         </div>
 
-        <div class="form-group">
-            <label for="amount">Amount:</label>
-            <input type="text" id="amount" name="amount"
-                   value="<%= isEdit ? String.format("%.2f", donation.getAmount()) : "" %>"
-                   pattern="^\d+(\.\d{1,2})?$" title="Enter a valid amount (e.g., 100 or 100.50)" required>
+        <div class="mb-3">
+            <label for="amount" class="form-label">Amount (₹)</label>
+            <input type="number" step="0.01" class="form-control" id="amount" name="amount"
+                   value="<fmt:formatNumber value='${donation.amount}' pattern='0.00'/>" required>
         </div>
 
-        <div class="form-group">
-            <label for="date">Date:</label>
-            <input type="datetime-local" id="date" name="date"
-                   value="<%= formattedDate %>" required>
+        <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="date" class="form-control" id="date" name="date"
+                   value="<fmt:formatDate value='${donation.date}' pattern='yyyy-MM-dd'/>" required>
         </div>
 
-        <div class="form-group">
-            <label for="mode">Payment Mode:</label>
-            <select id="mode" name="mode" required>
-                <option value="">-- Select Mode --</option>
-                <option value="Cash" <%= isEdit && "Cash".equals(donation.getMode()) ? "selected" : "" %>>Cash</option>
-                <option value="Credit Card" <%= isEdit && "Credit Card".equals(donation.getMode()) ? "selected" : "" %>>Credit Card</option>
-                <option value="Bank Transfer" <%= isEdit && "Bank Transfer".equals(donation.getMode()) ? "selected" : "" %>>Bank Transfer</option>
-                <option value="Check" <%= isEdit && "Check".equals(donation.getMode()) ? "selected" : "" %>>Check</option>
-                <option value="Online" <%= isEdit && "Online".equals(donation.getMode()) ? "selected" : "" %>>Online</option>
+        <div class="mb-3">
+            <label for="mode" class="form-label">Payment Mode</label>
+            <select class="form-select" id="mode" name="mode" required>
+                <option value="">Select payment mode</option>
+                <option value="Cash" ${donation.mode eq 'Cash' ? 'selected' : ''}>Cash</option>
+                <option value="Bank Transfer" ${donation.mode eq 'Bank Transfer' ? 'selected' : ''}>Bank Transfer</option>
+                <option value="Cheque" ${donation.mode eq 'Cheque' ? 'selected' : ''}>Cheque</option>
+                <option value="Online" ${donation.mode eq 'Online' ? 'selected' : ''}>Online</option>
             </select>
         </div>
 
-        <div class="form-group">
-            <button type="submit" class="btn"><%= isEdit ? "Update" : "Add" %> Donation</button>
-            <a href="donations" class="btn cancel">Cancel</a>
-        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a href="${pageContext.request.contextPath}/donations" class="btn btn-secondary">Cancel</a>
     </form>
 </div>
 </body>

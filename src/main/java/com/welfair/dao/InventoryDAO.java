@@ -104,4 +104,18 @@ public class InventoryDAO {
             e.printStackTrace();
         }
     }
+    public int getTotalInventoryItems() throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM inventory";
+        int total = 0;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                total = resultSet.getInt("total");
+            }
+        }
+        return total;
+    }
 }

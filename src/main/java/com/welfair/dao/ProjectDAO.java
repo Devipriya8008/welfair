@@ -132,4 +132,18 @@ public class ProjectDAO {
             e.printStackTrace();
         }
     }
+    public int getTotalProjects() throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM projects";
+        int total = 0;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                total = resultSet.getInt("total");
+            }
+        }
+        return total;
+    }
 }

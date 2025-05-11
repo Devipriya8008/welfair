@@ -31,7 +31,7 @@
 </head>
 <body>
 <h2>Donation Management</h2>
-<a href="donations?action=new" class="add-btn">Add New Donation</a>
+<a href="/admin-add?table=donations" class="add-btn">Add New Donation</a>
 
 <% if (donations.isEmpty()) { %>
 <p>No donations found.</p>

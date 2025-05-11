@@ -108,4 +108,18 @@ public class BeneficiaryDAO {
             e.printStackTrace();
         }
     }
+    public int getTotalBeneficiaries() throws SQLException {
+        String sql = "SELECT COUNT(*) AS total FROM beneficiaries";
+        int total = 0;
+
+        try (Connection connection = DBConnection.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                total = resultSet.getInt("total");
+            }
+        }
+        return total;
+    }
 }
