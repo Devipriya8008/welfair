@@ -9,6 +9,7 @@
     <title>Welfair - Empowering Communities</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* (Keep all existing CSS styles the same) */
         :root {
             --primary: #2c8a8a;
             --secondary: #f8b400;
@@ -634,18 +635,8 @@
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About Us</a></li>
                 <li><a href="#mission">Vision & Mission</a></li>
-                <li><a href="#impact">Impact Stories</a></li>
-                <li><a href="#events">Upcoming Events</a></li>
+                <li><a href="#events">Events</a></li>
                 <li><a href="#contact">Contact Us</a></li>
-                <c:choose>
-                    <c:when test="${not empty sessionScope.user}">
-                        <li><a href="${pageContext.request.contextPath}/dashboard.jsp" class="auth-btn btn-primary">Dashboard</a></li>
-                        <li><a href="${pageContext.request.contextPath}/logout" class="auth-btn btn-secondary">Logout</a></li>
-                    </c:when>
-                    <c:otherwise>
-                        <li><a href="#" class="auth-btn btn-primary" onclick="showAuthOptionsForRole(localStorage.getItem('selectedRole') || 'donor')">Login/Register</a></li>
-                    </c:otherwise>
-                </c:choose>
             </ul>
         </nav>
     </div>
@@ -659,20 +650,9 @@
             <p>Welfair is dedicated to creating sustainable change through education, healthcare, and community development initiatives.</p>
 
             <div class="role-selection">
-                <div class="role-buttons">
-                    <button class="role-btn btn-donor" onclick="showAuthOptionsForRole('donor')">Donor</button>
-                    <button class="role-btn btn-volunteer" onclick="showAuthOptionsForRole('volunteer')">Volunteer</button>
-                    <button class="role-btn btn-employee" onclick="showAuthOptionsForRole('employee')">Employee</button>
-                    <button class="role-btn btn-admin" onclick="showAuthOptionsForRole('admin')">Admin</button>
-                </div>
-
-                <div id="authOptions" class="auth-options">
-                    <h3 id="authRoleTitle">Select Option</h3>
-                    <div class="auth-btns">
-                        <a id="loginBtn" href="#" class="auth-option-btn login-btn">Login</a>
-                        <a id="registerBtn" href="#" class="auth-option-btn register-btn">Register</a>
-                    </div>
-                </div>
+                <a href="${pageContext.request.contextPath}/select-role.jsp" class="auth-btn btn-primary" style="margin-top: 20px; display: inline-block;">
+                    Get Started - Select Your Role
+                </a>
             </div>
         </div>
     </div>
@@ -689,10 +669,7 @@
                 <h3>Our Story</h3>
                 <p>Founded in 2010, Welfair has been at the forefront of social change, working tirelessly to uplift underprivileged communities across the region. What began as a small group of passionate individuals has now grown into a movement of thousands.</p>
                 <p>We believe in the power of collective action and sustainable solutions. Our approach combines immediate relief with long-term development programs to create lasting impact.</p>
-                <a href="about.jsp" class="auth-btn btn-primary">Learn More</a>
-                <!-- Update your Learn More button -->
                 <a href="about-details.jsp" class="auth-btn btn-primary">Learn More</a>
-
             </div>
             <div class="about-image">
                 <img src="https://images.unsplash.com/photo-1521791136064-7986c2920216?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80" alt="Welfair Team">
@@ -727,41 +704,11 @@
     </div>
 </section>
 
-<!-- Impact Section -->
-<section class="section" id="impact">
-    <div class="container">
-        <div class="section-title">
-            <h2>Our Impact</h2>
-        </div>
-        <div class="impact-stats">
-            <div class="stat-item">
-                <div class="stat-number">15,000+</div>
-                <div class="stat-label">Lives Impacted</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">200+</div>
-                <div class="stat-label">Communities Served</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">50+</div>
-                <div class="stat-label">Development Projects</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">500+</div>
-                <div class="stat-label">Dedicated Volunteers</div>
-            </div>
-        </div>
-        <div style="text-align: center; margin-top: 50px;">
-            <a href="impact.jsp" class="auth-btn btn-primary">Read Impact Stories</a>
-        </div>
-    </div>
-</section>
-
 <!-- Events Section -->
 <section class="section events" id="events">
     <div class="container">
         <div class="section-title">
-            <h2>Upcoming Events</h2>
+            <h2>Events</h2>
         </div>
         <div class="event-cards">
             <c:forEach items="${events}" var="event" end="2">
@@ -856,33 +803,7 @@
         </div>
     </div>
 </section>
-<!-- Header -->
-<header>
-    <div class="container">
-        <nav>
-            <a href="index.jsp" class="logo">Welf<span>air</span></a>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#mission">Vision & Mission</a></li>
-                <li><a href="#impact">Impact Stories</a></li>
-                <li><a href="#events">Upcoming Events</a></li>
-                <li><a href="#contact">Contact Us</a></li>
-                <!-- Added Select Role link -->
-                <li><a href="${pageContext.request.contextPath}/select-role.jsp">Select Role</a></li>
-                <c:choose>
-                    <c:when test="${not empty sessionScope.user}">
-                        <li><a href="${pageContext.request.contextPath}/dashboard.jsp" class="auth-btn btn-primary">Dashboard</a></li>
-                        <li><a href="${pageContext.request.contextPath}/logout" class="auth-btn btn-secondary">Logout</a></li>
-                    </c:when>
-                    <c:otherwise>
-                        <li><a href="#" class="auth-btn btn-primary" onclick="showAuthOptionsForRole(localStorage.getItem('selectedRole') || 'donor')">Login/Register</a></li>
-                    </c:otherwise>
-                </c:choose>
-            </ul>
-        </nav>
-    </div>
-</header>
+
 <!-- Footer -->
 <footer>
     <div class="container">
@@ -897,16 +818,13 @@
                     <li><a href="#home">Home</a></li>
                     <li><a href="#about">About Us</a></li>
                     <li><a href="#mission">Our Mission</a></li>
-                    <li><a href="#impact">Impact Stories</a></li>
                     <li><a href="#events">Events</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h3>Get Involved</h3>
                 <ul>
-                    <li><a href="#" onclick="showAuthOptionsForRole('donor')">Donate</a></li>
-                    <li><a href="#" onclick="showAuthOptionsForRole('volunteer')">Volunteer</a></li>
-                    <li><a href="#" onclick="showAuthOptionsForRole('employee')">Careers</a></li>
+                    <li><a href="${pageContext.request.contextPath}/select-role.jsp">Select Role</a></li>
                     <li><a href="partnerships.jsp">Partnerships</a></li>
                 </ul>
             </div>
@@ -931,59 +849,6 @@
 </footer>
 
 <script>
-    // Role selection functionality
-    function showAuthOptionsForRole(role) {
-        event.preventDefault();
-        currentRole = role;
-
-        // Store the selected role in localStorage
-        localStorage.setItem('selectedRole', role);
-
-        // Update the auth options title
-        document.getElementById('authRoleTitle').textContent = role.charAt(0).toUpperCase() + role.slice(1) + ' Options';
-
-        // Update the login and register links with context path and role parameter
-        const contextPath = '${pageContext.request.contextPath}';
-        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login.jsp?role=' + role);
-        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register.jsp?role=' + role);
-
-        // Show the auth options
-        document.getElementById('authOptions').classList.add('show');
-    }
-
-    // Initialize with context path
-    document.addEventListener('DOMContentLoaded', function() {
-        const contextPath = '${pageContext.request.contextPath}';
-        const storedRole = localStorage.getItem('selectedRole') || 'donor';
-
-        // Set default links with stored role
-        document.getElementById('loginBtn').setAttribute('href', contextPath + '/login.jsp?role=' + storedRole);
-        document.getElementById('registerBtn').setAttribute('href', contextPath + '/register.jsp?role=' + storedRole);
-
-        // Update the title if we have a stored role
-        if (storedRole) {
-            document.getElementById('authRoleTitle').textContent =
-                storedRole.charAt(0).toUpperCase() + storedRole.slice(1) + ' Options';
-        }
-    });
-
-    // Make sure the login/register buttons work when clicked
-    document.getElementById('loginBtn').addEventListener('click', function(e) {
-        window.location.href = this.getAttribute('href');
-    });
-
-    document.getElementById('registerBtn').addEventListener('click', function(e) {
-        window.location.href = this.getAttribute('href');
-    });
-
-    // Close auth options when clicking outside
-    document.addEventListener('click', function(event) {
-        const authOptions = document.getElementById('authOptions');
-        if (!event.target.closest('.role-selection') && authOptions.classList.contains('show')) {
-            authOptions.classList.remove('show');
-        }
-    });
-
     // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function(e) {
@@ -1001,7 +866,5 @@
         });
     });
 </script>
-    // Role selection functionality
-
 </body>
 </html>

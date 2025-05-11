@@ -75,7 +75,7 @@
   }
 
   function proceedToLogin() {
-    window.location.href = 'login.jsp?role=' + selectedRole;
+    window.location.href = 'login?role=' + selectedRole;
   }
 
   function proceedToRegister() {

@@ -4,379 +4,238 @@
 <html>
 <head>
   <title>About Welfair - Our Impact</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Add to your existing CSS */
-    .about-details {
-      padding: 60px 0;
-      background: #f9f9f9;
+    :root {
+      --primary: #2c8a8a;
+      --secondary: #f8b400;
+      --accent: #6c5ce7;
+      --dark: #2d3436;
+      --light: #f9f9f9;
+      --text: #333333;
+      --paper: #f5f5f5;
+      --gold: #d4af37;
     }
-    .tab-container {
-      display: flex;
-      margin-bottom: 30px;
-      border-bottom: 1px solid #ddd;
+
+    body {
+      font-family: 'Georgia', serif;
+      background-color: var(--paper);
+      color: var(--text);
+      margin: 0;
+      padding: 0;
     }
-    .tab-btn {
-      padding: 12px 24px;
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-      color: #777;
-      position: relative;
-    }
-    .tab-btn.active {
-      color: #2c8a8a;
-    }
-    .tab-btn.active::after {
-      content: '';
-      position: absolute;
-      bottom: -1px;
-      left: 0;
-      right: 0;
-      height: 3px;
-      background: #2c8a8a;
-    }
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.5s;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    .team-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 30px;
-    }
-    .team-card {
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-      transition: transform 0.3s;
-    }
-    .team-card:hover {
-      transform: translateY(-5px);
-    }
-    .team-photo {
-      height: 200px;
-      background: #eee;
-      overflow: hidden;
-    }
-    .team-photo img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-    .team-info {
-      padding: 20px;
-    }
-    .timeline {
-      position: relative;
+
+    .about-container {
       max-width: 1200px;
       margin: 0 auto;
+      padding: 40px 20px;
     }
-    .timeline::after {
-      content: '';
-      position: absolute;
-      width: 6px;
-      background: #2c8a8a;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      margin-left: -3px;
-    }
-    .timeline-item {
-      padding: 10px 40px;
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 50px;
       position: relative;
-      width: 50%;
-      box-sizing: border-box;
     }
-    .timeline-item::after {
+
+    .page-header h1 {
+      font-size: 3rem;
+      color: var(--dark);
+      margin-bottom: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .page-header::after {
       content: '';
-      position: absolute;
-      width: 25px;
-      height: 25px;
-      background: #f8b400;
-      border: 4px solid #2c8a8a;
-      border-radius: 50%;
-      top: 15px;
-      z-index: 1;
+      display: block;
+      width: 100px;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      margin: 20px auto;
     }
-    .left {
-      left: 0;
-    }
-    .right {
-      left: 50%;
-    }
-    .right::after {
-      left: -12px;
-    }
-    .left::after {
-      right: -12px;
-    }
-    .timeline-content {
-      padding: 20px;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    .partner-logos {
+
+    .nav-tabs {
       display: flex;
-      flex-wrap: wrap;
-      gap: 30px;
       justify-content: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      margin-bottom: 60px;
+    }
+
+    .nav-tab {
+      position: relative;
+      padding: 18px 30px;
+      background: white;
+      border: none;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--dark);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 200px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
       align-items: center;
     }
-    .partner-logo {
-      height: 80px;
-      filter: grayscale(100%);
-      opacity: 0.7;
-      transition: all 0.3s;
+
+    .nav-tab:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
     }
-    .partner-logo:hover {
-      filter: grayscale(0);
-      opacity: 1;
-    }
-    .stats-highlight {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      margin: 30px 0;
-    }
-    .stat-box {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-    }
-    .stat-number {
-      font-size: 2.5rem;
-      color: #2c8a8a;
-      font-weight: 700;
+
+    .nav-tab i {
+      font-size: 1.8rem;
       margin-bottom: 10px;
+      color: var(--primary);
     }
-    .finance-table {
+
+    .nav-tab::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
       width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
+      height: 100%;
+      border: 2px solid var(--gold);
+      border-radius: 8px;
+      opacity: 0;
+      transition: all 0.3s ease;
     }
-    .finance-table th, .finance-table td {
-      padding: 12px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
+
+    .nav-tab:hover::before {
+      opacity: 1;
+      transform: scale(1.05);
     }
-    .finance-table th {
-      background: #2c8a8a;
-      color: white;
+
+    .nav-tab:nth-child(1) { background: linear-gradient(135deg, #f5f7fa 0%, #e4e8ed 100%); }
+    .nav-tab:nth-child(2) { background: linear-gradient(135deg, #fdfcfb 0%, #e9e5e1 100%); }
+    .nav-tab:nth-child(3) { background: linear-gradient(135deg, #f3f9fb 0%, #d8e9ec 100%); }
+    .nav-tab:nth-child(4) { background: linear-gradient(135deg, #fef9f8 0%, #ece0dd 100%); }
+    .nav-tab:nth-child(5) { background: linear-gradient(135deg, #f8f9fa 0%, #e2e6ea 100%); }
+    .nav-tab:nth-child(6) { background: linear-gradient(135deg, #f5fbf8 0%, #ddebe4 100%); }
+    .nav-tab:nth-child(7) { background: linear-gradient(135deg, #f9f8fe 0%, #e5e2f0 100%); }
+
+    .nav-tab:nth-child(1) i { color: #2c8a8a; }
+    .nav-tab:nth-child(2) i { color: #e17055; }
+    .nav-tab:nth-child(3) i { color: #00b894; }
+    .nav-tab:nth-child(4) i { color: #d63031; }
+    .nav-tab:nth-child(5) i { color: #0984e3; }
+    .nav-tab:nth-child(6) i { color: #00cec9; }
+    .nav-tab:nth-child(7) i { color: #6c5ce7; }
+
+    .nav-tab:hover i {
+      animation: bounce 0.5s;
     }
-    .finance-table tr:hover {
-      background: #f5f5f5;
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+
+    .ornament {
+      position: absolute;
+      width: 150px;
+      height: 150px;
+      opacity: 0.1;
+      z-index: -1;
+    }
+
+    .ornament-1 {
+      top: 50px;
+      left: 50px;
+      background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+    }
+
+    .ornament-2 {
+      bottom: 30px;
+      right: 50px;
+      background: radial-gradient(circle, var(--secondary) 0%, transparent 70%);
+    }
+
+    .footer-note {
+      text-align: center;
+      margin-top: 80px;
+      font-style: italic;
+      color: var(--dark);
+      position: relative;
+    }
+
+    .footer-note::before, .footer-note::after {
+      content: "❧";
+      color: var(--gold);
+      padding: 0 15px;
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 768px) {
+      .nav-tabs {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .nav-tab {
+        width: 80%;
+      }
+
+      .page-header h1 {
+        font-size: 2.2rem;
+      }
     }
   </style>
 </head>
 <body>
+<div class="about-container">
+  <div class="ornament ornament-1"></div>
+  <div class="ornament ornament-2"></div>
 
-<div class="about-details">
-  <div class="container">
-    <h2>Our Impact in Detail</h2>
+  <div class="page-header">
+    <h1>Discover Welfair's Impact</h1>
+    <p>Explore our organization's journey, achievements, and the dedicated people behind our mission</p>
+  </div>
 
-    <!-- Tab Navigation -->
-    <div class="tab-container">
-      <button class="tab-btn active" onclick="openTab('team')">Our Team</button>
-      <button class="tab-btn" onclick="openTab('projects')">Projects</button>
-      <button class="tab-btn" onclick="openTab('impact')">Impact Stats</button>
-      <button class="tab-btn" onclick="openTab('stories')">Success Stories</button>
-      <button class="tab-btn" onclick="openTab('finance')">Financials</button>
-      <button class="tab-btn" onclick="openTab('partners')">Partners</button>
-      <button class="tab-btn" onclick="openTab('volunteers')">Volunteers</button>
-    </div>
+  <div class="nav-tabs">
+    <a href="team.jsp" class="nav-tab">
+      <i class="fas fa-users"></i>
+      Our Team
+    </a>
 
-    <!-- Team Tab -->
-    <div id="team" class="tab-content active">
-      <h3>Meet Our Team</h3>
-      <div class="team-grid" id="teamContainer">
-        <!-- Filled by JavaScript -->
-      </div>
-    </div>
+    <a href="/about/projects" class="nav-tab">
+      <i class="fas fa-project-diagram"></i>
+      Our Projects
+    </a>
 
-    <!-- Projects Tab -->
-    <div id="projects" class="tab-content">
-      <h3>Our Project Timeline</h3>
-      <div class="timeline" id="timelineContainer">
-        <!-- Filled by JavaScript -->
-      </div>
-    </div>
+    <a href="/about/impact" class="nav-tab">
+      <i class="fas fa-chart-line"></i>
+      Impact Stats
+    </a>
 
-    <!-- Impact Stats Tab -->
-    <div id="impact" class="tab-content">
-      <h3>By The Numbers</h3>
-      <div class="stats-highlight">
-        <div class="stat-box">
-          <div class="stat-number" id="totalBeneficiaries">0</div>
-          <div class="stat-label">Lives Impacted</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-number" id="totalProjects">0</div>
-          <div class="stat-label">Projects Completed</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-number" id="totalFunds">$0</div>
-          <div class="stat-label">Funds Raised</div>
-        </div>
-      </div>
-      <canvas id="impactChart" height="100"></canvas>
-    </div>
+    <a href="/about/stories" class="nav-tab">
+      <i class="fas fa-book-open"></i>
+      Success Stories
+    </a>
 
-    <!-- Success Stories Tab -->
-    <div id="stories" class="tab-content">
-      <h3>Transformation Stories</h3>
-      <div class="story-carousel" id="storiesCarousel">
-        <!-- Filled by JavaScript -->
-      </div>
-    </div>
+    <a href="/about/finance" class="nav-tab">
+      <i class="fas fa-file-invoice-dollar"></i>
+      Financial Transparency
+    </a>
 
-    <!-- Financials Tab -->
-    <div id="finance" class="tab-content">
-      <h3>Financial Transparency</h3>
-      <h4>Recent Donations</h4>
-      <table class="finance-table" id="donationsTable">
-        <thead>
-        <tr>
-          <th>Donor</th>
-          <th>Amount</th>
-          <th>Project</th>
-          <th>Date</th>
-        </tr>
-        </thead>
-        <tbody>
-        <!-- Filled by JavaScript -->
-        </tbody>
-      </table>
-      <h4>Fund Allocation</h4>
-      <canvas id="financeChart" height="100"></canvas>
-    </div>
+    <a href="/about/partners" class="nav-tab">
+      <i class="fas fa-handshake"></i>
+      Our Partners
+    </a>
 
-    <!-- Partners Tab -->
-    <div id="partners" class="tab-content">
-      <h3>Our Valued Partners</h3>
-      <div class="partner-logos" id="partnerLogos">
-        <!-- Filled by JavaScript -->
-      </div>
-    </div>
+    <a href="/about/volunteers" class="nav-tab">
+      <i class="fas fa-hands-helping"></i>
+      Volunteer Spotlight
+    </a>
+  </div>
 
-    <!-- Volunteers Tab -->
-    <div id="volunteers" class="tab-content">
-      <h3>Volunteer Spotlight</h3>
-      <div class="team-grid" id="volunteersContainer">
-        <!-- Filled by JavaScript -->
-      </div>
-    </div>
+  <div class="footer-note">
+    Together, we're building a better tomorrow through compassion and action
   </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-  // Tab functionality
-  function openTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.remove('active');
-    });
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.getElementById(tabId).classList.add('active');
-    event.currentTarget.classList.add('active');
-
-    // Load data when tab is opened
-    if(tabId === 'team' && !teamLoaded) loadTeam();
-    if(tabId === 'projects' && !projectsLoaded) loadProjects();
-    // Add similar checks for other tabs
-  }
-
-  // Track loaded states
-  let teamLoaded = false, projectsLoaded = false, impactLoaded = false;
-
-  // Load Team Data
-  function loadTeam() {
-    fetch('/api/about?type=team')
-            .then(res => res.json())
-            .then(team => {
-              const container = document.getElementById('teamContainer');
-              container.innerHTML = team.map(member => `
-                <div class="team-card">
-                    <div class="team-photo">
-                        <img src="/images/team/${member.id}.jpg" alt="${member.name}">
-                    </div>
-                    <div class="team-info">
-                        <h4>${member.name}</h4>
-                        <p class="position">${member.position}</p>
-                        <p class="bio">${member.bio || 'Dedicated to making a difference'}</p>
-                        <p class="email">${member.email}</p>
-                    </div>
-                </div>
-            `).join('');
-              teamLoaded = true;
-            });
-  }
-
-  // Load Projects Timeline
-  function loadProjects() {
-    fetch('/api/about?type=projects')
-            .then(res => res.json())
-            .then(projects => {
-              const container = document.getElementById('timelineContainer');
-              container.innerHTML = projects.map((project, index) => `
-                <div class="timeline-item ${index % 2 == 0 ? 'left' : 'right'}">
-                    <div class="timeline-content">
-                        <h4>${project.name}</h4>
-                        <p><strong>Status:</strong> ${project.status}</p>
-                        <p>${project.start_date} to ${project.end_date}</p>
-                        <p>${project.description || 'Making a positive impact'}</p>
-                    </div>
-                </div>
-            `).join('');
-              projectsLoaded = true;
-            });
-  }
-
-  // Load Impact Stats
-  function loadImpactStats() {
-    fetch('/api/about?type=impact')
-            .then(res => res.json())
-            .then(data => {
-              document.getElementById('totalBeneficiaries').textContent = data.beneficiaries_served;
-              document.getElementById('totalProjects').textContent = data.projects_completed;
-              document.getElementById('totalFunds').textContent = `$${data.total_funds_raised.toLocaleString()}`;
-
-              // Impact Chart
-              new Chart(document.getElementById('impactChart'), {
-                type: 'bar',
-                data: {
-                  labels: ['Beneficiaries', 'Projects', 'Funds Raised'],
-                  datasets: [{
-                    label: 'Our Impact',
-                    data: [data.beneficiaries_served, data.projects_completed, data.total_funds_raised/1000],
-                    backgroundColor: ['#2c8a8a', '#f8b400', '#6c5ce7']
-                  }]
-                },
-                options: {
-                  scales: {
-                    y: {
-                      beginAtZero: true
-                    }
-                  }
-                }
-              });
-            });
-  }
-
-  // Initialize first tab
-  window.addEventListener('DOMContentLoaded', () => {
-    loadTeam();
-    loadImpactStats();
-  });
-</script>
 </body>
 </html>

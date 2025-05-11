@@ -7,7 +7,8 @@ public class Employee {
     private String position;
     private String phone;
     private String email;
-
+    private String bio;
+    private String photoUrl;
     // Constructors
     public Employee() {}
 
@@ -35,4 +36,13 @@ public class Employee {
     public void setPhone(String phone) { this.phone = phone; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public void setBio(String bio){this.bio=bio;}
+    public String getBio() {
+        return bio;
+    }
+    public void setPhotoUrl(String photoUrl) { this.photoUrl = photoUrl; }
+
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
 }

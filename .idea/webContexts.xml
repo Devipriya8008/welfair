@@ -3,19 +3,7 @@
   <component name="WebContextManager">
     <option name="state">
       <map>
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/home.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donation/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donation" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donations/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donations" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor/form.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donor" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donors/list.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/donors" />
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/projectbeneficiary/form.jsp" value="file://$PROJECT_DIR$/src/main/webapp/WEB-INF/views/projectbeneficiary" />
-<<<<<<< HEAD
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/admin-dashboard.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
-=======
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/about-details.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
->>>>>>> 9a88f1e1f009bbd3db143e554701583b041fba7a
-        <entry key="file://$PROJECT_DIR$/src/main/webapp/events.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
+        <entry key="file://$PROJECT_DIR$/src/main/webapp/register.jsp" value="file://$PROJECT_DIR$/src/main/webapp" />
       </map>
     </option>
   </component>

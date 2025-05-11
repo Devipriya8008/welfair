@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Admin Registration</title>
+  <title>Registration</title>
   <style>
     :root {
       --primary: #2c8a8a;
@@ -159,7 +159,15 @@
 </head>
 <body>
 <div class="register-container">
-  <h1 class="register-title">Admin Registration</h1>
+  <h1 class="register-title">
+    <c:choose>
+      <c:when test="${param.role eq 'admin'}">Admin Registration</c:when>
+      <c:when test="${param.role eq 'employee'}">Employee Registration</c:when>
+      <c:when test="${param.role eq 'volunteer'}">Volunteer Registration</c:when>
+      <c:when test="${param.role eq 'donor'}">Donor Registration</c:when>
+      <c:otherwise>Registration</c:otherwise>
+    </c:choose>
+  </h1>
 
   <c:if test="${not empty error}">
     <div class="error">${error}</div>
@@ -170,7 +178,7 @@
   </c:if>
 
   <form action="${pageContext.request.contextPath}/register" method="post">
-    <input type="hidden" name="role" value="admin">
+    <input type="hidden" name="role" value="${param.role}">
 
     <div class="form-group">
       <label for="username">Username</label>
@@ -192,27 +200,40 @@
       <input type="password" id="confirmPassword" name="confirmPassword" required>
     </div>
 
-    <div class="role-fields">
-      <h3>Admin Information</h3>
-      <div class="form-group">
-        <label for="fullName">Full Name</label>
-        <input type="text" id="fullName" name="fullName" value="${param.fullName}" required>
-      </div>
-      <div class="form-group">
-        <label for="phone">Phone Number</label>
-        <input type="tel" id="phone" name="phone" value="${param.phone}" required>
-      </div>
-      <div class="form-group">
-        <label for="department">Department</label>
-        <input type="text" id="department" name="department" value="${param.department}" required>
-      </div>
+    <div class="form-group">
+      <label for="fullName">Full Name</label>
+      <input type="text" id="fullName" name="fullName" value="${param.fullName}" required>
     </div>
 
-    <button type="submit" class="auth-btn">Register as Admin</button>
+    <div class="form-group">
+      <label for="phone">Phone Number</label>
+      <input type="tel" id="phone" name="phone" value="${param.phone}" required>
+    </div>
+
+    <c:if test="${param.role eq 'admin'}">
+      <div class="role-fields">
+        <h3>Admin Information</h3>
+        <div class="form-group">
+          <label for="department">Department</label>
+          <input type="text" id="department" name="department" value="${param.department}" required>
+        </div>
+      </div>
+    </c:if>
+
+    <button type="submit" class="auth-btn">
+      Register as
+      <c:choose>
+        <c:when test="${param.role eq 'admin'}">Admin</c:when>
+        <c:when test="${param.role eq 'employee'}">Employee</c:when>
+        <c:when test="${param.role eq 'volunteer'}">Volunteer</c:when>
+        <c:when test="${param.role eq 'donor'}">Donor</c:when>
+        <c:otherwise>User</c:otherwise>
+      </c:choose>
+    </button>
   </form>
 
   <div class="switch-role">
-    Need a different role? <a href="${pageContext.request.contextPath}/login">Switch Role</a>
+    Need a different role? <a href="${pageContext.request.contextPath}/role-selection.jsp">Switch Role</a>
   </div>
 </div>
 </body>
