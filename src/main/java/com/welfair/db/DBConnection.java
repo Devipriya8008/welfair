@@ -12,6 +12,7 @@ public class DBConnection {
     public static Connection getConnection() throws SQLException {
         try {
             Class.forName("org.postgresql.Driver");
+            System.out.println("Attempting database connection...");
             Connection conn = DriverManager.getConnection(URL, USER, PASSWORD);
             System.out.println("Connected to database successfully");
             return conn;
