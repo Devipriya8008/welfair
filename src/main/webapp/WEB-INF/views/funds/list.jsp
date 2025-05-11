@@ -11,7 +11,7 @@
 <div class="container mt-4">
   <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Fund Allocations</h2>
-    <a href="${pageContext.request.contextPath}/funds/new" class="btn btn-success">+ New Allocation</a>
+    <a href="fund_allocation?action=new" class="btn btn-success">+ New Allocation</a>
   </div>
 
   <table class="table table-bordered table-striped">
@@ -32,8 +32,8 @@
         <td><fmt:formatNumber value="${fund.amount}" type="currency" currencySymbol="$"/></td>
         <td><fmt:formatDate value="${fund.dateAllocated}" pattern="yyyy-MM-dd"/></td>
         <td>
-          <a href="${pageContext.request.contextPath}/funds/edit?id=${fund.fundId}" class="btn btn-sm btn-primary">Edit</a>
-          <a href="${pageContext.request.contextPath}/funds/delete?id=${fund.fundId}"
+          <a href="${pageContext.request.contextPath}/fund_allocation/edit?id=${fund.fundId}" class="btn btn-sm btn-primary">Edit</a>
+          <a href="${pageContext.request.contextPath}/fund_allocation/delete?id=${fund.fundId}"
              onclick="return confirm('Are you sure you want to delete this allocation?');"
              class="btn btn-sm btn-danger">Delete</a>
         </td>

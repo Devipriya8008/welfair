@@ -156,4 +156,14 @@ public class VolunteerProjectDAO {
         }
         return volunteers;
     }
+
+    public List<VolunteerProject> getProjectsByVolunteerId(int volunteerId) {
+        List<VolunteerProject> projects = new ArrayList<>();
+        String sql = "SELECT * FROM volunteer_projects WHERE volunteer_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {} catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return projects;
+    }
 }

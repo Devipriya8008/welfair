@@ -7,7 +7,7 @@
 <body>
 <h2>Inventory Usage Records</h2>
 
-<a href="${pageContext.request.contextPath}/inventory-usage?action=add">Add New Usage</a>
+<a href="${pageContext.request.contextPath}/inventory_usage?action=add">Add New Usage</a>
 <br><br>
 
 <table border="1" cellpadding="10">
@@ -26,9 +26,9 @@
       <td>${u.projectId}</td>
       <td>${u.quantityUsed}</td>
       <td>
-        <a href="${pageContext.request.contextPath}/inventory-usage?action=edit&item_id=${u.itemId}&project_id=${u.projectId}">Edit</a>
+        <a href="${pageContext.request.contextPath}/inventory_usage?action=edit&item_id=${u.itemId}&project_id=${u.projectId}">Edit</a>
         |
-        <a href="${pageContext.request.contextPath}/inventory-usage?action=delete&item_id=${u.itemId}&project_id=${u.projectId}" onclick="return confirm('Are you sure?')">Delete</a>
+        <a href="${pageContext.request.contextPath}/inventory_usage?action=delete&item_id=${u.itemId}&project_id=${u.projectId}" onclick="return confirm('Are you sure?')">Delete</a>
       </td>
     </tr>
   </c:forEach>

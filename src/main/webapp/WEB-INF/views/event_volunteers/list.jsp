@@ -11,9 +11,9 @@
   <h2 class="mb-4">Event Volunteer Assignments</h2>
 
   <div class="d-flex justify-content-between mb-3">
-    <a href="${pageContext.request.contextPath}/event-volunteers?action=new"
+    <a href="${pageContext.request.contextPath}/event_volunteers?action=new"
        class="btn btn-success">New Assignment</a>
-    <form action="${pageContext.request.contextPath}/event-volunteers" method="get" class="d-flex">
+    <form action="${pageContext.request.contextPath}/event_volunteers" method="get" class="d-flex">
       <input type="hidden" name="action" value="listByEvent">
       <input type="number" name="eventId" class="form-control me-2" placeholder="Event ID" required>
       <button type="submit" class="btn btn-info">View by Event</button>
@@ -34,9 +34,9 @@
         <td>${assignment.eventId}</td>
         <td>${assignment.volunteerId}</td>
         <td>
-          <a href="${pageContext.request.contextPath}/event-volunteers?action=edit&eventId=${assignment.eventId}&volunteerId=${assignment.volunteerId}"
+          <a href="${pageContext.request.contextPath}/event_volunteers?action=edit&eventId=${assignment.eventId}&volunteerId=${assignment.volunteerId}"
              class="btn btn-warning btn-sm me-2">Edit</a>
-          <form action="${pageContext.request.contextPath}/event-volunteers"
+          <form action="${pageContext.request.contextPath}/event_volunteers"
                 method="post" style="display: inline;">
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="eventId" value="${assignment.eventId}">

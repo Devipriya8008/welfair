@@ -94,4 +94,24 @@ public class EventVolunteerDAO {
             pstmt.executeUpdate();
         }
     }
+
+    public List<EventVolunteer> getEventsByVolunteerId(int volunteerId) {
+        List<EventVolunteer> events = new ArrayList<>();
+        String sql = "SELECT * FROM event_volunteers WHERE volunteer_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setInt(1, volunteerId);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    events.add(new EventVolunteer(
+                            rs.getInt("event_id"),
+                            rs.getInt("volunteer_id")
+                    ));
+                }
+            }
+             } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+        return events;
+    }
 }

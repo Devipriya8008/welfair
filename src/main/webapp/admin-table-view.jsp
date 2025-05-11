@@ -59,7 +59,8 @@
         <a href="admin-dashboard" class="btn btn-outline-secondary me-2">
           <i class="bi bi-arrow-left"></i> Back to Dashboard
         </a>
-        <a href="admin-add?table=${tableId}" class="btn btn-primary">
+        <!-- Update the Add New link to match your donor list pattern -->
+        <a href="${tableId}?action=new" class="btn btn-primary">
           <i class="bi bi-plus-lg"></i> Add New
         </a>
       </div>
@@ -168,10 +169,10 @@
                   <td>${item.address}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.donorId}" class="btn btn-outline-warning">
+                      <a href="${tableId}?action=edit&id=${item.donorId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.donorId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="${tableId}?action=delete&id=${item.donorId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -188,10 +189,10 @@
                   <td>${item.projectId} </td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.donationId}" class="btn btn-outline-warning">
+                      <a href="donations?action=edit&id=${item.donationId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.donationId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="donations?action=delete&id=${item.donationId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -208,10 +209,10 @@
                   <td>${item.status}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.projectId}" class="btn btn-outline-warning">
+                      <a href="projects?action=edit&id=${item.projectId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.projectId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="projects?action=delete&id=${item.projectId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -225,10 +226,10 @@
                   <td>${item.address}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.beneficiaryId}" class="btn btn-outline-warning">
+                      <a href="beneficiaries?action=edit&id=${item.beneficiaryId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.beneficiaryId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="beneficiaries?action=delete&id=${item.beneficiaryId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -242,10 +243,10 @@
                   <td>${item.email}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.empId}" class="btn btn-outline-warning">
+                      <a href="employees?action=edit&id=${item.empId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.empId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="employees?action=delete&id=${item.empId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -258,15 +259,50 @@
                   <td>${item.email}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.volunteerId}" class="btn btn-outline-warning">
+                      <a href="volunteers?action=edit&id=${item.volunteerId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.volunteerId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="volunteers?action=delete&id=${item.volunteerId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
                   </td>
                 </c:when>
+
+                <c:when test="${tableId == 'event_volunteers'}">
+                  <td>${item.eventId}</td>
+                  <td>${item.volunteerId}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <a href="/event_volunteers?action=edit&eventId=${item.eventId}&volunteerId=${item.volunteerId}" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a href="/event_volunteers?action=delete&eventId=${item.eventId}&volunteerId=${item.volunteerId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </c:when>
+
+
+
+                <c:when test="${tableId == 'inventory_usage'}">
+                  <td>${item.itemId}</td>
+                  <td>${item.projectId}</td>
+                  <td>${item.quantityUsed}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <a href="/inventory_usage?action=edit&item_id=${item.itemId}&project_id=${item.projectId}" class="btn btn-outline-warning">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a href="/inventory_usage?action=delete&item_id=${item.itemId}&project_id=${item.projectId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </c:when>
+
+
                 <c:when test="${tableId == 'events'}">
                   <td>${item.eventId}</td>
                   <td>${item.name}</td>
@@ -275,10 +311,10 @@
                   <td>${item.organizer}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.eventId}" class="btn btn-outline-warning">
+                      <a href="/events/edit?id=${item.eventId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.eventId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="/events/delete?id=${item.eventId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -291,30 +327,16 @@
                   <td>${item.unit}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.itemId}" class="btn btn-outline-warning">
+                      <a href="inventory?action=edit&item_id=${item.itemId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.itemId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="inventory?action=delete&item_id=${item.itemId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
                   </td>
                 </c:when>
-                <c:when test="${tableId == 'inventory_usage'}">
-                  <td>${item.itemId}</td>
-                  <td>${item.projectId}</td>
-                  <td>${item.quantityUsed}</td>
-                  <td>
-                    <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.itemId}" class="btn btn-outline-warning">
-                        <i class="bi bi-pencil"></i>
-                      </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.itemId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
-                        <i class="bi bi-trash"></i>
-                      </a>
-                    </div>
-                  </td>
-                </c:when>
+
                 <c:when test="${tableId == 'fund_allocation'}">
                   <td>${item.fundId}</td>
                   <td>${item.projectName}</td>
@@ -322,24 +344,44 @@
                   <td>${item.dateAllocated}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item.fundId}" class="btn btn-outline-warning">
+                      <a href="/fund_allocation/edit?id=${item.fundId}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item.fundId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="/fund_allocation/delete?id=${item.fundId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
                   </td>
                 </c:when>
+
+                <c:when test="${tableId == 'project_beneficiaries'}">
+                  <td>${item.projectId}</td>
+                  <td>${item.beneficiaryId}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <!-- Special handling for composite key -->
+                      <a href="admin-edit?table=${tableId}&projectId=${item.projectId}&beneficiaryId=${item.beneficiaryId}"
+                         class="btn btn-outline-warning">
+                        <i class="bi bi-pencil"></i>
+                      </a>
+                      <a href="admin-delete?table=${tableId}&projectId=${item.projectId}&beneficiaryId=${item.beneficiaryId}"
+                         class="btn btn-outline-danger"
+                         onclick="return confirm('Are you sure?')">
+                        <i class="bi bi-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </c:when>
+
                 <c:otherwise>
-                  <td>${item[tableId + 'Id']}</td>
+                  <td>${item[idFieldName]}</td>
                   <td>View Details</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="admin-edit?table=${tableId}&id=${item[tableId + 'Id']}" class="btn btn-outline-warning">
+                      <a href="admin-edit?table=${tableId}&id=${item[idFieldName]}" class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="admin-delete?table=${tableId}&id=${item[tableId + 'Id']}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="admin-delete?table=${tableId}&id=${item[idFieldName]}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>

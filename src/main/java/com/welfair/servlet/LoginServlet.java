@@ -70,8 +70,13 @@ public class LoginServlet extends HttpServlet {
             }
 
             HttpSession session = request.getSession();
+            // Set both the user object and the individual attributes
             session.setAttribute("user", user);
-            response.sendRedirect(request.getContextPath() + "/" + user.getRole() + "-dashboard.jsp");
+            session.setAttribute("user_id", user.getUserId()); // Make sure User class has getId()
+            session.setAttribute("role", user.getRole());
+
+            // Use the redirectToDashboard method
+            redirectToDashboard(request, response, user.getRole());
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -87,7 +92,6 @@ public class LoginServlet extends HttpServlet {
             }
         }
     }
-
     private boolean isValidRole(String role) {
         return role != null && (
                 role.equalsIgnoreCase("admin") ||

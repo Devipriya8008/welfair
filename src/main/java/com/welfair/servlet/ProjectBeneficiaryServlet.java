@@ -12,7 +12,7 @@ import java.sql.Date;
 import java.util.List;
 import java.util.Map;
 
-@WebServlet(name = "ProjectBeneficiaryServlet", urlPatterns = {"/project-beneficiaries"})
+@WebServlet(name = "ProjectBeneficiaryServlet", urlPatterns = {"/project_beneficiaries"})
 public class ProjectBeneficiaryServlet extends HttpServlet {
     private ProjectBeneficiaryDAO dao;
 
@@ -40,7 +40,7 @@ public class ProjectBeneficiaryServlet extends HttpServlet {
             int projectId = Integer.parseInt(request.getParameter("projectId"));
             int beneficiaryId = Integer.parseInt(request.getParameter("beneficiaryId"));
             dao.deleteAssignment(projectId, beneficiaryId);
-            response.sendRedirect(request.getContextPath() + "/project-beneficiaries");
+            response.sendRedirect(request.getContextPath() + "/project_beneficiaries");
         } else {
             List<Map<String, Object>> assignments = dao.getAllAssignments();
             request.setAttribute("assignments", assignments);
@@ -57,6 +57,20 @@ public class ProjectBeneficiaryServlet extends HttpServlet {
 
         ProjectBeneficiary pb = new ProjectBeneficiary(projectId, beneficiaryId, dateAssigned);
         dao.saveAssignment(pb);
-        response.sendRedirect(request.getContextPath() + "/project-beneficiaries");
+        response.sendRedirect(request.getContextPath() + "/project_beneficiaries");
     }
+    public static String getIdFieldName(String tableId) {
+        switch(tableId) {
+            case "project_beneficiary": return "projectId";
+            case "project_employee": return "empId";
+            case "volunteer_project": return "volunteerId";
+            // Add other special cases
+            default:
+                // For regular tables (remove 's' from plural)
+                return tableId.substring(0, tableId.length()-1) + "Id";
+        }
+    }
+
+    // In your servlet's doGet() method
+
 }

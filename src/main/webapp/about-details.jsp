@@ -227,7 +227,7 @@
       Our Partners
     </a>
 
-    <a href="/about/volunteers" class="nav-tab">
+    <a href="volunteerspotlight.jsp" class="nav-tab">
       <i class="fas fa-hands-helping"></i>
       Volunteer Spotlight
     </a>
