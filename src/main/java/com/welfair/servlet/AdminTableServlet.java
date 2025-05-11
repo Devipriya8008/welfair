@@ -56,6 +56,9 @@ public class AdminTableServlet extends HttpServlet {
         String tableName = request.getParameter("table");
         String viewPage = "admin-table-view.jsp";
         String table = request.getParameter("table");
+        String idFieldName = getCorrectIdFieldName(table);
+        request.setAttribute("idFieldName", idFieldName);
+
 
         try {
             switch (tableName) {
@@ -154,6 +157,20 @@ public class AdminTableServlet extends HttpServlet {
 
         } catch (SQLException e) {
             throw new ServletException("Database error", e);
+        }
+    }
+    private String getCorrectIdFieldName(String tableId) {
+        switch (tableId) {
+            case "project_beneficiaries":
+                return "projectId"; // or whatever the correct field name is
+            case "project_employee":
+                return "empId";
+            case "volunteer_project":
+                return "volunteerId";
+            // Add other special cases as needed
+            default:
+                // For regular tables (remove 's' from plural)
+                return tableId.substring(0, tableId.length() - 1) + "Id";
         }
     }
 }

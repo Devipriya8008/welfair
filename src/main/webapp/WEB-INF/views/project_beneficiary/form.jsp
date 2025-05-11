@@ -40,7 +40,7 @@
 <body>
 <h1><%= (assignment.getProjectId() == 0) ? "New Assignment" : "Edit Assignment" %></h1>
 
-<form method="post" action="${pageContext.request.contextPath}/project-beneficiaries">
+<form method="post" action="${pageContext.request.contextPath}/project_beneficiaries">
     <label for="projectId">Project ID:</label>
     <input type="number" name="projectId" id="projectId"
            value="<%= assignment.getProjectId() %>" required>
@@ -56,6 +56,6 @@
     <input type="submit" value="Save Assignment">
 </form>
 
-<a href="${pageContext.request.contextPath}/project-beneficiaries">Cancel</a>
+<a href="${pageContext.request.contextPath}/project_beneficiaries">Cancel</a>
 </body>
 </html>

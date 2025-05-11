@@ -22,15 +22,13 @@ public class EmployeeDAO {
     }
 
     public boolean addEmployee(Employee emp) throws SQLException {
-        String sql = "INSERT INTO employees (name, position, phone, email, user_id, bio, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO employees (name, position, phone, email, user_id) VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             pstmt.setString(1, emp.getName());
             pstmt.setString(2, emp.getPosition());
             pstmt.setString(3, emp.getPhone());
             pstmt.setString(4, emp.getEmail());
             pstmt.setInt(5, emp.getUserId());
-            pstmt.setString(6, emp.getBio());
-            pstmt.setString(7, emp.getPhotoUrl());
 
             int affectedRows = pstmt.executeUpdate();
             if (affectedRows > 0) {
@@ -60,8 +58,6 @@ public class EmployeeDAO {
                 emp.setPosition(rs.getString("position"));
                 emp.setPhone(rs.getString("phone"));
                 emp.setEmail(rs.getString("email"));
-                emp.setBio(rs.getString("bio"));
-                emp.setPhotoUrl(rs.getString("photo_url"));
                 employees.add(emp);
             }
         }
@@ -83,8 +79,6 @@ public class EmployeeDAO {
                     emp.setPosition(rs.getString("position"));
                     emp.setPhone(rs.getString("phone"));
                     emp.setEmail(rs.getString("email"));
-                    emp.setBio(rs.getString("bio"));
-                    emp.setPhotoUrl(rs.getString("photo_url"));
                 }
             }
         }
@@ -100,8 +94,6 @@ public class EmployeeDAO {
             pstmt.setString(3, emp.getPhone());
             pstmt.setString(4, emp.getEmail());
             pstmt.setInt(5, emp.getUserId());
-            pstmt.setString(6, emp.getBio());
-            pstmt.setString(7, emp.getPhotoUrl());
             pstmt.setInt(8, emp.getEmpId());
 
             return pstmt.executeUpdate() > 0;
@@ -143,8 +135,6 @@ public class EmployeeDAO {
                     emp.setPosition(rs.getString("position"));
                     emp.setPhone(rs.getString("phone"));
                     emp.setEmail(rs.getString("email"));
-                    emp.setBio(rs.getString("bio"));
-                    emp.setPhotoUrl(rs.getString("photo_url"));
                 }
             }
         }

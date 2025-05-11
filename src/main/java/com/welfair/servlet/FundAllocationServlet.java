@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
 
-@WebServlet("/funds/*")
+@WebServlet("/fund_allocation/*")
 public class FundAllocationServlet extends HttpServlet {
     private FundAllocationDAO fundDAO;
 

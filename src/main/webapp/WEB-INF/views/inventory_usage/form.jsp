@@ -12,7 +12,7 @@
     </c:choose>
 </h2>
 
-<form action="${pageContext.request.contextPath}/inventory-usage" method="post">
+<form action="${pageContext.request.contextPath}/inventory_usage" method="post">
     <label for="item_id">Item ID:</label>
     <input type="number" id="item_id" name="item_id"
            value="${usage.itemId}" <c:if test="${not empty usage}">readonly</c:if> required><br><br>
@@ -25,7 +25,7 @@
     <input type="number" id="quantity_used" name="quantity_used" value="${usage.quantityUsed}" required><br><br>
 
     <input type="submit" value="Submit">
-    <a href="${pageContext.request.contextPath}/inventory-usage">Cancel</a>
+    <a href="${pageContext.request.contextPath}/inventory_usage">Cancel</a>
 </form>
 </body>
 </html>

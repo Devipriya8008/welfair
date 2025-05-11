@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-@WebServlet("/event-volunteers")
+@WebServlet("/event_volunteers")
 public class EventVolunteerServlet extends HttpServlet {
     private EventVolunteerDAO eventVolunteerDAO;
 
@@ -93,7 +93,7 @@ public class EventVolunteerServlet extends HttpServlet {
 
         EventVolunteer ev = new EventVolunteer(eventId, volunteerId);
         eventVolunteerDAO.assignVolunteerToEvent(ev);
-        response.sendRedirect(request.getContextPath() + "/event-volunteers");
+        response.sendRedirect(request.getContextPath() + "/event_volunteers");
     }
 
     private void updateAssignment(HttpServletRequest request, HttpServletResponse response)
@@ -104,7 +104,7 @@ public class EventVolunteerServlet extends HttpServlet {
         int newVolunteerId = Integer.parseInt(request.getParameter("volunteerId"));
 
         eventVolunteerDAO.updateAssignment(oldEventId, oldVolunteerId, newEventId, newVolunteerId);
-        response.sendRedirect(request.getContextPath() + "/event-volunteers");
+        response.sendRedirect(request.getContextPath() + "/event_volunteers");
     }
 
     private void deleteAssignment(HttpServletRequest request, HttpServletResponse response)
@@ -113,6 +113,6 @@ public class EventVolunteerServlet extends HttpServlet {
         int volunteerId = Integer.parseInt(request.getParameter("volunteerId"));
 
         eventVolunteerDAO.removeVolunteerFromEvent(eventId, volunteerId);
-        response.sendRedirect(request.getContextPath() + "/event-volunteers");
+        response.sendRedirect(request.getContextPath() + "/event_volunteers");
     }
 }

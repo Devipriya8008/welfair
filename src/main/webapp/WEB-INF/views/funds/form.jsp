@@ -10,7 +10,7 @@
 <body class="bg-light">
 <div class="container mt-4">
   <h2>${empty fund ? 'Add New Fund Allocation' : 'Edit Fund Allocation'}</h2>
-  <form action="${pageContext.request.contextPath}/funds" method="post">
+  <form action="${pageContext.request.contextPath}/fund_allocated" method="post">
     <input type="hidden" name="id" value="${fund.fundId}"/>
 
     <div class="mb-3">

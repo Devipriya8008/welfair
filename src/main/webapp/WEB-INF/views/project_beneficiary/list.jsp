@@ -27,7 +27,7 @@
 </head>
 <body>
 <h1>Project-Beneficiary Assignments</h1>
-<a href="${pageContext.request.contextPath}/project-beneficiaries?action=new">+ New Assignment</a>
+<a href="${pageContext.request.contextPath}/project_beneficiaries?action=new">+ New Assignment</a>
 <br/><br/>
 
 <table>
@@ -43,9 +43,9 @@
       <td>${assignment.beneficiaryName}</td>
       <td>${assignment.dateAssigned}</td>
       <td>
-        <a href="${pageContext.request.contextPath}/project-beneficiaries?action=edit&projectId=${assignment.projectId}&beneficiaryId=${assignment.beneficiaryId}">Edit</a>
+        <a href="${pageContext.request.contextPath}/project_beneficiaries?action=edit&projectId=${assignment.projectId}&beneficiaryId=${assignment.beneficiaryId}">Edit</a>
         |
-        <a href="${pageContext.request.contextPath}/project-beneficiaries?action=delete&projectId=${assignment.projectId}&beneficiaryId=${assignment.beneficiaryId}" onclick="return confirm('Are you sure?')">Delete</a>
+        <a href="${pageContext.request.contextPath}/project_beneficiaries?action=delete&projectId=${assignment.projectId}&beneficiaryId=${assignment.beneficiaryId}" onclick="return confirm('Are you sure?')">Delete</a>
       </td>
     </tr>
   </c:forEach>

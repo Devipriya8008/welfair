@@ -10,7 +10,7 @@ import jakarta.servlet.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
-@WebServlet("/inventory-usage")
+@WebServlet("/inventory_usage")
 public class InventoryUsageServlet extends HttpServlet {
     private InventoryUsageDAO usageDAO;
 
@@ -46,7 +46,7 @@ public class InventoryUsageServlet extends HttpServlet {
                 int delItemId = Integer.parseInt(request.getParameter("item_id"));
                 int delProjectId = Integer.parseInt(request.getParameter("project_id"));
                 usageDAO.deleteInventoryUsage(delItemId, delProjectId);
-                response.sendRedirect("inventory-usage");
+                response.sendRedirect("inventory_usage");
                 break;
 
             default:
@@ -74,6 +74,6 @@ public class InventoryUsageServlet extends HttpServlet {
             usageDAO.addInventoryUsage(usage);
         }
 
-        response.sendRedirect("inventory-usage");
+        response.sendRedirect("inventory_usage");
     }
 }
