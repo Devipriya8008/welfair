@@ -19,6 +19,6 @@ public class DisplayEventsServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setAttribute("events", eventDAO.getAllEvents());
-        request.getRequestDispatcher("/events.jsp").forward(request, response);
+        request.getRequestDispatcher("/events1.jsp").forward(request, response);
     }
 }

@@ -109,7 +109,7 @@ public class LoginServlet extends HttpServlet {
         // Check for return to events
         if (session.getAttribute("returnToEvents") != null) {
             session.removeAttribute("returnToEvents");
-            response.sendRedirect(contextPath + "/events.jsp?filter=volunteer");
+            response.sendRedirect(contextPath + "/events1.jsp?filter=volunteer");
             return;
         }
 

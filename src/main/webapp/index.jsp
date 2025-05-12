@@ -726,7 +726,7 @@
             </c:forEach>
         </div>
         <div style="text-align: center; margin-top: 50px;">
-            <a href="events.jsp" class="auth-btn btn-primary">View All Events</a>
+            <a href="events1.jsp" class="auth-btn btn-primary">View All Events</a>
         </div>
     </div>
 </section>

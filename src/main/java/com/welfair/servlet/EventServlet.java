@@ -45,7 +45,8 @@ public class EventServlet extends HttpServlet {
                 default:
                     List<Event> events = eventDAO.getAllEvents();
                     request.setAttribute("events", events);
-                    request.getRequestDispatcher("/events.jsp").forward(request, response); // Changed path
+                    request.getRequestDispatcher("/WEB-INF/views/events/form.jsp").forward(request, response);
+                    // Changed path
                     break;
             }
         } catch (Exception ex) {

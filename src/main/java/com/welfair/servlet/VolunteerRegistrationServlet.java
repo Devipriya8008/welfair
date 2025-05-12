@@ -46,7 +46,7 @@ public class VolunteerRegistrationServlet extends HttpServlet {
 
             if (volunteer == null) {
                 session.setAttribute("error", "Volunteer profile not found");
-                response.sendRedirect("events.jsp");
+                response.sendRedirect("events1.jsp");
                 return;
             }
 
@@ -65,7 +65,7 @@ public class VolunteerRegistrationServlet extends HttpServlet {
             session.removeAttribute("returnTo");
             response.sendRedirect("volunteer-dashboard.jsp");
         } else {
-            response.sendRedirect("events.jsp?filter=volunteer");
+            response.sendRedirect("events1.jsp?filter=volunteer");
         }
     }
 }
