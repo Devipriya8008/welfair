@@ -103,8 +103,11 @@ public class EmployeeServlet extends HttpServlet {
             conn = DBConnection.getConnection();
             conn.setAutoCommit(false); // Start transaction
 
-            // First validate email uniqueness
+            // Get employee details from form
+            String name = request.getParameter("name");
             String email = request.getParameter("email");
+
+            // Validate email uniqueness
             if (userDAO.emailExists(email, conn)) {
                 conn.rollback();
                 request.setAttribute("error", "Email already exists in system");
@@ -112,9 +115,9 @@ public class EmployeeServlet extends HttpServlet {
                 return;
             }
 
-            // Create User first
+            // Create User first - using the employee's name as username
             User user = new User();
-            user.setUsername(request.getParameter("email")); // Using email as username
+            user.setUsername(name); // Using the name directly as username
             user.setEmail(email);
             user.setPassword(PasswordUtil.hashPassword("TempPassword123!")); // Temporary password
             user.setRole("employee");

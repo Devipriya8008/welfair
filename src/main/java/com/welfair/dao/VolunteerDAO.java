@@ -22,24 +22,85 @@ public class VolunteerDAO {
     }
 
     public boolean addVolunteer(Volunteer volunteer) throws SQLException {
-        String sql = "INSERT INTO volunteers (user_id, name, phone, email) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setInt(1, volunteer.getUserId());
-            pstmt.setString(2, volunteer.getName());
-            pstmt.setString(3, volunteer.getPhone());
-            pstmt.setString(4, volunteer.getEmail());
+        Connection conn = null;
+        PreparedStatement userStmt = null;
+        PreparedStatement volunteerStmt = null;
+        ResultSet userKeys = null;
+        ResultSet volunteerKeys = null;
 
-            int affectedRows = pstmt.executeUpdate();
-            if (affectedRows > 0) {
-                try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        volunteer.setVolunteerId(generatedKeys.getInt(1));
-                    }
-                }
-                return true;
+        try {
+            conn = getActiveConnection();
+            conn.setAutoCommit(false); // Start transaction
+
+            // 1. Insert into users table
+            String userSql = "INSERT INTO users (username, password, role, email) VALUES (?, ?, 'volunteer', ?)";
+            userStmt = conn.prepareStatement(userSql, Statement.RETURN_GENERATED_KEYS);
+            userStmt.setString(1, volunteer.getEmail());
+            userStmt.setString(2, generateHashedPassword("tempPassword")); // Implement password hashing
+            userStmt.setString(3, volunteer.getEmail());
+
+            int userAffected = userStmt.executeUpdate();
+            if (userAffected != 1) {
+                throw new SQLException("Failed to create user record");
             }
-            return false;
+
+            // Get generated user ID
+            userKeys = userStmt.getGeneratedKeys();
+            if (!userKeys.next()) {
+                throw new SQLException("Failed to get generated user ID");
+            }
+            int userId = userKeys.getInt(1);
+            volunteer.setUserId(userId);
+
+            // 2. Insert into volunteers table
+            String volunteerSql = "INSERT INTO volunteers (user_id, name, phone, email) VALUES (?, ?, ?, ?)";
+            volunteerStmt = conn.prepareStatement(volunteerSql, Statement.RETURN_GENERATED_KEYS);
+            volunteerStmt.setInt(1, userId);
+            volunteerStmt.setString(2, volunteer.getName());
+            volunteerStmt.setString(3, volunteer.getPhone());
+            volunteerStmt.setString(4, volunteer.getEmail());
+
+            int volunteerAffected = volunteerStmt.executeUpdate();
+            if (volunteerAffected != 1) {
+                throw new SQLException("Failed to create volunteer record");
+            }
+
+            // Get generated volunteer ID
+            volunteerKeys = volunteerStmt.getGeneratedKeys();
+            if (volunteerKeys.next()) {
+                volunteer.setVolunteerId(volunteerKeys.getInt(1));
+            }
+
+            conn.commit();
+            return true;
+
+        } catch (SQLException e) {
+            if (conn != null) {
+                try {
+                    conn.rollback();
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            throw new SQLException("Error adding volunteer: " + e.getMessage(), e);
+        } finally {
+            // Close resources in reverse order
+            if (volunteerKeys != null) try { volunteerKeys.close(); } catch (SQLException e) { /* ignore */ }
+            if (userKeys != null) try { userKeys.close(); } catch (SQLException e) { /* ignore */ }
+            if (volunteerStmt != null) try { volunteerStmt.close(); } catch (SQLException e) { /* ignore */ }
+            if (userStmt != null) try { userStmt.close(); } catch (SQLException e) { /* ignore */ }
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) { /* ignore */ }
+            }
         }
+    }
+
+    private String generateHashedPassword(String password) {
+        // Implement proper password hashing (e.g., BCrypt)
+        return password; // Replace with real hashing in production
     }
 
     public List<Volunteer> getAllVolunteers() throws SQLException {
@@ -82,18 +143,20 @@ public class VolunteerDAO {
     }
 
     public boolean updateVolunteer(Volunteer volunteer) throws SQLException {
-        String sql = "UPDATE volunteers SET user_id=?, name=?, phone=?, email=? WHERE volunteer_id=?";
-        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {
-            pstmt.setInt(1, volunteer.getUserId());
-            pstmt.setString(2, volunteer.getName());
-            pstmt.setString(3, volunteer.getPhone());
-            pstmt.setString(4, volunteer.getEmail());
-            pstmt.setInt(5, volunteer.getVolunteerId());
+        String sql = "UPDATE volunteers SET name=?, phone=?, email=? WHERE volunteer_id=?";
 
-            return pstmt.executeUpdate() > 0;
+        try (Connection conn = getActiveConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, volunteer.getName());
+            pstmt.setString(2, volunteer.getPhone());
+            pstmt.setString(3, volunteer.getEmail());
+            pstmt.setInt(4, volunteer.getVolunteerId());
+
+            int affectedRows = pstmt.executeUpdate();
+            return affectedRows > 0;
         }
     }
-
     public boolean deleteVolunteer(int id) throws SQLException {
         String sql = "DELETE FROM volunteers WHERE volunteer_id=?";
         try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql)) {

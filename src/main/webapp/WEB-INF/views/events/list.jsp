@@ -28,8 +28,9 @@
   <div class="card shadow">
     <div class="card-header d-flex justify-content-between align-items-center">
       <h2 class="mb-0"><i class="bi bi-calendar3"></i> Event Management</h2>
-      <a href="${pageContext.request.contextPath}/events/new" class="btn btn-success">
-        <i class="bi bi-plus-circle"></i> Add New Event
+      <a href="${pageContext.request.contextPath}/events/new${fromAdmin ? '?fromAdmin=true' : ''}"
+         class="btn btn-primary">
+        <i class="bi bi-plus"></i> Add New Event
       </a>
     </div>
     <div class="card-body">

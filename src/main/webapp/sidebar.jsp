@@ -43,33 +43,8 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link ${param.table == 'events' ? 'active' : ''}" href="admin-table?table=events">
-                    <i class="bi bi-calendar-event me-2"></i> Events
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${param.table == 'event_volunteers' ? 'active' : ''}" href="admin-table?table=event_volunteers">
-                    <i class="bi bi-calendar-check me-2"></i> Event Volunteers
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link ${param.table == 'inventory' ? 'active' : ''}" href="admin-table?table=inventory">
                     <i class="bi bi-box-seam me-2"></i> Inventory
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${param.table == 'inventory_usage' ? 'active' : ''}" href="admin-table?table=inventory_usage">
-                    <i class="bi bi-box-arrow-right me-2"></i> Inventory Usage
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${param.table == 'fund_allocation' ? 'active' : ''}" href="admin-table?table=fund_allocation">
-                    <i class="bi bi-currency-dollar me-2"></i> Fund Allocation
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link ${param.table == 'project_beneficiaries' ? 'active' : ''}" href="admin-table?table=project_beneficiaries">
-                    <i class="bi bi-diagram-2 me-2"></i> Project Beneficiaries
                 </a>
             </li>
         </ul>
@@ -141,15 +116,28 @@
 </style>
 
 <script>
-    // Save and restore scroll position
+    // Enhanced scroll position maintenance
     document.addEventListener('DOMContentLoaded', function() {
         const sidebar = document.querySelector('.sidebar-content');
+        const navLinks = document.querySelectorAll('.sidebar .nav-link');
 
         // Load saved scroll position
         const savedScroll = sessionStorage.getItem('sidebarScroll');
         if (savedScroll) {
             sidebar.scrollTop = savedScroll;
         }
+
+        // Save scroll position before navigation
+        navLinks.forEach(link => {
+            link.addEventListener('click', function(e) {
+                sessionStorage.setItem('sidebarScroll', sidebar.scrollTop);
+
+                // For mobile, close sidebar after click
+                if (window.innerWidth <= 768) {
+                    document.querySelector('.sidebar').classList.remove('active');
+                }
+            });
+        });
 
         // Save scroll position before page unload
         window.addEventListener('beforeunload', function() {

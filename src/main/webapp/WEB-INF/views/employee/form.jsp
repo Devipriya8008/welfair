@@ -6,67 +6,123 @@
   <title><c:out value="${employee.empId == 0 ? 'Add New' : 'Edit'}"/> Employee</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f4f6f9;
+      color: #333;
+      margin: 0;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #2c3e50;
+      font-size: 28px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
     .form-container {
-      max-width: 800px;
-      margin: 30px auto;
-      padding: 20px;
       background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 30px 40px;
+      max-width: 700px;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     }
-    .error-message {
-      color: #dc3545;
-      margin-bottom: 15px;
-      padding: 10px;
-      background-color: #f8d7da;
-      border-radius: 4px;
-    }
+
     .form-group {
       margin-bottom: 20px;
-    }
-    .form-group label {
-      font-weight: 500;
-      margin-bottom: 5px;
-      display: block;
-    }
-    .form-control {
-      padding: 10px;
-      border-radius: 4px;
-      border: 1px solid #ced4da;
-      width: 100%;
-    }
-    .form-control.is-invalid {
-      border-color: #dc3545;
-    }
-    .btn-group {
-      margin-top: 20px;
       display: flex;
-      gap: 10px;
+      flex-direction: column;
     }
+
+    label {
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #34495e;
+    }
+
+    .form-control {
+      padding: 10px 12px;
+      border: 1px solid #dcdfe6;
+      border-radius: 6px;
+      font-size: 15px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-control:focus {
+      border-color: #3498db;
+      outline: none;
+      box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 80px;
+    }
+
+    .form-control.is-invalid {
+      border-color: #e74c3c;
+      box-shadow: none;
+    }
+
+    .error-message {
+      color: #e74c3c;
+      background-color: #fcebea;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-top: 30px;
+    }
+
     .btn {
-      padding: 10px 15px;
-      border-radius: 4px;
-      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 15px;
       cursor: pointer;
+      transition: background-color 0.3s, transform 0.2s;
+      text-align: center;
+      text-decoration: none;
+      border: none;
     }
+
     .btn-primary {
-      background-color: #0d6efd;
+      background-color: #3498db;
       color: white;
-      border: none;
     }
+
+    .btn-primary:hover {
+      background-color: #2980b9;
+      transform: translateY(-2px);
+    }
+
     .btn-secondary {
-      background-color: #6c757d;
+      background-color: #95a5a6;
       color: white;
-      border: none;
     }
+
+    .btn-secondary:hover {
+      background-color: #7f8c8d;
+      transform: translateY(-2px);
+    }
+
     .img-thumbnail {
       max-width: 100px;
       max-height: 100px;
       border: 1px solid #ddd;
       border-radius: 4px;
       padding: 5px;
+      margin-top: 10px;
     }
   </style>
+
 </head>
 <body>
 <div class="form-container">

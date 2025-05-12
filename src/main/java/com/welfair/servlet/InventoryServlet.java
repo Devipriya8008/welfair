@@ -35,7 +35,7 @@ public class InventoryServlet extends HttpServlet {
         } else if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("item_id"));
             inventoryDAO.deleteInventoryItem(id);
-            response.sendRedirect("inventory");
+            response.sendRedirect(request.getContextPath() + "/admin-table?table=inventory");
         } else {
             List<Inventory> items = inventoryDAO.getAllInventoryItems();
             request.setAttribute("items", items);
@@ -62,6 +62,6 @@ public class InventoryServlet extends HttpServlet {
             inventoryDAO.updateInventoryItem(item);
         }
 
-        response.sendRedirect("inventory");
+        response.sendRedirect(request.getContextPath() + "/admin-table?table=inventory");
     }
 }

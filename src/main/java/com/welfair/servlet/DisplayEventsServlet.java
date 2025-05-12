@@ -6,6 +6,7 @@ import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 @WebServlet(name = "DisplayEventsServlet", value = "/events-display")
 public class DisplayEventsServlet extends HttpServlet {
@@ -18,7 +19,11 @@ public class DisplayEventsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("events", eventDAO.getAllEvents());
+        try {
+            request.setAttribute("events", eventDAO.getAllEvents());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
         request.getRequestDispatcher("/events1.jsp").forward(request, response);
     }
 }

@@ -47,7 +47,13 @@ public class UserDAO {
     public boolean addUser(User user, Connection conn) throws SQLException {
         // First check if username already exists
         if (usernameExists(user.getUsername(), conn)) {
-            throw new SQLException("Username already exists");
+            // If username exists, append a number to make it unique
+            int counter = 1;
+            String originalUsername = user.getUsername();
+            while (usernameExists(user.getUsername(), conn)) {
+                user.setUsername(originalUsername + counter);
+                counter++;
+            }
         }
 
         String sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";

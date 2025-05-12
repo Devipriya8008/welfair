@@ -11,22 +11,112 @@
         </c:choose>
     </title>
     <style>
-        .form-group { margin-bottom: 15px; }
-        label { display: inline-block; width: 100px; }
-        input[type="text"], input[type="email"], input[type="tel"], input[type="number"] { width: 300px; }
-        textarea { width: 300px; height: 100px; }
-        .button-group { margin-top: 20px; }
-        .error { color: red; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 40px;
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        form {
+            background: #fff;
+            padding: 30px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #34495e;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        textarea {
+            padding: 10px 12px;
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
         .button {
-            padding: 5px 10px;
-            background-color: #007BFF;
+            padding: 10px 20px;
+            background-color: #3498db;
             color: white;
-            border-radius: 4px;
-            text-decoration: none;
             border: none;
+            border-radius: 6px;
+            font-size: 15px;
             cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
     </style>
+
+
+
+
+    <!-- Add this to your head tag for the Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+
+    <!-- Add this to your head tag for the Inter font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
