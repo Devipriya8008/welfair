@@ -21,14 +21,16 @@ public class EmployeeDAO {
         return connection != null ? connection : DBConnection.getConnection();
     }
 
-    public boolean addEmployee(Employee emp) throws SQLException {
-        String sql = "INSERT INTO employees (name, position, phone, email, user_id, bio, photo_url) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement pstmt = getActiveConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, emp.getName());
-            pstmt.setString(2, emp.getPosition());
-            pstmt.setString(3, emp.getPhone());
-            pstmt.setString(4, emp.getEmail());
-            pstmt.setInt(5, emp.getUserId());
+    public boolean addEmployee(Employee emp, Connection conn) throws SQLException {
+        String sql = "INSERT INTO employees (user_id, name, position, phone, email, bio, photo_url) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, emp.getUserId());
+            pstmt.setString(2, emp.getName());
+            pstmt.setString(3, emp.getPosition());
+            pstmt.setString(4, emp.getPhone());
+            pstmt.setString(5, emp.getEmail());
             pstmt.setString(6, emp.getBio());
             pstmt.setString(7, emp.getPhotoUrl());
 
@@ -37,13 +39,14 @@ public class EmployeeDAO {
                 try (ResultSet rs = pstmt.getGeneratedKeys()) {
                     if (rs.next()) {
                         emp.setEmpId(rs.getInt(1));
+                        return true;
                     }
                 }
-                return true;
             }
             return false;
         }
     }
+
 
     public List<Employee> getAllEmployees() throws SQLException {
         List<Employee> employees = new ArrayList<>();

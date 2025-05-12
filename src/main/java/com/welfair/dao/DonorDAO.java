@@ -21,9 +21,9 @@ public class DonorDAO {
         return connection != null ? connection : DBConnection.getConnection();
     }
 
-    public boolean saveDonor(Donor donor) throws SQLException {
+    public boolean saveDonor(Donor donor, Connection conn) throws SQLException {
         String sql = "INSERT INTO donors (user_id, name, email, phone, address) VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement stmt = getActiveConnection().prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, donor.getUserId());
             stmt.setString(2, donor.getName());
             stmt.setString(3, donor.getEmail());
@@ -84,28 +84,34 @@ public class DonorDAO {
     }
 
     public boolean updateDonor(Donor donor) throws SQLException {
-        String sql = "UPDATE donors SET user_id=?, name=?, email=?, phone=?, address=? WHERE donor_id=?";
+        Connection conn = null;
         try {
-            getActiveConnection().setAutoCommit(false);
-            try (PreparedStatement stmt = getActiveConnection().prepareStatement(sql)) {
-                stmt.setInt(1, donor.getUserId());
-                stmt.setString(2, donor.getName());
-                stmt.setString(3, donor.getEmail());
-                stmt.setString(4, donor.getPhone());
-                stmt.setString(5, donor.getAddress());
-                stmt.setInt(6, donor.getDonorId());
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false);
+
+            String sql = "UPDATE donors SET name=?, email=?, phone=?, address=? WHERE donor_id=?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, donor.getName());
+                stmt.setString(2, donor.getEmail());
+                stmt.setString(3, donor.getPhone());
+                stmt.setString(4, donor.getAddress());
+                stmt.setInt(5, donor.getDonorId());
 
                 int rowsAffected = stmt.executeUpdate();
-                getActiveConnection().commit();
+                conn.commit();
                 return rowsAffected > 0;
             } catch (SQLException e) {
-                getActiveConnection().rollback();
+                conn.rollback();
                 throw e;
             }
         } finally {
-            getActiveConnection().setAutoCommit(true);
+            if (conn != null) {
+                conn.setAutoCommit(true);
+                conn.close();
+            }
         }
     }
+
 
     public Donor getDonorByUserId(int userId) throws SQLException {
         String sql = "SELECT * FROM donors WHERE user_id = ?";

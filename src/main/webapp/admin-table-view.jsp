@@ -60,7 +60,7 @@
           <i class="bi bi-arrow-left"></i> Back to Dashboard
         </a>
         <!-- Update the Add New link to match your donor list pattern -->
-        <a href="${tableId}?action=new" class="btn btn-primary">
+        <a href="${pageContext.request.contextPath}/${tableId}?action=new&fromAdmin=true" class="btn btn-primary">
           <i class="bi bi-plus-lg"></i> Add New
         </a>
       </div>
@@ -112,6 +112,8 @@
                 <th>Position</th>
                 <th>Phone</th>
                 <th>Email</th>
+                <th>Bio</th>
+                <th>Photo</th>
                 <th>Actions</th>
               </c:when>
               <c:when test="${tableId == 'volunteers'}">
@@ -169,10 +171,10 @@
                   <td>${item.address}</td>
                   <td>
                     <div class="btn-group btn-group-sm">
-                      <a href="${tableId}?action=edit&id=${item.donorId}" class="btn btn-outline-warning">
+                      <a href=${pageContext.request.contextPath}/donors?action=edit&id=${item.donorId}&fromAdmin=true class="btn btn-outline-warning">
                         <i class="bi bi-pencil"></i>
                       </a>
-                      <a href="${tableId}?action=delete&id=${item.donorId}" class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
+                      <a href="${pageContext.request.contextPath}/donors?action=delete&id=${item.donorId}&fromAdmin=true"  class="btn btn-outline-danger" onclick="return confirm('Are you sure?')">
                         <i class="bi bi-trash"></i>
                       </a>
                     </div>
@@ -241,6 +243,12 @@
                   <td>${item.position}</td>
                   <td>${item.phone}</td>
                   <td>${item.email}</td>
+                  <td>${item.bio}</td>
+                  <td>
+                    <c:if test="${not empty item.photoUrl}">
+                      <img src="${item.photoUrl}" width="50" height="50" class="img-thumbnail">
+                    </c:if>
+                  </td>
                   <td>
                     <div class="btn-group btn-group-sm">
                       <a href="employees?action=edit&id=${item.empId}" class="btn btn-outline-warning">

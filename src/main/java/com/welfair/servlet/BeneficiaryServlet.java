@@ -47,7 +47,7 @@ public class BeneficiaryServlet extends HttpServlet {
             } else if ("delete".equals(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 beneficiaryDAO.deleteBeneficiary(id);
-                response.sendRedirect(request.getContextPath() + "/beneficiaries");
+                response.sendRedirect(request.getContextPath() + "/admin-table?table=beneficiaries");
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action parameter");
             }
@@ -76,11 +76,11 @@ public class BeneficiaryServlet extends HttpServlet {
                 int beneficiaryId = Integer.parseInt(request.getParameter("beneficiary_id"));
                 beneficiary.setBeneficiaryId(beneficiaryId);
                 beneficiaryDAO.updateBeneficiary(beneficiary);
-                response.sendRedirect(request.getContextPath() + "/beneficiaries");
+                response.sendRedirect(request.getContextPath() + "/admin-table?table=beneficiaries");
             } else {
                 // Add new beneficiary
                 beneficiaryDAO.addBeneficiary(beneficiary);
-                response.sendRedirect(request.getContextPath() + "/beneficiaries");
+                response.sendRedirect(request.getContextPath() + "/admin-table?table=beneficiaries");
             }
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid number format");

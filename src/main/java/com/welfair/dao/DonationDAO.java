@@ -9,18 +9,34 @@ import java.math.BigDecimal;
 
 public class DonationDAO {
     // Add a new donation
-    private Connection connection;
-    public void addDonation(Donation donation) throws SQLException {
+    public boolean addDonation(Donation donation, Connection conn) throws SQLException {
         String sql = "INSERT INTO donations (donor_id, project_id, amount, date, mode) VALUES (?, ?, ?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-            setDonationParameters(pstmt, donation);
-            pstmt.executeUpdate();
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            // Set parameters with null checks
+            pstmt.setInt(1, donation.getDonorId());
+            pstmt.setInt(2, donation.getProjectId());
+            pstmt.setBigDecimal(3, donation.getAmount() != null ? donation.getAmount() : BigDecimal.ZERO);
+
+            // Handle date - use current time if null
+            Timestamp date = donation.getDate() != null ? donation.getDate() : new Timestamp(System.currentTimeMillis());
+            pstmt.setTimestamp(4, date);
+
+            // Handle mode - default to 'Unknown' if null
+            pstmt.setString(5, donation.getMode() != null ? donation.getMode() : "Unknown");
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating donation failed, no rows affected.");
+            }
 
             try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     donation.setDonationId(generatedKeys.getInt(1));
+                    return true;
+                } else {
+                    throw new SQLException("Creating donation failed, no ID obtained.");
                 }
             }
         }
@@ -60,15 +76,32 @@ public class DonationDAO {
     }
 
     // Update donation
-    public void updateDonation(Donation donation) throws SQLException {
-        String sql = "UPDATE donations SET donor_id = ?, project_id = ?, amount = ?, date = ?, mode = ? WHERE donation_id = ?";
+    public boolean updateDonation(Donation donation, Connection conn) throws SQLException {
+        // First delete the existing record
+        String deleteSql = "DELETE FROM donations WHERE donation_id = ?";
+        try (PreparedStatement deleteStmt = conn.prepareStatement(deleteSql)) {
+            deleteStmt.setInt(1, donation.getDonationId());
+            int deletedRows = deleteStmt.executeUpdate();
 
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            if (deletedRows == 0) {
+                return false; // No record found to update
+            }
+        }
 
-            setDonationParameters(pstmt, donation);
-            pstmt.setInt(6, donation.getDonationId());
-            pstmt.executeUpdate();
+        // Then insert new record with same ID
+        String insertSql = "INSERT INTO donations (donation_id, donor_id, project_id, amount, date, mode) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+            insertStmt.setInt(1, donation.getDonationId());
+            insertStmt.setInt(2, donation.getDonorId());
+            insertStmt.setInt(3, donation.getProjectId());
+            insertStmt.setBigDecimal(4, donation.getAmount());
+            insertStmt.setTimestamp(5, donation.getDate());
+            insertStmt.setString(6, donation.getMode());
+
+            int insertedRows = insertStmt.executeUpdate();
+            return insertedRows > 0;
         }
     }
 
@@ -89,7 +122,15 @@ public class DonationDAO {
         pstmt.setInt(1, donation.getDonorId());
         pstmt.setInt(2, donation.getProjectId());
         pstmt.setBigDecimal(3, donation.getAmount());
-        pstmt.setTimestamp(4, donation.getDate());
+
+        // Ensure date is not null
+        if (donation.getDate() == null) {
+            System.out.println("WARNING: Date is null, setting to current timestamp"); // Debug line
+            pstmt.setTimestamp(4, new Timestamp(System.currentTimeMillis()));
+        } else {
+            pstmt.setTimestamp(4, donation.getDate());
+        }
+
         pstmt.setString(5, donation.getMode());
     }
 
@@ -185,7 +226,5 @@ public class DonationDAO {
             return BigDecimal.ZERO;
         }
     }
-    public void setConnection(Connection connection) {
-        this.connection = connection;
-    }
+
 }

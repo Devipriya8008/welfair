@@ -45,7 +45,7 @@ public class ProjectServlet extends HttpServlet {
             } else if ("delete".equals(action)) {
                 int id = Integer.parseInt(request.getParameter("id"));
                 projectDAO.deleteProject(id);
-                response.sendRedirect(request.getContextPath() + "/projects");
+                response.sendRedirect(request.getContextPath() + "/admin-table?table=projects");
             } else {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid action parameter");
             }
@@ -77,7 +77,7 @@ public class ProjectServlet extends HttpServlet {
             } else {
                 projectDAO.addProject(project);
             }
-            response.sendRedirect(request.getContextPath() + "/projects");
+            response.sendRedirect(request.getContextPath() + "/admin-table?table=projects");
 
         } catch (Exception e) {
             request.setAttribute("errorMessage", "Error processing project: " + e.getMessage());

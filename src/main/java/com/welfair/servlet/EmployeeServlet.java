@@ -1,21 +1,26 @@
 package com.welfair.servlet;
 
-import com.welfair.dao.EmployeeDAO;
-import com.welfair.model.Employee;
+import com.welfair.dao.*;
+import com.welfair.db.DBConnection;
+import com.welfair.model.*;
+import com.welfair.util.PasswordUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.*;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 @WebServlet(name = "EmployeeServlet", urlPatterns = {"/employees"})
 public class EmployeeServlet extends HttpServlet {
     private EmployeeDAO employeeDAO;
+    private UserDAO userDAO;
 
     @Override
     public void init() {
         employeeDAO = new EmployeeDAO();
+        userDAO = new UserDAO();
     }
 
     @Override
@@ -93,21 +98,60 @@ public class EmployeeServlet extends HttpServlet {
 
     private void addEmployee(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
-        Employee emp = new Employee();
-        populateEmployeeFromRequest(emp, request);
+        Connection conn = null;
+        try {
+            conn = DBConnection.getConnection();
+            conn.setAutoCommit(false); // Start transaction
 
-        // Validate email uniqueness
-        if (employeeDAO.emailExists(emp.getEmail(), 0)) {
-            request.setAttribute("error", "Email already exists");
-            showForm(request, response, emp);
-            return;
-        }
+            // First validate email uniqueness
+            String email = request.getParameter("email");
+            if (userDAO.emailExists(email, conn)) {
+                conn.rollback();
+                request.setAttribute("error", "Email already exists in system");
+                showForm(request, response, new Employee());
+                return;
+            }
 
-        if (employeeDAO.addEmployee(emp)) {
-            response.sendRedirect("employees");
-        } else {
-            request.setAttribute("error", "Failed to add employee");
-            showForm(request, response, emp);
+            // Create User first
+            User user = new User();
+            user.setUsername(request.getParameter("email")); // Using email as username
+            user.setEmail(email);
+            user.setPassword(PasswordUtil.hashPassword("TempPassword123!")); // Temporary password
+            user.setRole("employee");
+
+            if (!userDAO.addUser(user, conn)) {
+                conn.rollback();
+                request.setAttribute("error", "Failed to create user account");
+                showForm(request, response, new Employee());
+                return;
+            }
+
+            // Now create Employee with the new user_id
+            Employee emp = new Employee();
+            populateEmployeeFromRequest(emp, request);
+            emp.setUserId(user.getUserId()); // Set the user_id from the newly created user
+
+            if (employeeDAO.addEmployee(emp, conn)) {
+                conn.commit();
+                redirectToProperView(request, response);
+            } else {
+                conn.rollback();
+                request.setAttribute("error", "Failed to add employee");
+                showForm(request, response, emp);
+            }
+        } catch (Exception e) {
+            if (conn != null) conn.rollback();
+            request.setAttribute("error", "Error creating employee: " + e.getMessage());
+            showForm(request, response, new Employee());
+        } finally {
+            if (conn != null) {
+                try {
+                    conn.setAutoCommit(true);
+                    conn.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -116,27 +160,24 @@ public class EmployeeServlet extends HttpServlet {
         int id = Integer.parseInt(request.getParameter("id"));
         Employee emp = employeeDAO.getEmployeeById(id);
 
-        if (emp == null) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-
-        String originalEmail = emp.getEmail();
         populateEmployeeFromRequest(emp, request);
-
-        // Check if email was changed and now conflicts
-        if (!originalEmail.equals(emp.getEmail()) &&
-                employeeDAO.emailExists(emp.getEmail(), emp.getEmpId())) {
-            request.setAttribute("error", "Email already exists");
-            showForm(request, response, emp);
-            return;
-        }
+        emp.setBio(request.getParameter("bio"));
+        emp.setPhotoUrl(request.getParameter("photo_url"));
 
         if (employeeDAO.updateEmployee(emp)) {
-            response.sendRedirect("employees");
+            response.sendRedirect(request.getContextPath() + "/admin-table?table=employees");
         } else {
-            request.setAttribute("error", "Failed to update employee");
-            showForm(request, response, emp);
+            // Error handling
+        }
+    }
+
+    private void redirectToProperView(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {
+        String fromAdmin = request.getParameter("fromAdmin");
+        if ("true".equals(fromAdmin)) {
+            response.sendRedirect(request.getContextPath() + "/admin-table?table=employees");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/employees");
         }
     }
 
@@ -144,17 +185,25 @@ public class EmployeeServlet extends HttpServlet {
             throws ServletException, IOException, SQLException {
         int id = Integer.parseInt(request.getParameter("id"));
         if (employeeDAO.deleteEmployee(id)) {
-            response.sendRedirect("employees");
+            response.sendRedirect(request.getContextPath() + "/admin-table?table=employees");
         } else {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         }
     }
 
     private void populateEmployeeFromRequest(Employee emp, HttpServletRequest request) {
-        emp.setUserId(Integer.parseInt(request.getParameter("user_id"))); // NEW
+        // Only set user_id if it's not already set (for new employees)
+        if (emp.getUserId() == 0) {
+            String userIdParam = request.getParameter("user_id");
+            if (userIdParam != null && !userIdParam.isEmpty()) {
+                emp.setUserId(Integer.parseInt(userIdParam));
+            }
+        }
         emp.setName(request.getParameter("name"));
         emp.setPosition(request.getParameter("position"));
         emp.setPhone(request.getParameter("phone"));
         emp.setEmail(request.getParameter("email"));
+        emp.setBio(request.getParameter("bio"));
+        emp.setPhotoUrl(request.getParameter("photo_url"));
     }
 }

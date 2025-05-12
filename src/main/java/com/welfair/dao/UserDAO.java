@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import com.welfair.db.DBConnection;
 
+import static com.welfair.db.DBConnection.getConnection;
+
 public class UserDAO {
     private Connection connection;
 
@@ -20,7 +22,7 @@ public class UserDAO {
     }
 
     private Connection getActiveConnection() throws SQLException {
-        return connection != null ? connection : DBConnection.getConnection();
+        return connection != null ? connection : getConnection();
     }
 
     public User findByUsername(String username) throws SQLException {
@@ -42,27 +44,42 @@ public class UserDAO {
         return null;
     }
 
-    public boolean addUser(User user) throws SQLException {
-        String sql = "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement stmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+    public boolean addUser(User user, Connection conn) throws SQLException {
+        // First check if username already exists
+        if (usernameExists(user.getUsername(), conn)) {
+            throw new SQLException("Username already exists");
+        }
+
+        String sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+        try (PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setString(1, user.getUsername());
-            stmt.setString(2, user.getPassword());
-            stmt.setString(3, user.getEmail());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
             stmt.setString(4, user.getRole());
 
             int affectedRows = stmt.executeUpdate();
-            if (affectedRows == 0) {
-                return false;
-            }
+            if (affectedRows == 0) return false;
 
             try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     user.setUserId(generatedKeys.getInt(1));
-                    return true;
                 }
             }
-            return false;
+            return true;
         }
+    }
+
+    private boolean usernameExists(String username, Connection conn) throws SQLException {
+        String sql = "SELECT COUNT(*) FROM users WHERE username = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1) > 0;
+                }
+            }
+        }
+        return false;
     }
 
     public User findByEmail(String email) throws SQLException {
@@ -171,6 +188,54 @@ public class UserDAO {
                 return mapUserFromResultSet(rs);
             }
             return null;
+        }
+    }
+    public boolean deleteUser(int userId) throws SQLException {
+        String sql = "DELETE FROM users WHERE user_id = ?";
+        try (PreparedStatement stmt = getConnection().prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            return stmt.executeUpdate() > 0;
+        }
+    }
+    public boolean updateUser(User user) throws SQLException {
+        String sql = "UPDATE users SET username=?, email=?, password=?, role=? WHERE user_id=?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, user.getEmail());
+            stmt.setString(3, user.getPassword());
+            stmt.setString(4, user.getRole());
+            stmt.setInt(5, user.getUserId());
+            return stmt.executeUpdate() > 0;
+        }
+    }
+
+    public User getUserById(int userId) throws SQLException {
+        String sql = "SELECT * FROM users WHERE user_id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setUserId(rs.getInt("user_id"));
+                    user.setUsername(rs.getString("username"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password"));
+                    user.setRole(rs.getString("role"));
+                    return user;
+                }
+            }
+        }
+        return null;
+    }
+    public boolean emailExists(String email, Connection conn) throws SQLException {
+        String sql = "SELECT 1 FROM users WHERE email = ?";
+        try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                return rs.next();
+            }
         }
     }
 }

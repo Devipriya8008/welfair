@@ -79,7 +79,7 @@ public class RegistrationServlet extends HttpServlet {
             user.setPassword(PasswordUtil.hashPassword(password));
             user.setRole(role);
 
-            if (!userDao.addUser(user)) {
+            if (!userDao.addUser(user,conn)) {
                 forwardWithError(request, response, "Failed to create user account", conn);
                 return;
             }
@@ -118,7 +118,7 @@ public class RegistrationServlet extends HttpServlet {
                     employee.setUserId(createdUser.getUserId());
                     employee.setName(fullName);
                     employee.setPhone(phone);
-                    roleSpecificSuccess = employeeDao.addEmployee(employee);
+                    roleSpecificSuccess = employeeDao.addEmployee(employee,conn);
                     break;
 
                 case "volunteer":
@@ -136,7 +136,7 @@ public class RegistrationServlet extends HttpServlet {
                     donor.setUserId(createdUser.getUserId());
                     donor.setName(fullName);
                     donor.setPhone(phone);
-                    roleSpecificSuccess = donorDao.saveDonor(donor);
+                    roleSpecificSuccess = donorDao.saveDonor(donor,conn);
                     break;
 
                 default:

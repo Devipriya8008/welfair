@@ -140,8 +140,9 @@ public class AdminDashboardServlet extends HttpServlet {
             user.setEmail(email);
             user.setPassword(PasswordUtil.hashPassword(password));
             user.setRole(role);
+            Connection conn = DBConnection.getConnection();
 
-            if (userDAO.addUser(user)) {
+            if (userDAO.addUser(user,conn)) {
                 request.setAttribute("message", "Registration successful!");
             } else {
                 request.setAttribute("error", "Registration failed");

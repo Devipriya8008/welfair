@@ -44,6 +44,7 @@
 <form action="${pageContext.request.contextPath}/donors" method="post">
     <input type="hidden" name="action" value="${empty donor.donorId || donor.donorId == 0 ? 'save' : 'update'}"/>
 
+    <input type="hidden" name="fromAdmin" value="true"/>
     <c:if test="${not empty donor.donorId && donor.donorId != 0}">
         <input type="hidden" name="donor_id" value="${donor.donorId}"/>
     </c:if>
