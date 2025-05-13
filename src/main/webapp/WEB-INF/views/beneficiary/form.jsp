@@ -4,9 +4,11 @@
     Beneficiary b = (Beneficiary) request.getAttribute("beneficiary");
     boolean edit = b != null && b.getBeneficiaryId() > 0;
 %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title><%= edit ? "Edit" : "Add" %> Beneficiary</title>
+    <meta charset="UTF-8">
+    <title><%= edit ? "Edit" : "Add New" %> Beneficiary</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -78,6 +80,7 @@
             cursor: pointer;
             transition: background-color 0.3s, transform 0.2s;
             text-decoration: none;
+            text-align: center;
         }
 
         .button:hover {
@@ -103,32 +106,48 @@
 </head>
 <body>
 <h2><%= edit ? "Edit" : "Add New" %> Beneficiary</h2>
+
 <form action="beneficiaries" method="post">
     <% if (edit) { %>
     <input type="hidden" name="action" value="update">
     <input type="hidden" name="beneficiary_id" value="<%= b.getBeneficiaryId() %>">
+    <% } else { %>
+    <input type="hidden" name="action" value="create">
     <% } %>
 
-    Name: <input type="text" name="name" value="<%= edit ? b.getName() : "" %>" required><br>
+    <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" value="<%= edit ? b.getName() : "" %>" required>
+    </div>
 
-    Age: <input type="number" name="age" value="<%= edit ? b.getAge() : "" %>" min="1" required><br>
+    <div class="form-group">
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" value="<%= edit ? b.getAge() : "" %>" min="1" required>
+    </div>
 
-    Gender:
-    <select name="gender" required>
-        <option value="">-- Select Gender --</option>
-        <option value="Male" <%= edit && "Male".equals(b.getGender()) ? "selected" : "" %>>Male</option>
-        <option value="Female" <%= edit && "Female".equals(b.getGender()) ? "selected" : "" %>>Female</option>
-        <option value="Other" <%= edit && "Other".equals(b.getGender()) ? "selected" : "" %>>Other</option>
-    </select><br>
+    <div class="form-group">
+        <label for="gender">Gender:</label>
+        <select id="gender" name="gender" required>
+            <option value="">-- Select Gender --</option>
+            <option value="Male" <%= edit && "Male".equals(b.getGender()) ? "selected" : "" %>>Male</option>
+            <option value="Female" <%= edit && "Female".equals(b.getGender()) ? "selected" : "" %>>Female</option>
+            <option value="Other" <%= edit && "Other".equals(b.getGender()) ? "selected" : "" %>>Other</option>
+        </select>
+    </div>
 
-    Address: <input type="text" name="address" value="<%= edit ? b.getAddress() : "" %>" required><br>
+    <div class="form-group">
+        <label for="address">Address:</label>
+        <input type="text" id="address" name="address" value="<%= edit ? b.getAddress() : "" %>" required>
+    </div>
 
-    <input type="submit" value="<%= edit ? "Update" : "Add" %>">
-    <a href="beneficiaries" style="margin-left: 10px;">Cancel</a>
+    <div class="button-group">
+        <button type="submit" class="button"><%= edit ? "Update" : "Add" %></button>
+        <a href="beneficiaries" class="button cancel-button">Cancel</a>
+    </div>
 </form>
 
 <% if (request.getAttribute("errorMessage") != null) { %>
-<p style="color: red;"><%= request.getAttribute("errorMessage") %></p>
+<p class="error"><%= request.getAttribute("errorMessage") %></p>
 <% } %>
 
 </body>
