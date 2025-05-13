@@ -1,132 +1,133 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
 <html>
 <head>
-    <title>Inventory Form</title>
-    <%@ page contentType="text/html;charset=UTF-8" language="java" %>
-    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-    <html>
-    <head>
-        <title>Inventory Form</title>
-        <style>
-            body {
-                font-family: 'Segoe UI', sans-serif;
-                background: #f4f6f9;
-                color: #333;
-                padding: 40px;
-            }
+    <title>${formTitle}</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 40px;
+        }
 
-            h2 {
-                color: #2c3e50;
-                text-align: center;
-                margin-bottom: 30px;
-            }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-            form {
-                background: #fff;
-                padding: 30px 40px;
-                max-width: 600px;
-                margin: 0 auto;
-                border-radius: 10px;
-                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            }
+        form {
+            background: #fff;
+            padding: 30px 40px;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        }
 
-            .form-group {
-                margin-bottom: 20px;
-                display: flex;
-                flex-direction: column;
-            }
+        .form-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+        }
 
-            label {
-                font-weight: 600;
-                margin-bottom: 6px;
-            }
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #34495e;
+        }
 
-            input[type="text"],
-            input[type="number"] {
-                padding: 10px;
-                border: 1px solid #dcdfe6;
-                border-radius: 6px;
-                font-size: 15px;
-            }
+        input[type="text"],
+        input[type="number"] {
+            padding: 10px;
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            font-size: 15px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
 
-            .btn {
-                padding: 10px 20px;
-                background-color: #3498db;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-size: 15px;
-                cursor: pointer;
-                text-decoration: none;
-            }
+        input:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
 
-            .btn:hover {
-                background-color: #2980b9;
-            }
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
 
-            .btn-secondary {
-                background-color: #95a5a6;
-            }
+        .btn {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
 
-            .btn-secondary:hover {
-                background-color: #7f8c8d;
-            }
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+        }
 
-            .button-group {
-                display: flex;
-                gap: 15px;
-                justify-content: center;
-                margin-top: 20px;
-            }
-        </style>
-    </head>
-    <body>
-    <h2>${item != null ? "Edit" : "Add"} Inventory Item</h2>
+        .cancel-button {
+            background-color: #95a5a6;
+        }
 
-    <form action="inventory" method="post">
-        <c:if test="${item != null}">
-            <input type="hidden" name="item_id" value="${item.itemId}"/>
-        </c:if>
+        .cancel-button:hover {
+            background-color: #7f8c8d;
+        }
 
-        <div class="form-group">
-            <label>Name:</label>
-            <input type="text" name="name" value="${item != null ? item.name : ''}" required/>
-        </div>
-
-        <div class="form-group">
-            <label>Quantity:</label>
-            <input type="number" name="quantity" value="${item != null ? item.quantity : ''}" required/>
-        </div>
-
-        <div class="form-group">
-            <label>Unit:</label>
-            <input type="text" name="unit" value="${item != null ? item.unit : ''}" required/>
-        </div>
-
-        <div class="button-group">
-            <input type="submit" class="btn" value="Save"/>
-            <a href="inventory" class="btn btn-secondary">Back to list</a>
-        </div>
-    </form>
-    </body>
-    </html>
-
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
-<h2>${item != null ? "Edit" : "Add"} Inventory Item</h2>
-<form action="inventory" method="post">
-    <c:if test="${item != null}">
-        <input type="hidden" name="item_id" value="${item.itemId}"/>
+
+<h1>${formTitle}</h1>
+<h2><%= edit ? "Edit" : "Add New" %> Beneficiary</h2>
+
+<c:if test="${not empty errorMessage}">
+    <p class="error">${errorMessage}</p>
+</c:if>
+
+<form action="${pageContext.request.contextPath}/inventory" method="post">
+    <c:if test="${not empty item.itemId}">
+        <input type="hidden" name="item_id" value="${item.itemId}">
     </c:if>
-    <label>Name:</label>
-    <input type="text" name="name" value="${item != null ? item.name : ''}" required/><br>
-    <label>Quantity:</label>
-    <input type="number" name="quantity" value="${item != null ? item.quantity : ''}" required/><br>
-    <label>Unit:</label>
-    <input type="text" name="unit" value="${item != null ? item.unit : ''}" required/><br>
-    <input type="submit" value="Save"/>
+
+    <div class="form-group">
+        <label for="name">Item Name:</label>
+        <input type="text" id="name" name="name" value="${item.name}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" name="quantity" value="${item.quantity}" required>
+    </div>
+
+    <div class="form-group">
+        <label for="unit">Unit:</label>
+        <input type="text" id="unit" name="unit" value="${item.unit}" required>
+    </div>
+
+    <div class="button-group">
+        <button type="submit" class="btn">${empty item.itemId ? 'Add' : 'Update'}</button>
+        <a href="${pageContext.request.contextPath}/admin-table?table=inventory" class="btn cancel-button">Cancel</a>
+    </div>
 </form>
-<a href="inventory">Back to list</a>
+
 </body>
 </html>

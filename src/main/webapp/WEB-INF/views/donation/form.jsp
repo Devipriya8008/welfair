@@ -5,9 +5,10 @@
 <html>
 <head>
     <title>${empty donation.donationId ? 'Add' : 'Edit'} Donation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #f4f6f9;
             color: #333;
             margin: 0;
@@ -56,7 +57,11 @@
             transition: border-color 0.3s, box-shadow 0.3s;
         }
 
-        input:focus,
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        input[type="datetime-local"]:focus,
         select:focus,
         textarea:focus {
             border-color: #3498db;
@@ -104,7 +109,6 @@
             font-weight: 500;
         }
     </style>
-
 </head>
 <body>
 <h2>${empty donation.donationId ? 'Add' : 'Edit'} Donation</h2>
@@ -121,29 +125,29 @@
         <input type="hidden" name="donation_id" value="${donation.donationId}">
     </c:if>
 
-    <div>
+    <div class="form-group">
         <label>Donor ID:</label>
         <input type="number" name="donor_id" value="${donation.donorId}" required>
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Project ID:</label>
         <input type="number" name="project_id" value="${donation.projectId}" required>
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Amount:</label>
         <input type="number" step="0.01" name="amount"
                value="<fmt:formatNumber value='${donation.amount}' pattern='0.00'/>" required>
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Date:</label>
         <input type="datetime-local" name="date"
                value="<fmt:formatDate value='${donation.date}' pattern="yyyy-MM-dd'T'HH:mm"/>" required>
     </div>
 
-    <div>
+    <div class="form-group">
         <label>Payment Mode:</label>
         <select name="mode" required>
             <option value="">Select mode</option>
@@ -154,8 +158,10 @@
         </select>
     </div>
 
-    <button type="submit">Save</button>
-    <a href="${pageContext.request.contextPath}/admin-table?table=donations">Cancel</a>
+    <div class="button-group">
+        <button type="submit" class="button">Save</button>
+        <a href="${pageContext.request.contextPath}/admin-table?table=donations" class="button cancel-button">Cancel</a>
+    </div>
 </form>
 </body>
 </html>
