@@ -135,13 +135,13 @@
 
     Session session = Session.getInstance(props, new jakarta.mail.Authenticator() {
       protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication("dhev2006@gmail.com", "jnvfceajdjsuuoii");
+        return new PasswordAuthentication("welfairngo@gmail.com", "vkxiaumhynijumuy");
       }
     });
 
     try {
       Message message = new MimeMessage(session);
-      message.setFrom(new InternetAddress("dhev2006@gmail.com"));
+      message.setFrom(new InternetAddress("welfairngo@gmail.com"));
       message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email));
       message.setSubject("Registration Confirmation");
 

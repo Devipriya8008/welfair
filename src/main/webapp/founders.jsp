@@ -106,7 +106,7 @@
         <div class="founder-info">
             <div class="founder-name">Aditya Babu</div>
             <div class="founder-role">Co-Founder</div>
-            <a href="mailto:23i203@" class="founder-email"><i class="fas fa-envelope"></i>23i203@gmail.com</a>
+            <a href="mailto:23i203@psgtech.ac.in" class="founder-email"><i class="fas fa-envelope"></i>23i203@psgtech.ac.in</a>
             <div class="founder-note">
                 "WELFAIR is more than a mission – it's a movement. We're building a future where hope is accessible to all. Every small act of kindness can ripple into a wave of change."
             </div>
@@ -118,7 +118,7 @@
         <div class="founder-info">
             <div class="founder-name">Devipriya</div>
             <div class="founder-role">Co-Founder</div>
-            <a href="mailto:23i212@psgtech.ac.in" class="founder-email"><i class="fas fa-envelope"></i>23i212@gmail.com</a>
+            <a href="mailto:23i212@psgtech.ac.in" class="founder-email"><i class="fas fa-envelope"></i>23i212@psgtech.ac.in</a>
             <div class="founder-note">
                 "We created WELFAIR to be a platform of empathy, empowerment, and equal opportunity. Every voice deserves to be heard, and every soul deserves dignity."
             </div>
@@ -130,7 +130,7 @@
         <div class="founder-info">
             <div class="founder-name">Dhevasrie</div>
             <div class="founder-role">Co-Founder</div>
-            <a href="mailto:23i214@gmail.com" class="founder-email"><i class="fas fa-envelope"></i>23i214@gmail.com</a>
+            <a href="mailto:23i214@psgtech.ac.in" class="founder-email"><i class="fas fa-envelope"></i>23i214@psgtech.ac.in</a>
             <div class="founder-note">
                 "At WELFAIR, we focus on grassroots impact. Real change starts when communities are uplifted with education, health, and compassion."
             </div>
@@ -142,7 +142,7 @@
         <div class="founder-info">
             <div class="founder-name">Mohit</div>
             <div class="founder-role">Co-Founder</div>
-            <a href="mailto:23i240@gmail.com" class="founder-email"><i class="fas fa-envelope"></i>23i240@gmail.com</a>
+            <a href="mailto:23i240@psgtech.ac.in" class="founder-email"><i class="fas fa-envelope"></i>23i240@psgtech.ac.in</a>
             <div class="founder-note">
                 "We envision a society where resources are shared, not hoarded. WELFAIR is our promise to bring equity, support, and transparency to those who need it most."
             </div>
@@ -154,7 +154,7 @@
         <div class="founder-info">
             <div class="founder-name">Mohnish</div>
             <div class="founder-role">Co-Founder</div>
-            <a href="mailto:23i241@gmail.com" class="founder-email"><i class="fas fa-envelope"></i>23i241@gmail.com</a>
+            <a href="mailto:23i241@psgtech.ac.in" class="founder-email"><i class="fas fa-envelope"></i>23i214@psgtech.ac.in</a>
             <div class="founder-note">
                 "Our journey is one of unity, resilience, and relentless hope. WELFAIR is our shared dream – where humanity comes first, always."
             </div>
