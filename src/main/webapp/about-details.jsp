@@ -207,24 +207,15 @@
       Our Projects
     </a>
 
-    <a href="/about/impact" class="nav-tab">
-      <i class="fas fa-chart-line"></i>
-      Impact Stats
-    </a>
-
-    <a href="/about/stories" class="nav-tab">
-      <i class="fas fa-book-open"></i>
-      Success Stories
-    </a>
 
     <a href="finance.jsp" class="nav-tab">
       <i class="fas fa-file-invoice-dollar"></i>
       Financial Transparency
     </a>
 
-    <a href="/about/partners" class="nav-tab">
-      <i class="fas fa-handshake"></i>
-      Our Partners
+    <a href="founders.jsp" class="nav-tab">
+      <i class="fas fa-user-tie"></i>
+      From Founders' Desk
     </a>
 
     <a href="volunteerspotlight.jsp" class="nav-tab">

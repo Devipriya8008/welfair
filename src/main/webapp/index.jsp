@@ -630,13 +630,15 @@
 <header>
     <div class="container">
         <nav>
-            <a href="index.jsp" class="logo">Welf<span>air</span></a>
+            <a href="index.jsp" class="logo">Wel<span>fair</span></a>
             <ul class="nav-links">
                 <li><a href="#home">Home</a></li>
                 <li><a href="#about">About Us</a></li>
                 <li><a href="#mission">Vision & Mission</a></li>
                 <li><a href="#events">Events</a></li>
                 <li><a href="#contact">Contact Us</a></li>
+                <li><a href="${pageContext.request.contextPath}/register.jsp?role=employee" style="color: var(--tertiary);">Join Our Crew</a></li>
+                <li><a href="${pageContext.request.contextPath}/login.jsp?role=admin" style="color: var(--quaternary);">Admin Login</a></li>
             </ul>
         </nav>
     </div>
@@ -650,9 +652,14 @@
             <p>Welfair is dedicated to creating sustainable change through education, healthcare, and community development initiatives.</p>
 
             <div class="role-selection">
-                <a href="${pageContext.request.contextPath}/select-role.jsp" class="auth-btn btn-primary" style="margin-top: 20px; display: inline-block;">
-                    Get Started - Select Your Role
-                </a>
+                <div class="role-buttons">
+                    <a href="${pageContext.request.contextPath}/register.jsp?role=donor" class="auth-btn btn-primary">Join as Donor</a>
+                    <a href="${pageContext.request.contextPath}/register.jsp?role=volunteer" class="auth-btn btn-secondary">Join as Volunteer</a>
+                </div>
+                <div class="role-buttons">
+                    <a href="${pageContext.request.contextPath}/login.jsp?role=donor" class="auth-btn btn-primary">Existing Donor</a>
+                    <a href="${pageContext.request.contextPath}/login.jsp?role=volunteer" class="auth-btn btn-secondary">Existing Volunteer</a>
+                </div>
             </div>
         </div>
     </div>
@@ -667,7 +674,7 @@
         <div class="about-content">
             <div class="about-text">
                 <h3>Our Story</h3>
-                <p>Founded in 2010, Welfair has been at the forefront of social change, working tirelessly to uplift underprivileged communities across the region. What began as a small group of passionate individuals has now grown into a movement of thousands.</p>
+                <p>Founded in 2023, Welfair has been at the forefront of social change, working tirelessly to uplift underprivileged communities across the region. What began as a small group of passionate individuals has now grown into a movement of thousands.</p>
                 <p>We believe in the power of collective action and sustainable solutions. Our approach combines immediate relief with long-term development programs to create lasting impact.</p>
                 <a href="about-details.jsp" class="auth-btn btn-primary">Learn More</a>
             </div>
@@ -740,7 +747,7 @@
         <div class="contact-container">
             <div class="contact-info">
                 <h3>Get in Touch</h3>
-                <p>We'd love to hear from you! Reach out for partnerships, volunteer opportunities, or any questions.</p>
+                <p>We'd love to hear from you! Reach out for donations,volunteer opportunities, or any questions.</p>
 
                 <div class="contact-item">
                     <div class="contact-icon">
@@ -748,7 +755,7 @@
                     </div>
                     <div>
                         <h4>Address</h4>
-                        <p>123 Social Change Avenue, Cityville, Country</p>
+                        <p>PSG College Of Technology , Coimbatore</p>
                     </div>
                 </div>
 
@@ -758,7 +765,7 @@
                     </div>
                     <div>
                         <h4>Phone</h4>
-                        <p>+1 (555) 123-4567</p>
+                        <p>9042554992</p>
                     </div>
                 </div>
 
@@ -768,7 +775,7 @@
                     </div>
                     <div>
                         <h4>Email</h4>
-                        <p>info@welfair.org</p>
+                        <p>welfairngo@gmail.com</p>
                     </div>
                 </div>
 
@@ -810,7 +817,7 @@
         <div class="footer-content">
             <div class="footer-column">
                 <h3>About Welfair</h3>
-                <p>Empowering communities through sustainable development initiatives since 2010.</p>
+                <p>Empowering communities through sustainable development initiatives since 2023.</p>
             </div>
             <div class="footer-column">
                 <h3>Quick Links</h3>
@@ -824,15 +831,15 @@
             <div class="footer-column">
                 <h3>Get Involved</h3>
                 <ul>
-                    <li><a href="${pageContext.request.contextPath}/select-role.jsp">Select Role</a></li>
-                    <li><a href="partnerships.jsp">Partnerships</a></li>
+                    <li><a href="${pageContext.request.contextPath}/register.jsp?role=volunteer">Volunteer Now</a></li>
+                    <li><a href="${pageContext.request.contextPath}/register.jsp?role=donor">Donate Now</a></li>
                 </ul>
             </div>
             <div class="footer-column">
                 <h3>Contact</h3>
                 <ul>
-                    <li><a href="mailto:info@welfair.org">info@welfair.org</a></li>
-                    <li><a href="tel:+15551234567">+1 (555) 123-4567</a></li>
+                    <li><a href="mailto:welfairngo@gmail.com">welfairngo@gmail.com</a></li>
+                    <li><a href="tel:9042554992">9042554992</a></li>
                 </ul>
                 <div class="social-links" style="margin-top: 15px;">
                     <a href="#"><i class="fab fa-facebook-f"></i></a>
@@ -843,7 +850,7 @@
             </div>
         </div>
         <div class="copyright">
-            <p>&copy; 2023 Welfair. All Rights Reserved. | <a href="privacy.jsp" style="color: #bbb;">Privacy Policy</a> | <a href="terms.jsp" style="color: #bbb;">Terms of Service</a></p>
+            <p>&copy; 2025 Welfair. All Rights Reserved. | <a href="privacy.jsp" style="color: #bbb;">Privacy Policy</a> | <a href="terms.jsp" style="color: #bbb;">Terms of Service</a></p>
         </div>
     </div>
 </footer>
